@@ -1,0 +1,8 @@
+<plugin
+	id="br.ufes.inf.ontoumlplugin"
+	name="OntoUML Visual Paradigm Plugin"
+	description="OntoUML plugin for Visual Paradigm"
+	provider="Marcus Sales"
+	class="br.ufes.inf.ontoumlplugin.OntoUMLPlugin">
+	
+</plugin>
