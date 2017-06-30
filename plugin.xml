@@ -5,4 +5,25 @@
 	provider="Marcus Sales"
 	class="br.ufes.inf.ontoumlplugin.OntoUMLPlugin">
 	
+	<actionSets> 
+ 
+    <actionSet id="br.ufes.inf.ontoumlplugin.actionset"> 
+      <toolbar 
+          id="br.ufes.inf.ontoumlplugin.actions.toolbar1" 
+          orientation="north" 
+          index="last"/> 
+      <action 
+          id="br.ufes.inf.ontoumlplugin.actionset.ValidateOntoUMLModelAction" 
+          actionType="generalAction" 
+          label="Validate OntoUML Model" 
+          tooltip="Validate OntoUML Model" 
+          style="normal" 
+          toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#"> 
+        <actionController class="br.ufes.inf.ontoumlplugin.actions.ValidateOntoUMLModelController"/> 
+      </action> 
+    </actionSet> 
+ 
+ 
+  </actionSets> 
+	
 </plugin>

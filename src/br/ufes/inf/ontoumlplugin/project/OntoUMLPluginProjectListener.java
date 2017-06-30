@@ -40,125 +40,63 @@ public class OntoUMLPluginProjectListener implements IProjectListener {
 
     private void addOntoUMLStereotypes(){
 
-        ITaggedValueDefinitionContainer taggedValueDefinitionContainer;
-
-        ITaggedValueDefinition taggedValueDefinition;
-
-
         // Class Stereotypes
-        IStereotype stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("Kind");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_CLASS);
-
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("Subkind");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_CLASS);
-
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("Role");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_CLASS);
-
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("Phase");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_CLASS);
-
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("Category");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_CLASS);
-
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("RoleMixin");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_CLASS);
-
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("Mixin");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_CLASS);
-
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("Relator");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_CLASS);
-
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("Mode");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_CLASS);
-
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("Quality");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_CLASS);
-
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("Collective");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_CLASS);
-
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("Quantity");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_CLASS);
-
-
+        addClassStereotypes();
         // Relation Stereotypes
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("Formal");
+        addNonPartWholeAssociationStereotypes();
+        // PartWhole Relation Stereotypes
+        addPartWholeStereotypes();
+
+    }
+
+    private void addClassStereotypes(){
+        String classTypes[] = {"Kind", "Subkind", "Role", "Phase", "Category", "RoleMixin",
+                                "Mixin", "Relator", "Mode", "Quality", "Collective", "Quantity"};
+
+        for(String classType : classTypes){
+            IStereotype stereotype = IModelElementFactory.instance().createStereotype();
+            stereotype.setName(classType);
+            stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_CLASS);
+        }
+
+    }
+
+    private void addNonPartWholeAssociationStereotypes(){
+        String associationTypes[] = new String[] {"Formal", "Mediation","Material",
+                                                    "Derivation","Characterization"};
+
+        for(String associationType : associationTypes){
+            IStereotype stereotype = IModelElementFactory.instance().createStereotype();
+            stereotype.setName(associationType);
+            stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION);
+        }
+
+    }
+
+    private void addPartWholeStereotypes() {
+
+        addPartWholeStereotype("ComponentOf", "shareable");
+        addPartWholeStereotype("MemberOf", "essential", "shareable");
+        addPartWholeStereotype("SubCollectionOf", "essential", "shareable");
+        addPartWholeStereotype("SubQuantityOf", "essential");
+
+    }
+
+    private void addPartWholeStereotype(String name, String... taggedValues){
+        IStereotype stereotype = IModelElementFactory.instance().createStereotype();
+        stereotype.setName(name);
         stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION);
 
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("Mediation");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION);
+        ITaggedValueDefinitionContainer taggedValueDefinitionContainer =
+                IModelElementFactory.instance().createTaggedValueDefinitionContainer();
 
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("Material");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION);
+        for(String taggedValue : taggedValues){
+            ITaggedValueDefinition taggedValueDefinition =
+                    taggedValueDefinitionContainer.createTaggedValueDefinition();
+            taggedValueDefinition.setType(ITaggedValueDefinition.TYPE_BOOLEAN);
+            taggedValueDefinition.setName(taggedValue);
+        }
 
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("Derivation");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION);
-
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("Characterization");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION);
-
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("ComponentOf");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION);
-        taggedValueDefinitionContainer = IModelElementFactory.instance().createTaggedValueDefinitionContainer();
-        taggedValueDefinition = taggedValueDefinitionContainer.createTaggedValueDefinition();
-        taggedValueDefinition.setType(ITaggedValueDefinition.TYPE_BOOLEAN);
-        taggedValueDefinition.setName("shareable");
         stereotype.setTaggedValueDefinitions(taggedValueDefinitionContainer);
-
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("SubCollectionOf");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION);
-        taggedValueDefinitionContainer = IModelElementFactory.instance().createTaggedValueDefinitionContainer();
-        taggedValueDefinition = taggedValueDefinitionContainer.createTaggedValueDefinition();
-        taggedValueDefinition.setType(ITaggedValueDefinition.TYPE_BOOLEAN);
-        taggedValueDefinition.setName("essential");
-        taggedValueDefinition = taggedValueDefinitionContainer.createTaggedValueDefinition();
-        taggedValueDefinition.setType(ITaggedValueDefinition.TYPE_BOOLEAN);
-        taggedValueDefinition.setName("shareable");
-        stereotype.setTaggedValueDefinitions(taggedValueDefinitionContainer);
-
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("MemberOf");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION);
-        taggedValueDefinitionContainer = IModelElementFactory.instance().createTaggedValueDefinitionContainer();
-        taggedValueDefinition = taggedValueDefinitionContainer.createTaggedValueDefinition();
-        taggedValueDefinition.setType(ITaggedValueDefinition.TYPE_BOOLEAN);
-        taggedValueDefinition.setName("essential");
-        taggedValueDefinition = taggedValueDefinitionContainer.createTaggedValueDefinition();
-        taggedValueDefinition.setType(ITaggedValueDefinition.TYPE_BOOLEAN);
-        taggedValueDefinition.setName("shareable");
-        stereotype.setTaggedValueDefinitions(taggedValueDefinitionContainer);
-
-
-        stereotype = IModelElementFactory.instance().createStereotype();
-        stereotype.setName("SubQuantityOf");
-        stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION);
-        taggedValueDefinitionContainer = IModelElementFactory.instance().createTaggedValueDefinitionContainer();
-        taggedValueDefinition = taggedValueDefinitionContainer.createTaggedValueDefinition();
-        taggedValueDefinition.setType(ITaggedValueDefinition.TYPE_BOOLEAN);
-        taggedValueDefinition.setName("essential");
-        stereotype.setTaggedValueDefinitions(taggedValueDefinitionContainer);
-
-
     }
 }
