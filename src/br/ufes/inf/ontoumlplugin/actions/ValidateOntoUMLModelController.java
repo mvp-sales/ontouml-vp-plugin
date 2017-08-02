@@ -3,15 +3,10 @@ package br.ufes.inf.ontoumlplugin.actions;
 import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.action.VPAction;
 import com.vp.plugin.action.VPActionController;
-import com.vp.plugin.model.IClass;
-import com.vp.plugin.model.IGeneralization;
-import com.vp.plugin.model.IModelElement;
+import com.vp.plugin.diagram.IDiagramUIModel;
 import com.vp.plugin.model.IProject;
-import com.vp.plugin.model.ISimpleRelationship;
-import com.vp.plugin.model.IStereotype;
-import com.vp.plugin.model.factory.IModelElementFactory;
 
-import br.ufes.inf.ontoumlplugin.rules.OntoUMLRules;
+import br.ufes.inf.ontoumlplugin.model.RefOntoUMLWrapper;
 
 public class ValidateOntoUMLModelController implements VPActionController {
 
@@ -23,13 +18,18 @@ public class ValidateOntoUMLModelController implements VPActionController {
 							.getProjectManager()
 							.getProject();
 		
-		for(IModelElement element : 
-				project.toAllLevelModelElementArray
-							(IModelElementFactory.MODEL_TYPE_CLASS))
-		{
-			OntoUMLRules.validateOntoUMLClass((IClass)element);
-		}
 
+        IDiagramUIModel diagram = ApplicationManager
+                                    .instance()
+                                    .getDiagramManager()
+                                    .getActiveDiagram();
+        
+        RefOntoUMLWrapper wrapper = RefOntoUMLWrapper.createRefOntoUMLModel(diagram);
+		
+		/*RefOntoUML.Kind k = RefOntoUMLFactory.eINSTANCE.createKind();
+		k.setName("Person");
+		RefOntoUML.Role r = RefOntoUMLFactory.eINSTANCE.createRole();
+		r.setName("Student");*/
 	}
 
 	@Override
