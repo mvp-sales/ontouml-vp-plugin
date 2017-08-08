@@ -13,6 +13,8 @@ import java.util.Set;
 import com.vp.plugin.diagram.IDiagramElement;
 import com.vp.plugin.diagram.IDiagramUIModel;
 import com.vp.plugin.diagram.IShapeTypeConstants;
+import com.vp.plugin.model.IAssociation;
+import com.vp.plugin.model.IAssociationEnd;
 import com.vp.plugin.model.IGeneralization;
 import com.vp.plugin.model.IGeneralizationSet;
 import com.vp.plugin.model.IModelElement;
@@ -57,16 +59,7 @@ public class RefOntoUMLWrapper {
 			wrapper = addClassElement(wrapper, vpClass, vpStereotype);
 		}
 
-		for(IDiagramElement generalizationElement :
-			vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_GENERALIZATION))
-		{
-			IGeneralization vpGeneralization = (IGeneralization) generalizationElement.getMetaModelElement();
-			OntoUMLClass parent = wrapper.getOntoUMLClass(vpGeneralization.getFrom()),
-							child = wrapper.getOntoUMLClass(vpGeneralization.getTo());
-			RefOntoUMLFactoryUtil.createGeneralization(child.getMetaElement(), parent.getMetaElement());
-		}
-
-		/*for(IDiagramElement genSetElement :
+		for(IDiagramElement genSetElement :
 				vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_GENERALIZATION_SET))
 		{
 			IGeneralizationSet vpGenSet = (IGeneralizationSet) genSetElement.getMetaModelElement();
@@ -78,8 +71,8 @@ public class RefOntoUMLWrapper {
 				IGeneralization gen = (IGeneralization) genIterator.next();
 				RefOntoUML.Generalization generalization = 
 					RefOntoUMLFactoryUtil.createGeneralization
-						(wrapper.getOntoUMLClass(gen.getFrom()).getMetaElement(), 
-						 wrapper.getOntoUMLClass(gen.getTo()).getMetaElement());
+						(wrapper.getOntoUMLClass(gen.getTo()).getMetaElement(),
+						 wrapper.getOntoUMLClass(gen.getFrom()).getMetaElement());
 				
 				generalizations.add(generalization);
 				
@@ -93,44 +86,40 @@ public class RefOntoUMLWrapper {
 			}
 			RefOntoUML.GeneralizationSet genSet = RefOntoUMLFactoryUtil.createGeneralizationSet
 							(generalizations, vpGenSet.isDisjoint(), vpGenSet.isCovering(), wrapper.ontoUmlPackage);
-			OntoUMLGeneralizationSet ontoUmlGenSet = new OntoUMLGeneralizationSet(parent,genSetType, generalizations);
+			OntoUMLGeneralizationSet ontoUmlGenSet = new OntoUMLGeneralizationSet(parent,genSetType, genSet);
 			wrapper.addGeneralizationSet(ontoUmlGenSet);
-		}*/
+		}
+		
 
-		/*for(IDiagramElement associationElement :
+		for(IDiagramElement associationElement :
 				vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_ASSOCIATION))
 		{
 			IAssociation vpAssociation = (IAssociation) associationElement.getMetaModelElement();
-			OntoUMLElement from = model.getOntoUMLElement(vpAssociation.getFrom()),
-							to = model.getOntoUMLElement(vpAssociation.getTo());
+			OntoUMLClass from = wrapper.getOntoUMLClass(vpAssociation.getFrom()),
+							to = wrapper.getOntoUMLClass(vpAssociation.getTo());
 
 			IAssociationEnd assEndFrom = (IAssociationEnd) vpAssociation.getFromEnd();
 			IAssociationEnd assEndTo = (IAssociationEnd) vpAssociation.getToEnd();
+			
+			AssociationMultiplicity multFrom = new AssociationMultiplicity(assEndFrom.getMultiplicity());
+			AssociationMultiplicity multTo = new AssociationMultiplicity(assEndTo.getMultiplicity());
+			
+			RefOntoUML.Association association = 
+					RefOntoUMLFactoryUtil.createAssociation
+						(from.getMetaElement(), 
+							multFrom.getMinMultiplicity(), 
+							multFrom.getMaxMultiplicity(), 
+							vpAssociation.getName(), 
+							to.getMetaElement(), 
+							multTo.getMinMultiplicity(), 
+							multTo.getMaxMultiplicity(), 
+							wrapper.ontoUmlPackage);
 
-			AssociationMultiplicity multFrom =
-					new AssociationMultiplicity(assEndTo.getMultiplicity());
-			OntoUMLAssociationEnd assEnd =
-					new OntoUMLAssociationEnd(assEndTo.getName(),
-												multFrom,
-												to);
-			from.addAssociation(assEnd);
-
-			AssociationMultiplicity multTo =
-					new AssociationMultiplicity(assEndFrom.getMultiplicity());
-			OntoUMLAssociationEnd assEndOpposite =
-					new OntoUMLAssociationEnd(assEndFrom.getName(),
-							multTo,
-							from);
-			to.addAssociation(assEndOpposite);
-
-			assEnd.setOpposite(assEndOpposite);
-			assEndOpposite.setOpposite(assEnd);
-
-			OntoUMLAssociation association = new OntoUMLAssociation("", assEnd, assEndOpposite);
-			model.addOntoUMLAssociation(vpAssociation, association);
+/*			OntoUMLAssociation association = new OntoUMLAssociation("", assEnd, assEndOpposite);
+			model.addOntoUMLAssociation(vpAssociation, association);*/
 
 		}
-*/
+
 		
 		File file = new File("/home/mvp-sales/Documentos/teste.refontouml");
 		RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), wrapper.ontoUmlPackage);

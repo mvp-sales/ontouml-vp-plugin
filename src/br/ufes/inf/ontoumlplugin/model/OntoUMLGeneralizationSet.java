@@ -8,6 +8,7 @@ public class OntoUMLGeneralizationSet {
 	private OntoUMLClassType childrenStereotype;
 	private OntoUMLClass parent;
 	private List<RefOntoUML.Generalization> generalizations;
+	private RefOntoUML.GeneralizationSet generalizationSet;
 	
 	public OntoUMLGeneralizationSet
 		(OntoUMLClass parent, OntoUMLClassType stereotype, List<RefOntoUML.Generalization> generalizations)
@@ -17,12 +18,20 @@ public class OntoUMLGeneralizationSet {
 		this.generalizations = generalizations;
 	}
 	
+	public OntoUMLGeneralizationSet
+		(OntoUMLClass parent, OntoUMLClassType stereotype, RefOntoUML.GeneralizationSet genSet)
+	{
+		this.parent = parent;
+		this.childrenStereotype = stereotype;
+		this.generalizationSet = genSet;
+	}
+	
 	public OntoUMLClass getParent(){
         return this.parent;
     }
 	
 	public Iterator<RefOntoUML.Generalization> getGeneralizations(){
-		return this.generalizations.iterator();
+		return this.generalizationSet.getGeneralization().iterator();
 	}
 	
 	public OntoUMLClassType getChildrenStereotype(){
