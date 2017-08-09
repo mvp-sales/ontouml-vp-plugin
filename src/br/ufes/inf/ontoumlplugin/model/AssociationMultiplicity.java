@@ -28,6 +28,19 @@ public class AssociationMultiplicity {
 				this.mMinMultiplicity = 0;
 				this.mMaxMultiplicity = 1;
 				break;
+			default:
+				String[] multStr = multiplicity.split("[.]+");
+				this.mMinMultiplicity = multStr[0].equals("*") ? 
+											-1 : 
+											Integer.valueOf(multStr[0]);
+				this.mMaxMultiplicity = multStr.length == 2 ?
+										(multStr[1].equals("*") ? 
+											-1 : 
+											Integer.valueOf(multStr[1])) :
+										(multStr[0].equals("*") ? 
+											-1 : 
+											Integer.valueOf(multStr[0]));		
+				
 		}
 		
 	}
