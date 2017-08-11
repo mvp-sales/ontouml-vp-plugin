@@ -35,13 +35,22 @@
           orientation="north" 
           index="last"/> 
       <action 
+          id="br.ufes.inf.ontoumlplugin.actionset.ConvertModelToRefOntoUML" 
+          actionType="generalAction" 
+          label="Convert OntoUML Model to RefOntoUML" 
+          tooltip="Convert OntoUML model to RefOntoUML" 
+          style="normal" 
+          toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#"> 
+        <actionController class="br.ufes.inf.ontoumlplugin.actions.ValidateOntoUMLModelController"/> 
+      </action> 
+      <action 
           id="br.ufes.inf.ontoumlplugin.actionset.ValidateOntoUMLModelAction" 
           actionType="generalAction" 
           label="Validate OntoUML Model" 
           tooltip="Validate OntoUML Model" 
           style="normal" 
           toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#"> 
-        <actionController class="br.ufes.inf.ontoumlplugin.actions.ValidateOntoUMLModelController"/> 
+       <!-- <actionController class="br.ufes.inf.ontoumlplugin.actions.ValidateOntoUMLModelController"/> -->
       </action> 
     </actionSet> 
  

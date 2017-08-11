@@ -19,75 +19,68 @@ import com.vp.plugin.model.IGeneralization;
 import com.vp.plugin.model.IGeneralizationSet;
 import com.vp.plugin.model.IModelElement;
 
+import RefOntoUML.Classifier;
 import RefOntoUML.Package;
 import RefOntoUML.util.*;
 public class RefOntoUMLWrapper {
 	
-	
-	private Map<IModelElement, OntoUMLClass> ontoUmlClasses;
-	private Set<OntoUMLGeneralizationSet> generalizationSets;
+	private Map<IModelElement, RefOntoUML.Classifier> classifiers; 
 	Package ontoUmlPackage;
 	
 	private RefOntoUMLWrapper(){
 		this.ontoUmlPackage = RefOntoUMLFactoryUtil.createPackage("package1");
-		this.ontoUmlClasses = new HashMap<>();
-		this.generalizationSets = new HashSet<>();
+		this.classifiers = new HashMap<>();
 	}
 	
-	public void addOntoUmlClass(IModelElement vpElement, OntoUMLClass ontoUmlClass){
-		this.ontoUmlClasses.put(vpElement, ontoUmlClass);
+	public RefOntoUML.Classifier getOntoUMLClassifier(IModelElement vpElement){
+		return classifiers.get(vpElement);
 	}
 	
-	public OntoUMLClass getOntoUMLClass(IModelElement vpElement){
-		return ontoUmlClasses.get(vpElement);
-	}
-	
-	public void addGeneralizationSet(OntoUMLGeneralizationSet genSet){
-		this.generalizationSets.add(genSet);
+	public void addOntoUMLClassifier(IModelElement vpElement, RefOntoUML.Classifier classifier){
+		this.classifiers.put(vpElement, classifier);
 	}
 	
 	public static RefOntoUMLWrapper createRefOntoUMLModel(IDiagramUIModel vpDiagram){
 		RefOntoUMLWrapper wrapper = new RefOntoUMLWrapper();		
 
 		for(IDiagramElement classElement :
-			vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_CLASS))
+				vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_CLASS))
 		{
 			IModelElement vpClass = classElement.getMetaModelElement();
 			String vpStereotype = vpClass.toStereotypeModelArray().length > 0 ?
 									vpClass.toStereotypeModelArray()[0].getName() :
 									"Subkind";
-			wrapper = addClassElement(wrapper, vpClass, vpStereotype);
+			wrapper.addOntoUMLClassifier(vpClass, createOntoUMLElement(wrapper, vpClass, vpStereotype));
 		}
+		
+		for(IDiagramElement generalizationElement : 
+		      vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_GENERALIZATION)) 
+		{ 
+			  IGeneralization vpGeneralization = (IGeneralization) generalizationElement.getMetaModelElement();
+			  if(vpGeneralization.getGeneralizationSet() == null){
+				  RefOntoUML.Classifier parent = wrapper.getOntoUMLClassifier(vpGeneralization.getFrom()), 
+				          child = wrapper.getOntoUMLClassifier(vpGeneralization.getTo()); 
+				  RefOntoUMLFactoryUtil.createGeneralization(child, parent); 
+			  }
+		} 
 
 		for(IDiagramElement genSetElement :
 				vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_GENERALIZATION_SET))
 		{
 			IGeneralizationSet vpGenSet = (IGeneralizationSet) genSetElement.getMetaModelElement();
 			Iterator genIterator = vpGenSet.generalizationIterator();
-			OntoUMLClass parent = null;
-			OntoUMLClassType genSetType = null;
 			List<RefOntoUML.Generalization> generalizations = new ArrayList<>();
 			while(genIterator.hasNext()){
 				IGeneralization gen = (IGeneralization) genIterator.next();
 				RefOntoUML.Generalization generalization = 
 					RefOntoUMLFactoryUtil.createGeneralization
-						(wrapper.getOntoUMLClass(gen.getTo()).getMetaElement(),
-						 wrapper.getOntoUMLClass(gen.getFrom()).getMetaElement());
+						(wrapper.getOntoUMLClassifier(gen.getTo()),
+						 wrapper.getOntoUMLClassifier(gen.getFrom()));
 				
 				generalizations.add(generalization);
-				
-				if(parent == null){
-					parent = wrapper.getOntoUMLClass(gen.getFrom());
-				}
-				
-				if(genSetType == null){
-					genSetType = wrapper.getOntoUMLClass(gen.getTo()).getStereotype();
-				}
 			}
-			RefOntoUML.GeneralizationSet genSet = RefOntoUMLFactoryUtil.createGeneralizationSet
+			RefOntoUMLFactoryUtil.createGeneralizationSet
 							(generalizations, vpGenSet.isDisjoint(), vpGenSet.isCovering(), wrapper.ontoUmlPackage);
-			OntoUMLGeneralizationSet ontoUmlGenSet = new OntoUMLGeneralizationSet(parent,genSetType, genSet);
-			wrapper.addGeneralizationSet(ontoUmlGenSet);
 		}
 		
 
@@ -95,8 +88,8 @@ public class RefOntoUMLWrapper {
 				vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_ASSOCIATION))
 		{
 			IAssociation vpAssociation = (IAssociation) associationElement.getMetaModelElement();
-			OntoUMLClass from = wrapper.getOntoUMLClass(vpAssociation.getFrom()),
-							to = wrapper.getOntoUMLClass(vpAssociation.getTo());
+			RefOntoUML.Classifier from = wrapper.getOntoUMLClassifier(vpAssociation.getFrom()),
+							to = wrapper.getOntoUMLClassifier(vpAssociation.getTo());
 
 			IAssociationEnd assEndFrom = (IAssociationEnd) vpAssociation.getFromEnd();
 			IAssociationEnd assEndTo = (IAssociationEnd) vpAssociation.getToEnd();
@@ -104,19 +97,15 @@ public class RefOntoUMLWrapper {
 			AssociationMultiplicity multFrom = new AssociationMultiplicity(assEndFrom.getMultiplicity());
 			AssociationMultiplicity multTo = new AssociationMultiplicity(assEndTo.getMultiplicity());
 			
-			RefOntoUML.Association association = 
-					RefOntoUMLFactoryUtil.createAssociation
-						(from.getMetaElement(), 
-							multFrom.getMinMultiplicity(), 
-							multFrom.getMaxMultiplicity(), 
-							vpAssociation.getName(), 
-							to.getMetaElement(), 
-							multTo.getMinMultiplicity(), 
-							multTo.getMaxMultiplicity(), 
-							wrapper.ontoUmlPackage);
-
-/*			OntoUMLAssociation association = new OntoUMLAssociation("", assEnd, assEndOpposite);
-			model.addOntoUMLAssociation(vpAssociation, association);*/
+			RefOntoUMLFactoryUtil.createAssociation
+				(from, 
+					multFrom.getMinMultiplicity(), 
+					multFrom.getMaxMultiplicity(), 
+					vpAssociation.getName(), 
+					to, 
+					multTo.getMinMultiplicity(), 
+					multTo.getMaxMultiplicity(), 
+					wrapper.ontoUmlPackage);
 
 		}
 
@@ -127,7 +116,7 @@ public class RefOntoUMLWrapper {
 		return wrapper;
 	}
 	
-	private static RefOntoUMLWrapper addClassElement
+	private static Classifier createOntoUMLElement
 				(RefOntoUMLWrapper wrapper, IModelElement vpElement, String stereotype)
 	{
 		RefOntoUML.Class classifier;
@@ -170,27 +159,9 @@ public class RefOntoUMLWrapper {
 				break;
 		}
 		
-		OntoUMLClass ontoUmlClass = new OntoUMLClass(vpElement, classifier, classType);
-		wrapper.addOntoUmlClass(vpElement, ontoUmlClass);
-		
-		return wrapper;
+		return classifier;
 	}
-	
-	private static RefOntoUMLWrapper addGeneralizationElement
-			(RefOntoUMLWrapper wrapper, IGeneralization vpGeneralization)
-	{
-		OntoUMLClass parent = wrapper.getOntoUMLClass(vpGeneralization.getFrom()),
-					child = wrapper.getOntoUMLClass(vpGeneralization.getTo());
-		RefOntoUML.Generalization gen = 
-				RefOntoUMLFactoryUtil.createGeneralization(parent.getMetaElement(), child.getMetaElement());
-		return wrapper;
-	}
-	
-	private static RefOntoUMLWrapper addGeneralizationSets
-			(RefOntoUMLWrapper wrapper, IGeneralizationSet vpGenSet)
-	{
-		return wrapper;
-	}
+
 	
 
 }
