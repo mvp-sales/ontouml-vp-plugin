@@ -1,17 +1,25 @@
 package br.ufes.inf.ontoumlplugin.actions;
 
+import java.io.File;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import com.vp.plugin.ApplicationManager;
+import com.vp.plugin.ViewManager;
 import com.vp.plugin.action.VPAction;
 import com.vp.plugin.action.VPActionController;
 import com.vp.plugin.diagram.IDiagramUIModel;
 import com.vp.plugin.model.IProject;
 
+import RefOntoUML.util.RefOntoUMLResourceUtil;
 import br.ufes.inf.ontoumlplugin.model.RefOntoUMLWrapper;
+import io.reactivex.schedulers.Schedulers;
 
 public class ValidateOntoUMLModelController implements VPActionController {
 
 	@Override
 	public void performAction(VPAction arg0) {
+		
 		// TODO Auto-generated method stub
 		IProject project = ApplicationManager
 							.instance()
@@ -24,12 +32,20 @@ public class ValidateOntoUMLModelController implements VPActionController {
                                     .getDiagramManager()
                                     .getActiveDiagram();
         
-        RefOntoUMLWrapper wrapper = RefOntoUMLWrapper.createRefOntoUMLModel(diagram);
-		
-		/*RefOntoUML.Kind k = RefOntoUMLFactory.eINSTANCE.createKind();
-		k.setName("Person");
-		RefOntoUML.Role r = RefOntoUMLFactory.eINSTANCE.createRole();
-		r.setName("Student");*/
+        //RefOntoUMLWrapper wrapper = RefOntoUMLWrapper.createRefOntoUMLModel(diagram);
+        
+        RefOntoUMLWrapper
+        	.createObservableWrapper(diagram)
+        	.subscribeOn(Schedulers.io())
+        	.observeOn(Schedulers.trampoline())
+        	.subscribe(
+        		wrapper -> {
+        			ViewManager viewManager = ApplicationManager.instance().getViewManager();
+        			viewManager.showMessage("PROCESSO TERMINADO");
+         		}
+			);
+        	
+	
 	}
 
 	@Override
