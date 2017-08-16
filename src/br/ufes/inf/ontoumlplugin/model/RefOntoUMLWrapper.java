@@ -18,76 +18,80 @@ import com.vp.plugin.model.IAssociationEnd;
 import com.vp.plugin.model.IGeneralization;
 import com.vp.plugin.model.IGeneralizationSet;
 import com.vp.plugin.model.IModelElement;
+import com.vp.plugin.model.property.IModelProperty;
 
+import RefOntoUML.Association;
+import RefOntoUML.Classifier;
 import RefOntoUML.Package;
 import RefOntoUML.util.*;
+import io.reactivex.Observable;
 public class RefOntoUMLWrapper {
 	
-	
-	private Map<IModelElement, OntoUMLClass> ontoUmlClasses;
-	private Set<OntoUMLGeneralizationSet> generalizationSets;
-	Package ontoUmlPackage;
+	private Map<IModelElement, RefOntoUML.Classifier> classElements; 
+	public final Package ontoUmlPackage;
 	
 	private RefOntoUMLWrapper(){
 		this.ontoUmlPackage = RefOntoUMLFactoryUtil.createPackage("package1");
-		this.ontoUmlClasses = new HashMap<>();
-		this.generalizationSets = new HashSet<>();
+		this.classElements = new HashMap<>();
 	}
 	
-	public void addOntoUmlClass(IModelElement vpElement, OntoUMLClass ontoUmlClass){
-		this.ontoUmlClasses.put(vpElement, ontoUmlClass);
+	public RefOntoUML.Classifier getOntoUMLClassifier(IModelElement vpElement){
+		return classElements.get(vpElement);
 	}
 	
-	public OntoUMLClass getOntoUMLClass(IModelElement vpElement){
-		return ontoUmlClasses.get(vpElement);
+	public void addOntoUMLClassifier(IModelElement vpElement, RefOntoUML.Classifier classifier){
+		this.classElements.put(vpElement, classifier);
 	}
-	
-	public void addGeneralizationSet(OntoUMLGeneralizationSet genSet){
-		this.generalizationSets.add(genSet);
+
+	public static Observable<RefOntoUMLWrapper> createObservableWrapper(IDiagramUIModel vpDiagram){
+		return Observable.fromCallable(
+			() -> {
+				return createRefOntoUMLModel(vpDiagram);
+			}
+		);
 	}
 	
 	public static RefOntoUMLWrapper createRefOntoUMLModel(IDiagramUIModel vpDiagram){
 		RefOntoUMLWrapper wrapper = new RefOntoUMLWrapper();		
 
 		for(IDiagramElement classElement :
-			vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_CLASS))
+				vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_CLASS))
 		{
 			IModelElement vpClass = classElement.getMetaModelElement();
 			String vpStereotype = vpClass.toStereotypeModelArray().length > 0 ?
 									vpClass.toStereotypeModelArray()[0].getName() :
 									"Subkind";
-			wrapper = addClassElement(wrapper, vpClass, vpStereotype);
+			wrapper.addOntoUMLClassifier(vpClass, createOntoUMLElement(wrapper, vpClass, vpStereotype));
 		}
+		
+		for(IDiagramElement generalizationElement : 
+		      vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_GENERALIZATION)) 
+		{ 
+			  IGeneralization vpGeneralization = (IGeneralization) generalizationElement.getMetaModelElement();
+			  if(vpGeneralization.getGeneralizationSet() == null){
+				  RefOntoUML.Classifier parent = wrapper.getOntoUMLClassifier(vpGeneralization.getFrom()), 
+				          child = wrapper.getOntoUMLClassifier(vpGeneralization.getTo()); 
+				  RefOntoUMLFactoryUtil.createGeneralization(child, parent); 
+			  }
+		} 
 
 		for(IDiagramElement genSetElement :
 				vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_GENERALIZATION_SET))
 		{
 			IGeneralizationSet vpGenSet = (IGeneralizationSet) genSetElement.getMetaModelElement();
 			Iterator genIterator = vpGenSet.generalizationIterator();
-			OntoUMLClass parent = null;
-			OntoUMLClassType genSetType = null;
 			List<RefOntoUML.Generalization> generalizations = new ArrayList<>();
 			while(genIterator.hasNext()){
 				IGeneralization gen = (IGeneralization) genIterator.next();
 				RefOntoUML.Generalization generalization = 
 					RefOntoUMLFactoryUtil.createGeneralization
-						(wrapper.getOntoUMLClass(gen.getTo()).getMetaElement(),
-						 wrapper.getOntoUMLClass(gen.getFrom()).getMetaElement());
+						(wrapper.getOntoUMLClassifier(gen.getTo()),
+						 wrapper.getOntoUMLClassifier(gen.getFrom()));
 				
 				generalizations.add(generalization);
-				
-				if(parent == null){
-					parent = wrapper.getOntoUMLClass(gen.getFrom());
-				}
-				
-				if(genSetType == null){
-					genSetType = wrapper.getOntoUMLClass(gen.getTo()).getStereotype();
-				}
 			}
-			RefOntoUML.GeneralizationSet genSet = RefOntoUMLFactoryUtil.createGeneralizationSet
+			RefOntoUMLFactoryUtil.createGeneralizationSet
 							(generalizations, vpGenSet.isDisjoint(), vpGenSet.isCovering(), wrapper.ontoUmlPackage);
-			OntoUMLGeneralizationSet ontoUmlGenSet = new OntoUMLGeneralizationSet(parent,genSetType, genSet);
-			wrapper.addGeneralizationSet(ontoUmlGenSet);
 		}
 		
 
@@ -95,102 +99,294 @@ public class RefOntoUMLWrapper {
 				vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_ASSOCIATION))
 		{
 			IAssociation vpAssociation = (IAssociation) associationElement.getMetaModelElement();
-			OntoUMLClass from = wrapper.getOntoUMLClass(vpAssociation.getFrom()),
-							to = wrapper.getOntoUMLClass(vpAssociation.getTo());
+/*			RefOntoUML.Classifier from = wrapper.getOntoUMLClassifier(vpAssociation.getFrom()),
+							to = wrapper.getOntoUMLClassifier(vpAssociation.getTo());
+
+			IAssociationEnd assEndFrom = (IAssociationEnd) vpAssociation.getFromEnd();
+			IAssociationEnd assEndTo = (IAssociationEnd) vpAssociation.getToEnd();
+			
+			AssociationMultiplicity multFrom = new AssociationMultiplicity(assEndFrom.getMultiplicity());
+			AssociationMultiplicity multTo = new AssociationMultiplicity(assEndTo.getMultiplicity());*/
+			
+			System.out.println(vpAssociation.toStereotypeArray().length > 0 ?
+								vpAssociation.toStereotypeArray()[0] : "não tem nada");
+			
+			String vpStereotype = vpAssociation.toStereotypeArray().length > 0 ?
+					vpAssociation.toStereotypeArray()[0] : "";
+					
+/*			
+			RefOntoUMLFactoryUtil.createAssociation
+				(from, 
+					multFrom.getMinMultiplicity(), 
+					multFrom.getMaxMultiplicity(), 
+					vpAssociation.getName(), 
+					to, 
+					multTo.getMinMultiplicity(), 
+					multTo.getMaxMultiplicity(), 
+					wrapper.ontoUmlPackage);*/
+			
+			Association ontoUmlAssociation = createOntoUMLAssociation(wrapper, vpAssociation, vpStereotype);
+
+		}
+		
+		File file = new File("/home/mvp-sales/Documentos/teste.refontouml");
+		RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), wrapper.ontoUmlPackage);
+
+		return wrapper;
+	}
+	
+	private static Classifier createOntoUMLElement
+				(RefOntoUMLWrapper wrapper, IModelElement vpElement, String stereotype)
+	{
+		RefOntoUML.Class classifier;
+		OntoUMLClassType classType = OntoUMLClassType.fromString(stereotype);
+		
+		if(classType == null){
+			classifier = RefOntoUMLFactoryUtil.createSubKind(vpElement.getName(), wrapper.ontoUmlPackage);
+		}else{
+		
+			switch(classType){
+				default:
+				case KIND:
+					classifier = RefOntoUMLFactoryUtil.createKind(vpElement.getName(), wrapper.ontoUmlPackage);
+					break;
+				case SUBKIND:
+					classifier = RefOntoUMLFactoryUtil.createSubKind(vpElement.getName(), wrapper.ontoUmlPackage);
+					break;
+				case ROLE:
+					classifier = RefOntoUMLFactoryUtil.createRole(vpElement.getName(), wrapper.ontoUmlPackage);
+					break;
+				case PHASE:
+					classifier = RefOntoUMLFactoryUtil.createPhase(vpElement.getName(), wrapper.ontoUmlPackage);		
+					break;
+				case COLLECTIVE:
+					classifier = RefOntoUMLFactoryUtil.createCollective(vpElement.getName(), wrapper.ontoUmlPackage);
+					break;
+				case QUANTITY:
+					classifier = RefOntoUMLFactoryUtil.createQuantity(vpElement.getName(), wrapper.ontoUmlPackage);
+					break;
+				case CATEGORY:
+					classifier = RefOntoUMLFactoryUtil.createCategory(vpElement.getName(), wrapper.ontoUmlPackage);
+					break;
+				case ROLEMIXIN:
+					classifier = RefOntoUMLFactoryUtil.createRoleMixin(vpElement.getName(), wrapper.ontoUmlPackage);
+					break;
+				case RELATOR:
+					classifier = RefOntoUMLFactoryUtil.createRelator(vpElement.getName(), wrapper.ontoUmlPackage);
+					break;
+				case MIXIN:
+					classifier = RefOntoUMLFactoryUtil.createMixin(vpElement.getName(), wrapper.ontoUmlPackage);
+					break;
+				case MODE:
+					classifier = RefOntoUMLFactoryUtil.createMode(vpElement.getName(), wrapper.ontoUmlPackage);
+					break;
+			}
+		}
+		
+		for(IModelProperty property : vpElement.toModelPropertyArray()){
+			//RefOntoUMLFactoryUtil.createP
+		}
+		
+		return classifier;
+	}
+	
+	private static Association createOntoUMLAssociation
+				(RefOntoUMLWrapper wrapper, IAssociation vpAssociation, String stereotype){
+		Association association;
+		OntoUMLRelationshipType relationType = OntoUMLRelationshipType.fromString(stereotype);
+		
+		if(relationType == null){
+			RefOntoUML.Classifier source = wrapper.getOntoUMLClassifier(vpAssociation.getFrom()),
+					target = wrapper.getOntoUMLClassifier(vpAssociation.getTo());
 
 			IAssociationEnd assEndFrom = (IAssociationEnd) vpAssociation.getFromEnd();
 			IAssociationEnd assEndTo = (IAssociationEnd) vpAssociation.getToEnd();
 			
 			AssociationMultiplicity multFrom = new AssociationMultiplicity(assEndFrom.getMultiplicity());
 			AssociationMultiplicity multTo = new AssociationMultiplicity(assEndTo.getMultiplicity());
-			
-			RefOntoUML.Association association = 
-					RefOntoUMLFactoryUtil.createAssociation
-						(from.getMetaElement(), 
-							multFrom.getMinMultiplicity(), 
-							multFrom.getMaxMultiplicity(), 
-							vpAssociation.getName(), 
-							to.getMetaElement(), 
-							multTo.getMinMultiplicity(), 
-							multTo.getMaxMultiplicity(), 
-							wrapper.ontoUmlPackage);
-
-/*			OntoUMLAssociation association = new OntoUMLAssociation("", assEnd, assEndOpposite);
-			model.addOntoUMLAssociation(vpAssociation, association);*/
-
+			association = RefOntoUMLFactoryUtil.createAssociation
+					(source, 
+						multFrom.getMinMultiplicity(), 
+						multFrom.getMaxMultiplicity(), 
+						vpAssociation.getName(), 
+						target, 
+						multTo.getMinMultiplicity(), 
+						multTo.getMaxMultiplicity(), 
+						wrapper.ontoUmlPackage);
+		}else{
+			switch(relationType){
+				default:
+				case CHARACTERIZATION:
+				case MEDIATION:
+				case FORMAL_ASSOCIATION:
+				case MATERIAL_ASSOCIATION:
+					association = createCommonAssociation(wrapper, vpAssociation, relationType);
+					break;
+				case COMPONENT_OF:
+				case MEMBER_OF:
+				case SUBQUANTITY_OF:
+				case SUBCOLLECTION_OF:
+					association = createMeronymicAssociation(wrapper, vpAssociation, relationType);
+					break;
+				
+			}
 		}
-
 		
-		File file = new File("/home/mvp-sales/Documentos/teste.refontouml");
-		RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), wrapper.ontoUmlPackage);
-		
-		return wrapper;
+		return association;
 	}
 	
-	private static RefOntoUMLWrapper addClassElement
-				(RefOntoUMLWrapper wrapper, IModelElement vpElement, String stereotype)
+	private static Association createCommonAssociation
+				(RefOntoUMLWrapper wrapper, IAssociation vpAssociation, OntoUMLRelationshipType type)
 	{
-		RefOntoUML.Class classifier;
-		OntoUMLClassType classType = OntoUMLClassType.fromString(stereotype);
+		Association association;
+
+		RefOntoUML.Classifier source = wrapper.getOntoUMLClassifier(vpAssociation.getFrom()),
+				target = wrapper.getOntoUMLClassifier(vpAssociation.getTo());
+
+		IAssociationEnd assEndFrom = (IAssociationEnd) vpAssociation.getFromEnd();
+		IAssociationEnd assEndTo = (IAssociationEnd) vpAssociation.getToEnd();
 		
-		switch(classType){
+		AssociationMultiplicity multFrom = new AssociationMultiplicity(assEndFrom.getMultiplicity());
+		AssociationMultiplicity multTo = new AssociationMultiplicity(assEndTo.getMultiplicity());	
+		
+		switch(type){
 			default:
-			case KIND:
-				classifier = RefOntoUMLFactoryUtil.createKind(vpElement.getName(), wrapper.ontoUmlPackage);
+				association = RefOntoUMLFactoryUtil.createAssociation
+				(source, 
+					multFrom.getMinMultiplicity(), 
+					multFrom.getMaxMultiplicity(), 
+					vpAssociation.getName(), 
+					target, 
+					multTo.getMinMultiplicity(), 
+					multTo.getMaxMultiplicity(), 
+					wrapper.ontoUmlPackage);
+			case CHARACTERIZATION:
+				association = RefOntoUMLFactoryUtil.createCharacterization
+								(source, 
+									multFrom.getMinMultiplicity(), 
+									multFrom.getMaxMultiplicity(), 
+									vpAssociation.getName(), 
+									target, 
+									multTo.getMinMultiplicity(), 
+									multTo.getMaxMultiplicity(), 
+									wrapper.ontoUmlPackage);
 				break;
-			case SUBKIND:
-				classifier = RefOntoUMLFactoryUtil.createSubKind(vpElement.getName(), wrapper.ontoUmlPackage);
+			case MEDIATION:
+				association = RefOntoUMLFactoryUtil.createCharacterization
+								(source, 
+									multFrom.getMinMultiplicity(), 
+									multFrom.getMaxMultiplicity(), 
+									vpAssociation.getName(), 
+									target, 
+									multTo.getMinMultiplicity(), 
+									multTo.getMaxMultiplicity(), 
+									wrapper.ontoUmlPackage);
 				break;
-			case ROLE:
-				classifier = RefOntoUMLFactoryUtil.createRole(vpElement.getName(), wrapper.ontoUmlPackage);
+			case FORMAL_ASSOCIATION:
+				association = RefOntoUMLFactoryUtil.createFormalAssociation
+								(source, 
+									multFrom.getMinMultiplicity(), 
+									multFrom.getMaxMultiplicity(), 
+									vpAssociation.getName(), 
+									target, 
+									multTo.getMinMultiplicity(), 
+									multTo.getMaxMultiplicity(), 
+									wrapper.ontoUmlPackage);
 				break;
-			case PHASE:
-				classifier = RefOntoUMLFactoryUtil.createPhase(vpElement.getName(), wrapper.ontoUmlPackage);		
-				break;
-			case COLLECTIVE:
-				classifier = RefOntoUMLFactoryUtil.createCollective(vpElement.getName(), wrapper.ontoUmlPackage);
-				break;
-			case QUANTITY:
-				classifier = RefOntoUMLFactoryUtil.createQuantity(vpElement.getName(), wrapper.ontoUmlPackage);
-				break;
-			case CATEGORY:
-				classifier = RefOntoUMLFactoryUtil.createCategory(vpElement.getName(), wrapper.ontoUmlPackage);
-				break;
-			case ROLEMIXIN:
-				classifier = RefOntoUMLFactoryUtil.createRoleMixin(vpElement.getName(), wrapper.ontoUmlPackage);
-				break;
-			case RELATOR:
-				classifier = RefOntoUMLFactoryUtil.createRelator(vpElement.getName(), wrapper.ontoUmlPackage);
-				break;
-			case MIXIN:
-				classifier = RefOntoUMLFactoryUtil.createMixin(vpElement.getName(), wrapper.ontoUmlPackage);
-				break;
-			case MODE:
-				classifier = RefOntoUMLFactoryUtil.createMode(vpElement.getName(), wrapper.ontoUmlPackage);
+			case MATERIAL_ASSOCIATION:
+				association = RefOntoUMLFactoryUtil.createMaterialAssociation
+				(source, 
+					multFrom.getMinMultiplicity(), 
+					multFrom.getMaxMultiplicity(), 
+					vpAssociation.getName(), 
+					target, 
+					multTo.getMinMultiplicity(), 
+					multTo.getMaxMultiplicity(), 
+					wrapper.ontoUmlPackage);
 				break;
 		}
 		
-		OntoUMLClass ontoUmlClass = new OntoUMLClass(vpElement, classifier, classType);
-		wrapper.addOntoUmlClass(vpElement, ontoUmlClass);
+		return association;
+	}
+	
+	private static Association createMeronymicAssociation
+				(RefOntoUMLWrapper wrapper, IAssociation vpAssociation, OntoUMLRelationshipType type)
+	{
+		Association association;
 		
-		return wrapper;
+		RefOntoUML.Classifier whole,part;
+		AssociationMultiplicity multWhole, multPart;
+
+		IAssociationEnd assEndFrom = (IAssociationEnd) vpAssociation.getFromEnd();
+		String aggrTypeFrom = assEndFrom.getAggregationKind();
+		IAssociationEnd assEndTo = (IAssociationEnd) vpAssociation.getToEnd();
+		String aggrTypeTo = assEndTo.getAggregationKind();
+		
+		if(aggrTypeFrom.equals(IAssociationEnd.AGGREGATION_KIND_COMPOSITED) || 
+				aggrTypeFrom.equals(IAssociationEnd.AGGREGATION_KIND_SHARED)){
+			whole = wrapper.getOntoUMLClassifier(vpAssociation.getFrom());
+			multWhole = new AssociationMultiplicity(assEndFrom.getMultiplicity());
+			part = wrapper.getOntoUMLClassifier(vpAssociation.getTo());
+			multPart = new AssociationMultiplicity(assEndTo.getMultiplicity());
+		}else{
+			whole = wrapper.getOntoUMLClassifier(vpAssociation.getTo());
+			multWhole = new AssociationMultiplicity(assEndTo.getMultiplicity());
+			part = wrapper.getOntoUMLClassifier(vpAssociation.getFrom());
+			multPart = new AssociationMultiplicity(assEndFrom.getMultiplicity());
+		}
+		
+		switch(type){
+			default:
+			case COMPONENT_OF:
+				association = RefOntoUMLFactoryUtil.createComponentOf
+					(whole, 
+						multWhole.getMinMultiplicity(), 
+						multWhole.getMaxMultiplicity(), 
+						vpAssociation.getName(), 
+						part, 
+						multPart.getMinMultiplicity(), 
+						multPart.getMaxMultiplicity(), 
+						wrapper.ontoUmlPackage);
+				break;
+			case MEMBER_OF:
+				association = RefOntoUMLFactoryUtil.createMemberOf
+				(whole, 
+					multWhole.getMinMultiplicity(), 
+					multWhole.getMaxMultiplicity(), 
+					vpAssociation.getName(), 
+					part, 
+					multPart.getMinMultiplicity(), 
+					multPart.getMaxMultiplicity(), 
+					wrapper.ontoUmlPackage);
+				break;
+			case SUBQUANTITY_OF:
+				association = RefOntoUMLFactoryUtil.createSubQuantityOf
+				(whole, 
+					multWhole.getMinMultiplicity(), 
+					multWhole.getMaxMultiplicity(), 
+					vpAssociation.getName(), 
+					part, 
+					multPart.getMinMultiplicity(), 
+					multPart.getMaxMultiplicity(), 
+					wrapper.ontoUmlPackage);
+				break;
+			case SUBCOLLECTION_OF:
+				association = RefOntoUMLFactoryUtil.createSubCollectionOf
+				(whole, 
+					multWhole.getMinMultiplicity(), 
+					multWhole.getMaxMultiplicity(), 
+					vpAssociation.getName(), 
+					part, 
+					multPart.getMinMultiplicity(), 
+					multPart.getMaxMultiplicity(), 
+					wrapper.ontoUmlPackage);
+				break;
+		}
+		
+		return association;
+		
 	}
-	
-	private static RefOntoUMLWrapper addGeneralizationElement
-			(RefOntoUMLWrapper wrapper, IGeneralization vpGeneralization)
-	{
-		OntoUMLClass parent = wrapper.getOntoUMLClass(vpGeneralization.getFrom()),
-					child = wrapper.getOntoUMLClass(vpGeneralization.getTo());
-		RefOntoUML.Generalization gen = 
-				RefOntoUMLFactoryUtil.createGeneralization(parent.getMetaElement(), child.getMetaElement());
-		return wrapper;
-	}
-	
-	private static RefOntoUMLWrapper addGeneralizationSets
-			(RefOntoUMLWrapper wrapper, IGeneralizationSet vpGenSet)
-	{
-		return wrapper;
-	}
+
 	
 
 }
