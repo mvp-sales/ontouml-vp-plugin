@@ -40,6 +40,8 @@ public class ValidateOntoUMLModelController implements VPActionController {
         	.observeOn(Schedulers.trampoline())
         	.subscribe(
         		wrapper -> {
+        			File file = new File("/home/mvp-sales/Documentos/teste.refontouml");
+        			RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), wrapper.ontoUmlPackage);
         			ViewManager viewManager = ApplicationManager.instance().getViewManager();
         			viewManager.showMessage("PROCESSO TERMINADO");
          		}

@@ -99,38 +99,11 @@ public class RefOntoUMLWrapper {
 				vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_ASSOCIATION))
 		{
 			IAssociation vpAssociation = (IAssociation) associationElement.getMetaModelElement();
-/*			RefOntoUML.Classifier from = wrapper.getOntoUMLClassifier(vpAssociation.getFrom()),
-							to = wrapper.getOntoUMLClassifier(vpAssociation.getTo());
-
-			IAssociationEnd assEndFrom = (IAssociationEnd) vpAssociation.getFromEnd();
-			IAssociationEnd assEndTo = (IAssociationEnd) vpAssociation.getToEnd();
-			
-			AssociationMultiplicity multFrom = new AssociationMultiplicity(assEndFrom.getMultiplicity());
-			AssociationMultiplicity multTo = new AssociationMultiplicity(assEndTo.getMultiplicity());*/
-			
-			System.out.println(vpAssociation.toStereotypeArray().length > 0 ?
-								vpAssociation.toStereotypeArray()[0] : "não tem nada");
-			
 			String vpStereotype = vpAssociation.toStereotypeArray().length > 0 ?
 					vpAssociation.toStereotypeArray()[0] : "";
-					
-/*			
-			RefOntoUMLFactoryUtil.createAssociation
-				(from, 
-					multFrom.getMinMultiplicity(), 
-					multFrom.getMaxMultiplicity(), 
-					vpAssociation.getName(), 
-					to, 
-					multTo.getMinMultiplicity(), 
-					multTo.getMaxMultiplicity(), 
-					wrapper.ontoUmlPackage);*/
-			
-			Association ontoUmlAssociation = createOntoUMLAssociation(wrapper, vpAssociation, vpStereotype);
+			createOntoUMLAssociation(wrapper, vpAssociation, vpStereotype);
 
 		}
-		
-		File file = new File("/home/mvp-sales/Documentos/teste.refontouml");
-		RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), wrapper.ontoUmlPackage);
 
 		return wrapper;
 	}
@@ -196,23 +169,7 @@ public class RefOntoUMLWrapper {
 		OntoUMLRelationshipType relationType = OntoUMLRelationshipType.fromString(stereotype);
 		
 		if(relationType == null){
-			RefOntoUML.Classifier source = wrapper.getOntoUMLClassifier(vpAssociation.getFrom()),
-					target = wrapper.getOntoUMLClassifier(vpAssociation.getTo());
-
-			IAssociationEnd assEndFrom = (IAssociationEnd) vpAssociation.getFromEnd();
-			IAssociationEnd assEndTo = (IAssociationEnd) vpAssociation.getToEnd();
-			
-			AssociationMultiplicity multFrom = new AssociationMultiplicity(assEndFrom.getMultiplicity());
-			AssociationMultiplicity multTo = new AssociationMultiplicity(assEndTo.getMultiplicity());
-			association = RefOntoUMLFactoryUtil.createAssociation
-					(source, 
-						multFrom.getMinMultiplicity(), 
-						multFrom.getMaxMultiplicity(), 
-						vpAssociation.getName(), 
-						target, 
-						multTo.getMinMultiplicity(), 
-						multTo.getMaxMultiplicity(), 
-						wrapper.ontoUmlPackage);
+			association = createCommonAssociation(wrapper, vpAssociation, null);
 		}else{
 			switch(relationType){
 				default:
@@ -247,63 +204,75 @@ public class RefOntoUMLWrapper {
 		IAssociationEnd assEndTo = (IAssociationEnd) vpAssociation.getToEnd();
 		
 		AssociationMultiplicity multFrom = new AssociationMultiplicity(assEndFrom.getMultiplicity());
-		AssociationMultiplicity multTo = new AssociationMultiplicity(assEndTo.getMultiplicity());	
+		AssociationMultiplicity multTo = new AssociationMultiplicity(assEndTo.getMultiplicity());
 		
-		switch(type){
-			default:
-				association = RefOntoUMLFactoryUtil.createAssociation
-				(source, 
-					multFrom.getMinMultiplicity(), 
-					multFrom.getMaxMultiplicity(), 
-					vpAssociation.getName(), 
-					target, 
-					multTo.getMinMultiplicity(), 
-					multTo.getMaxMultiplicity(), 
-					wrapper.ontoUmlPackage);
-			case CHARACTERIZATION:
-				association = RefOntoUMLFactoryUtil.createCharacterization
-								(source, 
-									multFrom.getMinMultiplicity(), 
-									multFrom.getMaxMultiplicity(), 
-									vpAssociation.getName(), 
-									target, 
-									multTo.getMinMultiplicity(), 
-									multTo.getMaxMultiplicity(), 
-									wrapper.ontoUmlPackage);
-				break;
-			case MEDIATION:
-				association = RefOntoUMLFactoryUtil.createCharacterization
-								(source, 
-									multFrom.getMinMultiplicity(), 
-									multFrom.getMaxMultiplicity(), 
-									vpAssociation.getName(), 
-									target, 
-									multTo.getMinMultiplicity(), 
-									multTo.getMaxMultiplicity(), 
-									wrapper.ontoUmlPackage);
-				break;
-			case FORMAL_ASSOCIATION:
-				association = RefOntoUMLFactoryUtil.createFormalAssociation
-								(source, 
-									multFrom.getMinMultiplicity(), 
-									multFrom.getMaxMultiplicity(), 
-									vpAssociation.getName(), 
-									target, 
-									multTo.getMinMultiplicity(), 
-									multTo.getMaxMultiplicity(), 
-									wrapper.ontoUmlPackage);
-				break;
-			case MATERIAL_ASSOCIATION:
-				association = RefOntoUMLFactoryUtil.createMaterialAssociation
-				(source, 
-					multFrom.getMinMultiplicity(), 
-					multFrom.getMaxMultiplicity(), 
-					vpAssociation.getName(), 
-					target, 
-					multTo.getMinMultiplicity(), 
-					multTo.getMaxMultiplicity(), 
-					wrapper.ontoUmlPackage);
-				break;
+		if(type == null){
+			association = RefOntoUMLFactoryUtil.createAssociation
+					(source, 
+						multFrom.getMinMultiplicity(), 
+						multFrom.getMaxMultiplicity(), 
+						vpAssociation.getName(), 
+						target, 
+						multTo.getMinMultiplicity(), 
+						multTo.getMaxMultiplicity(), 
+						wrapper.ontoUmlPackage);
+		}else{
+			switch(type){
+				default:
+					association = RefOntoUMLFactoryUtil.createAssociation
+					(source, 
+						multFrom.getMinMultiplicity(), 
+						multFrom.getMaxMultiplicity(), 
+						vpAssociation.getName(), 
+						target, 
+						multTo.getMinMultiplicity(), 
+						multTo.getMaxMultiplicity(), 
+						wrapper.ontoUmlPackage);
+				case CHARACTERIZATION:
+					association = RefOntoUMLFactoryUtil.createCharacterization
+									(source, 
+										multFrom.getMinMultiplicity(), 
+										multFrom.getMaxMultiplicity(), 
+										vpAssociation.getName(), 
+										target, 
+										multTo.getMinMultiplicity(), 
+										multTo.getMaxMultiplicity(), 
+										wrapper.ontoUmlPackage);
+					break;
+				case MEDIATION:
+					association = RefOntoUMLFactoryUtil.createCharacterization
+									(source, 
+										multFrom.getMinMultiplicity(), 
+										multFrom.getMaxMultiplicity(), 
+										vpAssociation.getName(), 
+										target, 
+										multTo.getMinMultiplicity(), 
+										multTo.getMaxMultiplicity(), 
+										wrapper.ontoUmlPackage);
+					break;
+				case FORMAL_ASSOCIATION:
+					association = RefOntoUMLFactoryUtil.createFormalAssociation
+									(source, 
+										multFrom.getMinMultiplicity(), 
+										multFrom.getMaxMultiplicity(), 
+										vpAssociation.getName(), 
+										target, 
+										multTo.getMinMultiplicity(), 
+										multTo.getMaxMultiplicity(), 
+										wrapper.ontoUmlPackage);
+					break;
+				case MATERIAL_ASSOCIATION:
+					association = RefOntoUMLFactoryUtil.createMaterialAssociation
+					(source, 
+						multFrom.getMinMultiplicity(), 
+						multFrom.getMaxMultiplicity(), 
+						vpAssociation.getName(), 
+						target, 
+						multTo.getMinMultiplicity(), 
+						multTo.getMaxMultiplicity(), 
+						wrapper.ontoUmlPackage);
+					break;
+			}
 		}
 		
 		return association;
