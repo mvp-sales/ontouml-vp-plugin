@@ -240,7 +240,7 @@ public class RefOntoUMLWrapper {
 										wrapper.ontoUmlPackage);
 					break;
 				case MEDIATION:
-					association = RefOntoUMLFactoryUtil.createCharacterization
+					association = RefOntoUMLFactoryUtil.createMediation
 									(source, 
 										multFrom.getMinMultiplicity(), 
 										multFrom.getMaxMultiplicity(), 

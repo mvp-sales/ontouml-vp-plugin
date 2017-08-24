@@ -2,6 +2,7 @@ package br.ufes.inf.ontoumlplugin.actions;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -43,11 +44,14 @@ public class ValidateOntoUMLModelController implements VPActionController {
         	.subscribe(
         		verificator -> {
         			ViewManager viewManager = ApplicationManager.instance().getViewManager();
-        			for(ArrayList<String> errors : verificator.getMap().values()){
-        				for(String error : errors){
-        					viewManager.showMessage(error);
+        			/*for(Map.Entry<RefOntoUML.Element, ArrayList<String>> entry : 
+								verificator.getMap().entrySet()){
+        				for(String error : entry.getValue()){
+        					RefOntoUML.Element element = entry.getKey();
+        					viewManager.showMessage(element.toString() + " - " + error);
         				}
-        			}
+        			}*/
+        			viewManager.showMessage(verificator.getResult());
          		}
 			);
         	
