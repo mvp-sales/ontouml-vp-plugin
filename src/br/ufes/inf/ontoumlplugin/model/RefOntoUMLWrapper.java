@@ -355,6 +355,17 @@ public class RefOntoUMLWrapper {
 		return association;
 		
 	}
+	
+	public static Observable<RefOntoUML.parser.SyntacticVerificator> getVerificator(RefOntoUMLWrapper wrapper){
+		return Observable.fromCallable(
+			() -> {
+				RefOntoUML.parser.SyntacticVerificator verificator = new RefOntoUML.parser.SyntacticVerificator();
+				verificator.run(wrapper.ontoUmlPackage);
+				return verificator;
+			}
+		);
+		
+	}
 
 	
 

@@ -1,6 +1,7 @@
 package br.ufes.inf.ontoumlplugin.actions;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -36,14 +37,17 @@ public class ValidateOntoUMLModelController implements VPActionController {
         
         RefOntoUMLWrapper
         	.createObservableWrapper(diagram)
-        	.subscribeOn(Schedulers.io())
+        	.observeOn(Schedulers.computation())
+        	.flatMap(wrapper -> RefOntoUMLWrapper.getVerificator(wrapper))
         	.observeOn(Schedulers.trampoline())
         	.subscribe(
-        		wrapper -> {
-        			File file = new File("/home/mvp-sales/Documentos/teste.refontouml");
-        			RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), wrapper.ontoUmlPackage);
+        		verificator -> {
         			ViewManager viewManager = ApplicationManager.instance().getViewManager();
-        			viewManager.showMessage("PROCESSO TERMINADO");
+        			for(ArrayList<String> errors : verificator.getMap().values()){
+        				for(String error : errors){
+        					viewManager.showMessage(error);
+        				}
+        			}
          		}
 			);
         	
