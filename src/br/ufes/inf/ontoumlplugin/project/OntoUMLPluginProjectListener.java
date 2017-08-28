@@ -51,7 +51,11 @@ public class OntoUMLPluginProjectListener implements IProjectListener {
 
     private void addClassStereotypes(){
         String classTypes[] = {"Kind", "Subkind", "Role", "Phase", "Category", "RoleMixin",
-                                "Mixin", "Relator", "Mode", "Quality", "Collective", "Quantity"};
+                                "Mixin", "Relator", "Mode", "Quality", "Collective", "Quantity",
+                                "DataType", "PerceivableQuality", "NonPerceivableQuality","NominalQuality",
+                                "MeasurementDomain", "DecimalIntervalDimension", "DecimalOrdinalDimension",
+                                "DecimalRationalDimension", "IntegerIntervalDimension", "IntegerOrdinalDimension",
+                                "IntegerRationalDimension", "StringNominalStructure", "Enumeration"};
 
         for(String classType : classTypes){
             IStereotype stereotype = IModelElementFactory.instance().createStereotype();
@@ -63,7 +67,8 @@ public class OntoUMLPluginProjectListener implements IProjectListener {
 
     private void addNonPartWholeAssociationStereotypes(){
         String associationTypes[] = new String[] {"Formal", "Mediation","Material",
-                                                    "Derivation","Characterization"};
+                                                    "Derivation","Characterization",
+                                                    "Structuration"};
 
         for(String associationType : associationTypes){
             IStereotype stereotype = IModelElementFactory.instance().createStereotype();
