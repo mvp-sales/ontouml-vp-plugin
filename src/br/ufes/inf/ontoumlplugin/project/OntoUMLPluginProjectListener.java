@@ -55,7 +55,7 @@ public class OntoUMLPluginProjectListener implements IProjectListener {
                                 "DataType", "PerceivableQuality", "NonPerceivableQuality","NominalQuality",
                                 "MeasurementDomain", "DecimalIntervalDimension", "DecimalOrdinalDimension",
                                 "DecimalRationalDimension", "IntegerIntervalDimension", "IntegerOrdinalDimension",
-                                "IntegerRationalDimension", "StringNominalStructure", "Enumeration"};
+                                "IntegerRationalDimension", "StringNominalStructure", "Enumeration", "PrimitiveType"};
 
         for(String classType : classTypes){
             IStereotype stereotype = IModelElementFactory.instance().createStereotype();

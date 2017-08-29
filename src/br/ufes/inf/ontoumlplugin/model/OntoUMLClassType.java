@@ -4,7 +4,15 @@ public enum OntoUMLClassType {
 	KIND("Kind"), COLLECTIVE("Collective"), QUANTITY("Quantity"), 
 	SUBKIND("SubKind"), ROLE("Role"), PHASE("Phase"), 
 	ROLEMIXIN("RoleMixin"), CATEGORY("Category"), MIXIN("Mixin"), 
-	RELATOR("Relator"), MODE("Mode"), QUALITY("Quality");
+	RELATOR("Relator"), MODE("Mode"), QUALITY("Quality"),
+	
+	DATA_TYPE("DataType"), PERCEIVABLE_QUALITY("PerceivableQuality"),
+	NON_PERCEIVABLE_QUALITY("NonPerceivableQuality"), NOMINAL_QUALITY("NominalQuality"),
+	MEASUREMENT_DOMAIN("MeasurementDomain"), ENUMERATION("Enumeration"),
+	STRING_NOMINAL_STRUCTURE("StringNominalStructure"), DECIMAL_INTERVAL_DIMENSION("DecimalIntervalDimension"),
+	DECIMAL_ORDINAL_DIMENSION("DecimalOrdinalDimension"), DECIMAL_RATIONAL_DIMENSION("DecimalRationalDimension"),
+	INTEGER_INTERVAL_DIMENSION("IntegerIntervalDimension"), INTEGER_ORDINAL_DIMENSION("IntegerOrdinalDimension"),
+	INTEGER_RATIONAL_DIMENSION("IntegerRationalDimension"), PRIMITIVE_TYPE("PrimitiveType");
 	
 	private String text;
 	

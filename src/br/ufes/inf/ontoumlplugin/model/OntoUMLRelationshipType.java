@@ -4,7 +4,8 @@ public enum OntoUMLRelationshipType {
 
 	FORMAL_ASSOCIATION("FormalAssociation"), MEDIATION("Mediation"), CHARACTERIZATION("Characterization"), 
 	DERIVATION("Derivation"), MATERIAL_ASSOCIATION("MaterialAssociation"),COMPONENT_OF("ComponentOf"), 
-	MEMBER_OF("MemberOf"), SUBCOLLECTION_OF("SubCollectionOf"), SUBQUANTITY_OF("SubQuantityOf");
+	MEMBER_OF("MemberOf"), SUBCOLLECTION_OF("SubCollectionOf"), SUBQUANTITY_OF("SubQuantityOf"),
+	STRUCTURATION("Structuration");
 	
 	private String text;
 	

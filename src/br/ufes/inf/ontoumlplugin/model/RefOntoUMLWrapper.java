@@ -111,7 +111,7 @@ public class RefOntoUMLWrapper {
 	private static Classifier createOntoUMLElement
 				(RefOntoUMLWrapper wrapper, IModelElement vpElement, String stereotype)
 	{
-		RefOntoUML.Class classifier;
+		RefOntoUML.Classifier classifier;
 		OntoUMLClassType classType = OntoUMLClassType.fromString(stereotype);
 		
 		if(classType == null){
@@ -153,11 +153,22 @@ public class RefOntoUMLWrapper {
 				case MODE:
 					classifier = RefOntoUMLFactoryUtil.createMode(vpElement.getName(), wrapper.ontoUmlPackage);
 					break;
+				case PERCEIVABLE_QUALITY:
+					classifier = RefOntoUMLFactoryUtil.createPerceivableQuality(vpElement.getName(), wrapper.ontoUmlPackage);
+					break;
+				case NON_PERCEIVABLE_QUALITY:
+					classifier = RefOntoUMLFactoryUtil.createNonPerceivableQuality(vpElement.getName(), wrapper.ontoUmlPackage);
+					break;
+				case NOMINAL_QUALITY:
+					classifier = RefOntoUMLFactoryUtil.createNominalQuality(vpElement.getName(), wrapper.ontoUmlPackage);
+					break;
+				case DATA_TYPE:
+					classifier = RefOntoUMLFactoryUtil.createDataType(vpElement.getName(), wrapper.ontoUmlPackage);
+					break;
+				case PRIMITIVE_TYPE:
+					classifier = RefOntoUMLFactoryUtil.createPrimitiveType(vpElement.getName(), wrapper.ontoUmlPackage);
+					break;
 			}
-		}
-		
-		for(IModelProperty property : vpElement.toModelPropertyArray()){
-			//RefOntoUMLFactoryUtil.createP
 		}
 		
 		return classifier;
@@ -177,6 +188,7 @@ public class RefOntoUMLWrapper {
 				case MEDIATION:
 				case FORMAL_ASSOCIATION:
 				case MATERIAL_ASSOCIATION:
+				case STRUCTURATION:
 					association = createCommonAssociation(wrapper, vpAssociation, relationType);
 					break;
 				case COMPONENT_OF:
@@ -271,6 +283,17 @@ public class RefOntoUMLWrapper {
 						multTo.getMinMultiplicity(), 
 						multTo.getMaxMultiplicity(), 
 						wrapper.ontoUmlPackage);
+					break;
+				case STRUCTURATION:
+					association = RefOntoUMLFactoryUtil.createStructuration
+									(source,
+										multFrom.getMinMultiplicity(), 
+										multFrom.getMaxMultiplicity(), 
+										vpAssociation.getName(), 
+										target, 
+										multTo.getMinMultiplicity(), 
+										multTo.getMaxMultiplicity(), 
+										wrapper.ontoUmlPackage);
 					break;
 			}
 		}
