@@ -232,14 +232,14 @@ public class RefOntoUMLWrapper {
 			switch(type){
 				default:
 					association = RefOntoUMLFactoryUtil.createAssociation
-					(source, 
-						multFrom.getMinMultiplicity(), 
-						multFrom.getMaxMultiplicity(), 
-						vpAssociation.getName(), 
-						target, 
-						multTo.getMinMultiplicity(), 
-						multTo.getMaxMultiplicity(), 
-						wrapper.ontoUmlPackage);
+									(source, 
+										multFrom.getMinMultiplicity(), 
+										multFrom.getMaxMultiplicity(), 
+										vpAssociation.getName(), 
+										target, 
+										multTo.getMinMultiplicity(), 
+										multTo.getMaxMultiplicity(), 
+										wrapper.ontoUmlPackage);
 				case CHARACTERIZATION:
 					association = RefOntoUMLFactoryUtil.createCharacterization
 									(source, 
@@ -275,14 +275,14 @@ public class RefOntoUMLWrapper {
 					break;
 				case MATERIAL_ASSOCIATION:
 					association = RefOntoUMLFactoryUtil.createMaterialAssociation
-					(source, 
-						multFrom.getMinMultiplicity(), 
-						multFrom.getMaxMultiplicity(), 
-						vpAssociation.getName(), 
-						target, 
-						multTo.getMinMultiplicity(), 
-						multTo.getMaxMultiplicity(), 
-						wrapper.ontoUmlPackage);
+									(source, 
+										multFrom.getMinMultiplicity(), 
+										multFrom.getMaxMultiplicity(), 
+										vpAssociation.getName(), 
+										target, 
+										multTo.getMinMultiplicity(), 
+										multTo.getMaxMultiplicity(), 
+										wrapper.ontoUmlPackage);
 					break;
 				case STRUCTURATION:
 					association = RefOntoUMLFactoryUtil.createStructuration
