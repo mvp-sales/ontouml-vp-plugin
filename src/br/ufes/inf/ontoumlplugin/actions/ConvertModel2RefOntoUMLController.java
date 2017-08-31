@@ -2,6 +2,9 @@ package br.ufes.inf.ontoumlplugin.actions;
 
 import java.io.File;
 
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.ViewManager;
 import com.vp.plugin.action.VPAction;
@@ -35,8 +38,22 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 		.observeOn(Schedulers.trampoline())
 		.subscribe(
 			wrapper -> {
-				File file = new File("/home/mvp-sales/Documentos/teste.refontouml"); 
-                RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), wrapper.ontoUmlPackage);
+				JFileChooser fileChooser = ApplicationManager.instance().getViewManager().createJFileChooser();
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("Reference OntoUML (*.refontouml)", "refontouml");
+				fileChooser.setFileFilter(filter);
+				fileChooser.setDialogTitle("Selecione o diretório de destino");
+				fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+				int returnValue = fileChooser.showSaveDialog(null);
+				
+				if(returnValue == JFileChooser.APPROVE_OPTION){
+					File outputFolder = fileChooser.getCurrentDirectory();
+					String fileName = fileChooser.getSelectedFile().getName();
+					if(!fileName.contains(".refontouml")){
+						fileName += ".refontouml";
+					}
+					File file = new File(outputFolder.getAbsolutePath() + File.separator + fileName);
+					RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), wrapper.ontoUmlPackage);
+				}
 			}
 		);
 	}
