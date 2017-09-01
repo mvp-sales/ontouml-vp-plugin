@@ -52,6 +52,15 @@
           toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#"> 
        	<actionController class="br.ufes.inf.ontoumlplugin.actions.ValidateOntoUMLModelController"/>
       </action> 
+      <action 
+          id="br.ufes.inf.ontoumlplugin.actionset.LoadOntoUMLModelAction" 
+          actionType="generalAction" 
+          label="Load OntoUML Model" 
+          tooltip="Load RefOntoUML File" 
+          style="normal" 
+          toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#"> 
+       	<actionController class="br.ufes.inf.ontoumlplugin.actions.LoadOntoUMLModelController"/>
+      </action> 
     </actionSet> 
  
  
