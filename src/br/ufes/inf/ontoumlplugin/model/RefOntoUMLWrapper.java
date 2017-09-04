@@ -241,26 +241,50 @@ public class RefOntoUMLWrapper {
 										multTo.getMaxMultiplicity(), 
 										wrapper.ontoUmlPackage);
 				case CHARACTERIZATION:
-					association = RefOntoUMLFactoryUtil.createCharacterization
-									(source, 
-										multFrom.getMinMultiplicity(), 
-										multFrom.getMaxMultiplicity(), 
-										vpAssociation.getName(), 
-										target, 
-										multTo.getMinMultiplicity(), 
-										multTo.getMaxMultiplicity(), 
-										wrapper.ontoUmlPackage);
+					if(target instanceof RefOntoUML.Mode){
+						association = RefOntoUMLFactoryUtil.createCharacterization
+										(target, 
+											multTo.getMinMultiplicity(), 
+											multTo.getMaxMultiplicity(), 
+											vpAssociation.getName(), 
+											source, 
+											multFrom.getMinMultiplicity(), 
+											multFrom.getMaxMultiplicity(), 
+											wrapper.ontoUmlPackage);
+					}else{
+						association = RefOntoUMLFactoryUtil.createCharacterization
+										(source, 
+											multFrom.getMinMultiplicity(), 
+											multFrom.getMaxMultiplicity(), 
+											vpAssociation.getName(), 
+											target, 
+											multTo.getMinMultiplicity(), 
+											multTo.getMaxMultiplicity(), 
+											wrapper.ontoUmlPackage);
+					}
 					break;
 				case MEDIATION:
-					association = RefOntoUMLFactoryUtil.createMediation
-									(source, 
-										multFrom.getMinMultiplicity(), 
-										multFrom.getMaxMultiplicity(), 
-										vpAssociation.getName(), 
-										target, 
-										multTo.getMinMultiplicity(), 
-										multTo.getMaxMultiplicity(), 
-										wrapper.ontoUmlPackage);
+					if(target instanceof RefOntoUML.Relator){
+						association = RefOntoUMLFactoryUtil.createMediation
+										(target, 
+											multTo.getMinMultiplicity(), 
+											multTo.getMaxMultiplicity(), 
+											vpAssociation.getName(), 
+											source, 
+											multFrom.getMinMultiplicity(), 
+											multFrom.getMaxMultiplicity(), 
+											wrapper.ontoUmlPackage);
+					}else{
+						association = RefOntoUMLFactoryUtil.createMediation
+										(source, 
+											multFrom.getMinMultiplicity(), 
+											multFrom.getMaxMultiplicity(), 
+											vpAssociation.getName(), 
+											target, 
+											multTo.getMinMultiplicity(), 
+											multTo.getMaxMultiplicity(), 
+											wrapper.ontoUmlPackage);
+					}
 					break;
 				case FORMAL_ASSOCIATION:
 					association = RefOntoUMLFactoryUtil.createFormalAssociation
