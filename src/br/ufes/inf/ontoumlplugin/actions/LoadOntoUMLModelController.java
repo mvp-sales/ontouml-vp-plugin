@@ -33,6 +33,7 @@ import com.vp.plugin.model.IModelElement;
 import com.vp.plugin.model.IMultiplicity;
 import com.vp.plugin.model.IPackage;
 import com.vp.plugin.model.IProject;
+import com.vp.plugin.model.IStereotype;
 import com.vp.plugin.model.factory.IModelElementFactory;
 
 import RefOntoUML.Classifier;
@@ -51,6 +52,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 	
 	private Map<RefOntoUML.Classifier, IModelElement> ontoUml2VpClasses;
 	private Map<RefOntoUML.Classifier, IDiagramElement> ontoUml2VpShapes;
+	private final IProject project = ApplicationManager.instance().getProjectManager().getProject();
 	
 	public LoadOntoUMLModelController(){
 		this.ontoUml2VpClasses = new HashMap<>();
@@ -131,6 +133,17 @@ public class LoadOntoUMLModelController implements VPActionController {
 		IClass vpClass = IModelElementFactory.instance().createClass();
 		vpClass.setName(c.getName());
 		this.ontoUml2VpClasses.put(c, vpClass);
+
+		if(c instanceof RefOntoUML.Kind){
+			IModelElement[] stereotypes = project.toModelElementArray(IModelElementFactory.MODEL_TYPE_STEREOTYPE);
+			for(IModelElement e : stereotypes){
+				IStereotype s = (IStereotype) e;
+				if(s.getName().equals("Kind")){
+					vpClass.addStereotype(s);
+					break;
+				}
+			}
+		}
 		
 		// create superclass shape
 		IClassUIModel vpClassUi = (IClassUIModel) diagramManager.createDiagramElement(diagram, vpClass);

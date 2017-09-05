@@ -3,6 +3,7 @@ package br.ufes.inf.ontoumlplugin.actions;
 import java.io.File;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.vp.plugin.ApplicationManager;
@@ -52,7 +53,20 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 						fileName += ".refontouml";
 					}
 					File file = new File(outputFolder.getAbsolutePath() + File.separator + fileName);
-					RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), wrapper.ontoUmlPackage);
+					if(file.exists()){
+						int result = JOptionPane.showConfirmDialog(null,"The file exists, overwrite?","Existing file",JOptionPane.YES_NO_CANCEL_OPTION);
+						switch(result){
+							case JOptionPane.YES_OPTION:
+								RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), wrapper.ontoUmlPackage);
+								return;
+							case JOptionPane.NO_OPTION:
+							case JOptionPane.CLOSED_OPTION:
+							case JOptionPane.CANCEL_OPTION:
+								return;
+						}
+					}else{
+						RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), wrapper.ontoUmlPackage);
+					}
 				}
 			}
 		);
