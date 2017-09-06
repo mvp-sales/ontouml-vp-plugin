@@ -1,5 +1,10 @@
 package br.ufes.inf.ontoumlplugin.model;
 
+/* import com.vp.plugin.model.IStereotype;
+import com.vp.plugin.model.IProject;
+import com.vp.plugin.model.IModelElement;
+import com.vp.plugin.model.factory.IModelElementFactory;
+ */
 public enum OntoUMLRelationshipType {
 
 	FORMAL_ASSOCIATION("FormalAssociation"), MEDIATION("Mediation"), CHARACTERIZATION("Characterization"), 
@@ -24,5 +29,5 @@ public enum OntoUMLRelationshipType {
 	      }
 	    }
 	    return null;
-	  }
+	}
 }

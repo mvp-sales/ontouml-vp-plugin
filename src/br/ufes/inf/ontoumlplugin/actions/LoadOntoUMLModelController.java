@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.vp.plugin.ApplicationManager;
@@ -44,6 +45,8 @@ import RefOntoUML.NamedElement;
 import RefOntoUML.PackageableElement;
 import RefOntoUML.parser.OntoUMLParser;
 import RefOntoUML.util.RefOntoUMLResourceUtil;
+import br.ufes.inf.ontoumlplugin.model.OntoUMLClassType;
+import br.ufes.inf.ontoumlplugin.model.OntoUMLRelationshipType;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
@@ -74,7 +77,6 @@ public class LoadOntoUMLModelController implements VPActionController {
 			File file = fileChooser.getSelectedFile();
 			try {
 				Resource model = RefOntoUMLResourceUtil.loadModel(file.getAbsolutePath());
-
 				RefOntoUML.Package ontoUmlPackage = (RefOntoUML.Package) model.getContents().get(0);
 
 				buildClassDiagram(ontoUmlPackage);
@@ -135,13 +137,9 @@ public class LoadOntoUMLModelController implements VPActionController {
 		this.ontoUml2VpClasses.put(c, vpClass);
 
 		if(c instanceof RefOntoUML.Kind){
-			IModelElement[] stereotypes = project.toModelElementArray(IModelElementFactory.MODEL_TYPE_STEREOTYPE);
-			for(IModelElement e : stereotypes){
-				IStereotype s = (IStereotype) e;
-				if(s.getName().equals("Kind")){
-					vpClass.addStereotype(s);
-					break;
-				}
+			IStereotype stereotype = OntoUMLClassType.getStereotypeFromString(project, "Kind");
+			if(stereotype != null){
+				vpClass.addStereotype(stereotype);
 			}
 		}
 		
