@@ -39,10 +39,14 @@ import com.vp.plugin.model.factory.IModelElementFactory;
 
 import RefOntoUML.Classifier;
 import RefOntoUML.Element;
+import RefOntoUML.FormalAssociation;
 import RefOntoUML.Generalization;
 import RefOntoUML.GeneralizationSet;
 import RefOntoUML.NamedElement;
 import RefOntoUML.PackageableElement;
+import RefOntoUML.PerceivableQuality;
+import RefOntoUML.SubKind;
+import RefOntoUML.subQuantityOf;
 import RefOntoUML.parser.OntoUMLParser;
 import RefOntoUML.util.RefOntoUMLResourceUtil;
 import br.ufes.inf.ontoumlplugin.model.OntoUMLClassType;
@@ -115,7 +119,12 @@ public class LoadOntoUMLModelController implements VPActionController {
 		
 		for(Classifier c : parser.getAssociations()){
 			RefOntoUML.Association association = (RefOntoUML.Association) c;
-			createAssociation(diagramManager, diagram, association);
+			if(association instanceof RefOntoUML.Meronymic){
+				RefOntoUML.Meronymic meronymicAssociation = (RefOntoUML.Meronymic) association;
+				createMeronymicAssociation(diagramManager, diagram, meronymicAssociation);
+			}else{
+				createAssociation(diagramManager, diagram, association);
+			}
 		}
 
 		for(RefOntoUML.GeneralizationSet genSet : parser.getAllInstances(RefOntoUML.GeneralizationSet.class)){
@@ -136,18 +145,120 @@ public class LoadOntoUMLModelController implements VPActionController {
 		vpClass.setName(c.getName());
 		this.ontoUml2VpClasses.put(c, vpClass);
 
-		if(c instanceof RefOntoUML.Kind){
-			IStereotype stereotype = OntoUMLClassType.getStereotypeFromString(project, "Kind");
-			if(stereotype != null){
-				vpClass.addStereotype(stereotype);
-			}
-		}
+		vpClass = setClassStereotype(vpClass, c);
 		
 		// create superclass shape
 		IClassUIModel vpClassUi = (IClassUIModel) diagramManager.createDiagramElement(diagram, vpClass);
 		vpClassUi.setRequestResetCaption(true);
 		
 		this.ontoUml2VpShapes.put(c, vpClassUi);
+	}
+
+	private IClass setClassStereotype(IClass vpClass, Classifier ontoUmlElement){
+		if(ontoUmlElement instanceof RefOntoUML.Kind){
+			addStereotypeClass(vpClass, "Kind");
+		}else if(ontoUmlElement instanceof RefOntoUML.SubKind){
+			addStereotypeClass(vpClass, "SubKind");
+		}else if(ontoUmlElement instanceof RefOntoUML.Role){
+			addStereotypeClass(vpClass, "Role");
+		}else if(ontoUmlElement instanceof RefOntoUML.Phase){
+			addStereotypeClass(vpClass, "Phase");
+		}else if(ontoUmlElement instanceof RefOntoUML.Relator){
+			addStereotypeClass(vpClass, "Relator");
+		}else if(ontoUmlElement instanceof RefOntoUML.RoleMixin){
+			addStereotypeClass(vpClass, "RoleMixin");
+		}else if(ontoUmlElement instanceof RefOntoUML.Category){
+			addStereotypeClass(vpClass, "Category");
+		}else if(ontoUmlElement instanceof RefOntoUML.Quantity){
+			addStereotypeClass(vpClass, "Quantity");
+		}else if(ontoUmlElement instanceof RefOntoUML.Collective){
+			addStereotypeClass(vpClass, "Collective");
+		}else if(ontoUmlElement instanceof RefOntoUML.Mixin){
+			addStereotypeClass(vpClass, "Mixin");
+		}else if(ontoUmlElement instanceof RefOntoUML.Mode){
+			addStereotypeClass(vpClass, "Mode");
+		}else if(ontoUmlElement instanceof RefOntoUML.Quality){
+			addStereotypeClass(vpClass, "Quality");
+		}else if(ontoUmlElement instanceof RefOntoUML.DataType){
+			addStereotypeClass(vpClass, "DataType");
+		}else if(ontoUmlElement instanceof RefOntoUML.PrimitiveType){
+			addStereotypeClass(vpClass, "PrimitiveType");
+		}else if(ontoUmlElement instanceof RefOntoUML.PerceivableQuality){
+			addStereotypeClass(vpClass, "PerceivableQuality");
+		}else if(ontoUmlElement instanceof RefOntoUML.NonPerceivableQuality){
+			addStereotypeClass(vpClass, "NonPerceivableQuality");
+		}else if(ontoUmlElement instanceof RefOntoUML.NominalQuality){
+			addStereotypeClass(vpClass, "NominalQuality");
+		}else if(ontoUmlElement instanceof RefOntoUML.Enumeration){
+			addStereotypeClass(vpClass, "Enumeration");
+		}else if(ontoUmlElement instanceof RefOntoUML.MeasurementDomain){
+			addStereotypeClass(vpClass, "MeasurementDomain");
+		}
+
+		return vpClass;
+	}
+
+	private void addStereotypeClass(IClass vpClass, String stereotypeStr){
+		IStereotype stereotype = OntoUMLClassType.getStereotypeFromString(project, stereotypeStr);
+		if(stereotype != null){
+			vpClass.addStereotype(stereotype);
+		}
+	}
+
+	private void createMeronymicAssociation(DiagramManager diagramManager, IClassDiagramUIModel diagram, RefOntoUML.Meronymic association){
+		RefOntoUML.Property wholeEnd = association.wholeEnd();
+		RefOntoUML.Property partEnd = association.partEnd();
+		
+		RefOntoUML.Classifier whole = association.whole();
+		RefOntoUML.Classifier part = association.part();
+		int lowerPart = partEnd.getLower(), upperC1 = partEnd.getUpper();
+		int lowerWhole = wholeEnd.getLower(), upperC2 = wholeEnd.getUpper();
+		
+		IModelElement wholeVp = this.ontoUml2VpClasses.get(whole),
+						partVp = this.ontoUml2VpClasses.get(part);
+		
+		// create normal association between subclass to "ClassWithAssociation"
+		IAssociation associationModel = IModelElementFactory.instance().createAssociation();
+		associationModel.setFrom(partVp);
+		associationModel.setTo(wholeVp);
+		// specify multiplicity for from & to end
+		IAssociationEnd associationFromEnd = (IAssociationEnd) associationModel.getFromEnd();
+		associationFromEnd.setMultiplicity(getMultiplicityFromValues(lowerPart, upperC1));
+		IAssociationEnd associationToEnd = (IAssociationEnd) associationModel.getToEnd();
+		associationToEnd.setMultiplicity(getMultiplicityFromValues(lowerWhole, upperC2));
+		associationToEnd.setAggregationKind(association.isIsShareable() ? IAssociationEnd.AGGREGATION_KIND_AGGREGATION :
+																			IAssociationEnd.AGGREGATION_KIND_COMPOSITED);
+		
+		associationModel = setMeronymicAssociation(associationModel, association);
+		
+		// create association connector on diagram
+		IDiagramElement from = this.ontoUml2VpShapes.get(part),
+						to = this.ontoUml2VpShapes.get(whole);
+		IAssociationUIModel associationConnector = (IAssociationUIModel) diagramManager.createConnector(diagram, associationModel, from, to, null);
+		// set to automatic calculate the initial caption position
+		associationConnector.setRequestResetCaption(true);
+	}
+
+	private IAssociation setMeronymicAssociation(IAssociation vpAssociation, RefOntoUML.Meronymic ontoUmlAssociation){
+		
+		if(ontoUmlAssociation instanceof RefOntoUML.memberOf){
+			addStereotypeAssociation(vpAssociation, "MemberOf");
+		}else if(ontoUmlAssociation instanceof RefOntoUML.componentOf){
+			addStereotypeAssociation(vpAssociation, "ComponentOf");
+		}else if(ontoUmlAssociation instanceof RefOntoUML.subQuantityOf){
+			addStereotypeAssociation(vpAssociation, "subQuantityOf");
+		}else if(ontoUmlAssociation instanceof RefOntoUML.subCollectionOf){
+			addStereotypeAssociation(vpAssociation, "subCollectionOf");
+		}
+
+		return vpAssociation;
+	}
+
+	private void addStereotypeAssociation(IAssociation vpAssociation, String stereotypeStr){
+		IStereotype stereotype = OntoUMLRelationshipType.getStereotypeFromString(project, stereotypeStr);
+		if(stereotype != null){
+			vpAssociation.addStereotype(stereotype);
+		}
 	}
 
 	private void createAssociation(DiagramManager diagramManager, IClassDiagramUIModel diagram, RefOntoUML.Association association){
@@ -171,12 +282,32 @@ public class LoadOntoUMLModelController implements VPActionController {
 		associationFromEnd.setMultiplicity(getMultiplicityFromValues(lowerC1, upperC1));
 		IAssociationEnd associationToEnd = (IAssociationEnd) associationModel.getToEnd();
 		associationToEnd.setMultiplicity(getMultiplicityFromValues(lowerC2, upperC2));
+		
+		associationModel = setAssociationStereotype(associationModel, association);
+		
 		// create association connector on diagram
 		IDiagramElement from = this.ontoUml2VpShapes.get(c1),
 						to = this.ontoUml2VpShapes.get(c2);
 		IAssociationUIModel associationConnector = (IAssociationUIModel) diagramManager.createConnector(diagram, associationModel, from, to, null);
 		// set to automatic calculate the initial caption position
 		associationConnector.setRequestResetCaption(true);
+	}
+
+	private IAssociation setAssociationStereotype(IAssociation vpAssociation, RefOntoUML.Association ontoUmlAssociation){
+
+		if(ontoUmlAssociation instanceof RefOntoUML.FormalAssociation){
+			addStereotypeAssociation(vpAssociation, "FormalAssociation");
+		}else if(ontoUmlAssociation instanceof RefOntoUML.Mediation){
+			addStereotypeAssociation(vpAssociation, "Mediation");
+		}else if(ontoUmlAssociation instanceof RefOntoUML.Characterization){
+			addStereotypeAssociation(vpAssociation, "Characterization");
+		}else if(ontoUmlAssociation instanceof RefOntoUML.Derivation){
+			addStereotypeAssociation(vpAssociation, "Derivation");
+		}else if(ontoUmlAssociation instanceof RefOntoUML.Structuration){
+			addStereotypeAssociation(vpAssociation, "Structuration");
+		}
+
+		return vpAssociation;
 	}
 
 	private String getMultiplicityFromValues(int lower, int upper){

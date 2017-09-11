@@ -1,10 +1,10 @@
 package br.ufes.inf.ontoumlplugin.model;
 
-/* import com.vp.plugin.model.IStereotype;
+import com.vp.plugin.model.IStereotype;
 import com.vp.plugin.model.IProject;
 import com.vp.plugin.model.IModelElement;
 import com.vp.plugin.model.factory.IModelElementFactory;
- */
+
 public enum OntoUMLRelationshipType {
 
 	FORMAL_ASSOCIATION("FormalAssociation"), MEDIATION("Mediation"), CHARACTERIZATION("Characterization"), 
@@ -29,5 +29,16 @@ public enum OntoUMLRelationshipType {
 	      }
 	    }
 	    return null;
+	}
+
+	public static IStereotype getStereotypeFromString(IProject project, String text){
+		IModelElement[] stereotypes = project.toModelElementArray(IModelElementFactory.MODEL_TYPE_STEREOTYPE);
+		for(IModelElement e : stereotypes){
+			IStereotype s = (IStereotype) e;
+			if(s.getName().equals(text)){
+				return s;
+			}
+		}
+		return null;
 	}
 }

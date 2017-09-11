@@ -328,8 +328,9 @@ public class RefOntoUMLWrapper {
 	private static Association createMeronymicAssociation
 				(RefOntoUMLWrapper wrapper, IAssociation vpAssociation, OntoUMLRelationshipType type)
 	{
-		Association association;
+		RefOntoUML.Meronymic association;
 		
+		String aggregationKind;
 		RefOntoUML.Classifier whole,part;
 		AssociationMultiplicity multWhole, multPart;
 
@@ -340,11 +341,13 @@ public class RefOntoUMLWrapper {
 		
 		if(aggrTypeFrom.equals(IAssociationEnd.AGGREGATION_KIND_COMPOSITED) || 
 				aggrTypeFrom.equals(IAssociationEnd.AGGREGATION_KIND_SHARED)){
+			aggregationKind = aggrTypeFrom;
 			whole = wrapper.getOntoUMLClassifier(vpAssociation.getFrom());
 			multWhole = new AssociationMultiplicity(assEndFrom.getMultiplicity());
 			part = wrapper.getOntoUMLClassifier(vpAssociation.getTo());
 			multPart = new AssociationMultiplicity(assEndTo.getMultiplicity());
 		}else{
+			aggregationKind = aggrTypeTo;
 			whole = wrapper.getOntoUMLClassifier(vpAssociation.getTo());
 			multWhole = new AssociationMultiplicity(assEndTo.getMultiplicity());
 			part = wrapper.getOntoUMLClassifier(vpAssociation.getFrom());
@@ -397,6 +400,12 @@ public class RefOntoUMLWrapper {
 					multPart.getMaxMultiplicity(), 
 					wrapper.ontoUmlPackage);
 				break;
+		}
+
+		if(association instanceof RefOntoUML.subQuantityOf || aggregationKind.equals(IAssociationEnd.AGGREGATION_KIND_COMPOSITED)){
+			association.setIsShareable(false);
+		}else{
+			association.setIsShareable(true);
 		}
 		
 		return association;
