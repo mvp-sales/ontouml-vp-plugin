@@ -80,10 +80,10 @@ public class OntoUMLPluginProjectListener implements IProjectListener {
 
     private void addPartWholeStereotypes() {
 
-        addPartWholeStereotype("ComponentOf", "shareable");
-        addPartWholeStereotype("MemberOf", "essential", "shareable");
-        addPartWholeStereotype("SubCollectionOf", "essential", "shareable");
-        addPartWholeStereotype("SubQuantityOf", "essential");
+        addPartWholeStereotype("ComponentOf", "essential", "inseparable", "immutableWhole", "immutablePart");
+        addPartWholeStereotype("MemberOf", "essential", "inseparable", "immutableWhole", "immutablePart");
+        addPartWholeStereotype("SubCollectionOf", "essential", "inseparable", "immutableWhole", "immutablePart");
+        addPartWholeStereotype("SubQuantityOf", "essential", "inseparable", "immutableWhole", "immutablePart");
 
     }
 

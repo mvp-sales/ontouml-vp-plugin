@@ -18,10 +18,13 @@ import com.vp.plugin.model.IAssociationEnd;
 import com.vp.plugin.model.IGeneralization;
 import com.vp.plugin.model.IGeneralizationSet;
 import com.vp.plugin.model.IModelElement;
+import com.vp.plugin.model.ITaggedValue;
+import com.vp.plugin.model.ITaggedValueContainer;
 import com.vp.plugin.model.property.IModelProperty;
 
 import RefOntoUML.Association;
 import RefOntoUML.Classifier;
+import RefOntoUML.Meronymic;
 import RefOntoUML.Package;
 import RefOntoUML.util.*;
 import io.reactivex.Observable;
@@ -407,9 +410,30 @@ public class RefOntoUMLWrapper {
 		}else{
 			association.setIsShareable(true);
 		}
+
+		association = setTaggedValues(vpAssociation, association);
 		
 		return association;
 		
+	}
+
+	private static RefOntoUML.Meronymic setTaggedValues(IAssociation vpAssociation, RefOntoUML.Meronymic ontoUmlAssociation){
+		ITaggedValueContainer taggedValuesContainer = vpAssociation.toStereotypeModelArray()[0].getTaggedValues();
+
+		ITaggedValue essential = taggedValuesContainer.getTaggedValueByName("essential");
+		ITaggedValue inseparable = taggedValuesContainer.getTaggedValueByName("inseparable");
+		ITaggedValue immutablePart = taggedValuesContainer.getTaggedValueByName("immutablePart");
+		ITaggedValue immutableWhole = taggedValuesContainer.getTaggedValueByName("immutableWhole");
+
+		ontoUmlAssociation.setIsEssential(((Boolean)essential.getValue()).booleanValue());
+		ontoUmlAssociation.setIsImmutablePart(ontoUmlAssociation.isIsEssential() ? 
+												true : (((Boolean)immutablePart.getValue()).booleanValue());
+		
+		ontoUmlAssociation.setIsInseparable(((Boolean)inseparable.getValue()).booleanValue());
+		ontoUmlAssociation.setIsImmutableWhole(ontoUmlAssociation.isIsInseparable() ? 
+												true : (((Boolean)immutablePart.getValue()).booleanValue());
+
+		return ontoUmlAssociation;
 	}
 	
 	public static Observable<RefOntoUML.parser.SyntacticVerificator> getVerificator(RefOntoUMLWrapper wrapper){

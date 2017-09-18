@@ -230,7 +230,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 																			IAssociationEnd.AGGREGATION_KIND_COMPOSITED);
 		
 		associationModel = setMeronymicAssociation(associationModel, association);
-		
+
 		// create association connector on diagram
 		IDiagramElement from = this.ontoUml2VpShapes.get(part),
 						to = this.ontoUml2VpShapes.get(whole);
