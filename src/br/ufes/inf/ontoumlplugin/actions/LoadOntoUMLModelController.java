@@ -35,6 +35,8 @@ import com.vp.plugin.model.IMultiplicity;
 import com.vp.plugin.model.IPackage;
 import com.vp.plugin.model.IProject;
 import com.vp.plugin.model.IStereotype;
+import com.vp.plugin.model.ITaggedValue;
+import com.vp.plugin.model.ITaggedValueContainer;
 import com.vp.plugin.model.factory.IModelElementFactory;
 
 import RefOntoUML.Classifier;
@@ -240,25 +242,46 @@ public class LoadOntoUMLModelController implements VPActionController {
 	}
 
 	private IAssociation setMeronymicAssociation(IAssociation vpAssociation, RefOntoUML.Meronymic ontoUmlAssociation){
+
+		IStereotype stereotype;
 		
 		if(ontoUmlAssociation instanceof RefOntoUML.memberOf){
-			addStereotypeAssociation(vpAssociation, "MemberOf");
+			stereotype = addStereotypeAssociation(vpAssociation, "MemberOf");
 		}else if(ontoUmlAssociation instanceof RefOntoUML.componentOf){
-			addStereotypeAssociation(vpAssociation, "ComponentOf");
+			stereotype = addStereotypeAssociation(vpAssociation, "ComponentOf");
 		}else if(ontoUmlAssociation instanceof RefOntoUML.subQuantityOf){
-			addStereotypeAssociation(vpAssociation, "subQuantityOf");
-		}else if(ontoUmlAssociation instanceof RefOntoUML.subCollectionOf){
-			addStereotypeAssociation(vpAssociation, "subCollectionOf");
+			stereotype = addStereotypeAssociation(vpAssociation, "subQuantityOf");
+		}else{
+			stereotype = addStereotypeAssociation(vpAssociation, "subCollectionOf");
+		}
+
+		if(stereotype != null){
+			ITaggedValueContainer container = stereotype.getTaggedValues();
+			ITaggedValue inseparable = container.getTaggedValueByName("inseparable");
+			ITaggedValue immutableWhole = container.getTaggedValueByName("immutableWhole");
+			ITaggedValue immutablePart = container.getTaggedValueByName("immutablePart");
+			ITaggedValue essential = container.getTaggedValueByName("essential");
+			
+
+			inseparable.setValue(Boolean.toString(ontoUmlAssociation.isIsInseparable()));
+			immutableWhole.setValue(Boolean.toString(ontoUmlAssociation.isIsImmutableWhole()));
+			immutablePart.setValue(Boolean.toString(ontoUmlAssociation.isIsImmutablePart()));
+
+			if(essential != null){
+				essential.setValue(Boolean.toString(ontoUmlAssociation.isIsEssential()));
+			}
 		}
 
 		return vpAssociation;
 	}
 
-	private void addStereotypeAssociation(IAssociation vpAssociation, String stereotypeStr){
+	private IStereotype addStereotypeAssociation(IAssociation vpAssociation, String stereotypeStr){
 		IStereotype stereotype = OntoUMLRelationshipType.getStereotypeFromString(project, stereotypeStr);
 		if(stereotype != null){
 			vpAssociation.addStereotype(stereotype);
 		}
+
+		return stereotype;
 	}
 
 	private void createAssociation(DiagramManager diagramManager, IClassDiagramUIModel diagram, RefOntoUML.Association association){
