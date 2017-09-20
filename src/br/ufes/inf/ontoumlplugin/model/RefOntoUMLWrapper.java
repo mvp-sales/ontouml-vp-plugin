@@ -18,6 +18,7 @@ import com.vp.plugin.model.IAssociationEnd;
 import com.vp.plugin.model.IGeneralization;
 import com.vp.plugin.model.IGeneralizationSet;
 import com.vp.plugin.model.IModelElement;
+import com.vp.plugin.model.IStereotype;
 import com.vp.plugin.model.ITaggedValue;
 import com.vp.plugin.model.ITaggedValueContainer;
 import com.vp.plugin.model.property.IModelProperty;
@@ -437,20 +438,18 @@ public class RefOntoUMLWrapper {
 	}
 
 	private static RefOntoUML.Meronymic setTaggedValues(IAssociation vpAssociation, RefOntoUML.Meronymic ontoUmlAssociation){
-		ITaggedValueContainer taggedValuesContainer = vpAssociation.toStereotypeModelArray()[0].getTaggedValues();
-
+		ITaggedValueContainer taggedValuesContainer = vpAssociation.getTaggedValues();
+		
 		ITaggedValue essential = taggedValuesContainer.getTaggedValueByName("essential");
 		ITaggedValue inseparable = taggedValuesContainer.getTaggedValueByName("inseparable");
 		ITaggedValue immutablePart = taggedValuesContainer.getTaggedValueByName("immutablePart");
 		ITaggedValue immutableWhole = taggedValuesContainer.getTaggedValueByName("immutableWhole");
 
-		ontoUmlAssociation.setIsEssential(((Boolean)essential.getValue()).booleanValue());
-		ontoUmlAssociation.setIsImmutablePart(ontoUmlAssociation.isIsEssential() ? 
-												true : (((Boolean)immutablePart.getValue()).booleanValue());
+		ontoUmlAssociation.setIsEssential(Boolean.valueOf(essential.getValueAsString().toLowerCase()));
+		ontoUmlAssociation.setIsImmutablePart(ontoUmlAssociation.isIsEssential() || Boolean.valueOf(immutablePart.getValueAsString().toLowerCase()));
 		
-		ontoUmlAssociation.setIsInseparable(((Boolean)inseparable.getValue()).booleanValue());
-		ontoUmlAssociation.setIsImmutableWhole(ontoUmlAssociation.isIsInseparable() ? 
-												true : (((Boolean)immutablePart.getValue()).booleanValue());
+		ontoUmlAssociation.setIsInseparable(Boolean.valueOf(inseparable.getValueAsString().toLowerCase()));
+		ontoUmlAssociation.setIsImmutableWhole(ontoUmlAssociation.isIsInseparable() || Boolean.valueOf(immutableWhole.getValueAsString().toLowerCase()));
 
 		return ontoUmlAssociation;
 	}

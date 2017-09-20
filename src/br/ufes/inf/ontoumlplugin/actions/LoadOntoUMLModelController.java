@@ -256,14 +256,14 @@ public class LoadOntoUMLModelController implements VPActionController {
 		}
 
 		if(stereotype != null){
-			ITaggedValueContainer container = stereotype.getTaggedValues();
-			ITaggedValue inseparable = container.getTaggedValueByName("inseparable");
+			ITaggedValueContainer container = vpAssociation.getTaggedValues();
+			//ITaggedValue inseparable = container.getTaggedValueByName("inseparable");
 			ITaggedValue immutableWhole = container.getTaggedValueByName("immutableWhole");
 			ITaggedValue immutablePart = container.getTaggedValueByName("immutablePart");
 			ITaggedValue essential = container.getTaggedValueByName("essential");
 			
 
-			inseparable.setValue(Boolean.toString(ontoUmlAssociation.isIsInseparable()));
+			//inseparable.setValue(Boolean.toString(ontoUmlAssociation.isIsInseparable()));
 			immutableWhole.setValue(Boolean.toString(ontoUmlAssociation.isIsImmutableWhole()));
 			immutablePart.setValue(Boolean.toString(ontoUmlAssociation.isIsImmutablePart()));
 
