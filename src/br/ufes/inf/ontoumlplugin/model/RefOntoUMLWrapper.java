@@ -13,14 +13,7 @@ import java.util.Set;
 import com.vp.plugin.diagram.IDiagramElement;
 import com.vp.plugin.diagram.IDiagramUIModel;
 import com.vp.plugin.diagram.IShapeTypeConstants;
-import com.vp.plugin.model.IAssociation;
-import com.vp.plugin.model.IAssociationEnd;
-import com.vp.plugin.model.IGeneralization;
-import com.vp.plugin.model.IGeneralizationSet;
-import com.vp.plugin.model.IModelElement;
-import com.vp.plugin.model.IStereotype;
-import com.vp.plugin.model.ITaggedValue;
-import com.vp.plugin.model.ITaggedValueContainer;
+import com.vp.plugin.model.*;
 import com.vp.plugin.model.property.IModelProperty;
 
 import RefOntoUML.Association;
@@ -29,6 +22,8 @@ import RefOntoUML.Meronymic;
 import RefOntoUML.Package;
 import RefOntoUML.util.*;
 import io.reactivex.Observable;
+import org.jfree.util.Log;
+
 public class RefOntoUMLWrapper {
 	
 	private Map<IModelElement, RefOntoUML.Classifier> classElements; 
@@ -193,8 +188,32 @@ public class RefOntoUMLWrapper {
 					break;
 			}
 		}
+
+		IClass vpClass = (IClass) vpElement;
+		for(IAttribute attribute : vpClass.toAttributeArray()){
+			String className = attribute.getTypeAsString();
+			RefOntoUML.Classifier attributeClassifier = wrapper.getOntoUMLClassFromName(className);
+			AssociationMultiplicity multiplicity = new AssociationMultiplicity(attribute.getMultiplicity());
+			RefOntoUMLFactoryUtil.createAttribute
+									(classifier, 
+									attributeClassifier, 
+									multiplicity.getMinMultiplicity(), 
+									multiplicity.getMaxMultiplicity(), 
+									attribute.getName(), 
+									false);
+		}
 		
 		return classifier;
+	}
+	
+	private RefOntoUML.Classifier getOntoUMLClassFromName(String className){
+		for(Map.Entry<IModelElement, RefOntoUML.Classifier> entry : this.classElements.entrySet()){
+			IModelElement elem = entry.getKey();
+			if(elem.getName().equals(className)){
+				return entry.getValue();
+			}
+		}
+		return null;
 	}
 	
 	private static Association createOntoUMLAssociation

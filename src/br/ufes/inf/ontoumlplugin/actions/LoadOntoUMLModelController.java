@@ -37,6 +37,7 @@ import com.vp.plugin.model.IProject;
 import com.vp.plugin.model.IStereotype;
 import com.vp.plugin.model.ITaggedValue;
 import com.vp.plugin.model.ITaggedValueContainer;
+import com.vp.plugin.model.IAttribute;
 import com.vp.plugin.model.factory.IModelElementFactory;
 
 import RefOntoUML.Classifier;
@@ -195,6 +196,13 @@ public class LoadOntoUMLModelController implements VPActionController {
 			addStereotypeClass(vpClass, "Enumeration");
 		}else if(ontoUmlElement instanceof RefOntoUML.MeasurementDomain){
 			addStereotypeClass(vpClass, "MeasurementDomain");
+		}
+
+		for(RefOntoUML.Property attribute : ontoUmlElement.getAttribute()){
+			IAttribute vpAttribute = IModelElementFactory.instance().createAttribute();
+			vpAttribute.setName(attribute.getName());
+			vpAttribute.setType(attribute.getType().getName());
+			vpClass.addAttribute(vpAttribute);
 		}
 
 		return vpClass;
