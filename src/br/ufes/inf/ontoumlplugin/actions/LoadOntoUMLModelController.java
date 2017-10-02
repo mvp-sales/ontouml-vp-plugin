@@ -52,6 +52,7 @@ import RefOntoUML.SubKind;
 import RefOntoUML.subQuantityOf;
 import RefOntoUML.parser.OntoUMLParser;
 import RefOntoUML.util.RefOntoUMLResourceUtil;
+import br.ufes.inf.ontoumlplugin.model.AssociationMultiplicity;
 import br.ufes.inf.ontoumlplugin.model.OntoUMLClassType;
 import br.ufes.inf.ontoumlplugin.model.OntoUMLRelationshipType;
 import io.reactivex.Observable;
@@ -202,6 +203,8 @@ public class LoadOntoUMLModelController implements VPActionController {
 			IAttribute vpAttribute = IModelElementFactory.instance().createAttribute();
 			vpAttribute.setName(attribute.getName());
 			vpAttribute.setType(attribute.getType().getName());
+			AssociationMultiplicity multiplicity = new AssociationMultiplicity(attribute.getLower(), attribute.getUpper());
+			vpAttribute.setMultiplicity(multiplicity.getMultiplicityString());
 			vpClass.addAttribute(vpAttribute);
 		}
 

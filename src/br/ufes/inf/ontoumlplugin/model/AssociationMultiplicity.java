@@ -13,6 +13,7 @@ public class AssociationMultiplicity {
 		
 		switch(mMultiplicity){
 			case IAssociationEnd.MULTIPLICITY_ONE:
+			case IAssociationEnd.MULTIPLICITY_UNSPECIFIED:
 				this.mMinMultiplicity = 1;
 				this.mMaxMultiplicity = 1;
 				break;
@@ -28,6 +29,9 @@ public class AssociationMultiplicity {
 				this.mMinMultiplicity = 0;
 				this.mMaxMultiplicity = 1;
 				break;
+			case IAssociationEnd.MULTIPLICITY_MANY:
+				this.mMinMultiplicity = -1;
+				this.mMaxMultiplicity = -1;
 			default:
 				String[] multStr = multiplicity.split("[.]+");
 				this.mMinMultiplicity = multStr[0].equals("*") ? 
@@ -48,7 +52,14 @@ public class AssociationMultiplicity {
 	public AssociationMultiplicity(int min, int max){
 		this.mMinMultiplicity = min;
 		this.mMaxMultiplicity = max;
-		this.mMultiplicity = IAssociationEnd.MULTIPLICITY_MANY;
+		this.mMultiplicity = buildMultiplicityString(min, max);
+	}
+	
+	private static String buildMultiplicityString(int min, int max){
+		if(min != max){
+			return min + ".." + (max == -1 ? "*" : max);
+		}
+		return min == -1 ? "*" : Integer.toString(min);
 	}
 	
 	public int getMinMultiplicity(){
@@ -57,6 +68,10 @@ public class AssociationMultiplicity {
 	
 	public int getMaxMultiplicity(){
 		return mMaxMultiplicity;
+	}
+	
+	public String getMultiplicityString(){
+		return mMultiplicity;
 	}
 
 }
