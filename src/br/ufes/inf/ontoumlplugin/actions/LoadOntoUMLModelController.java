@@ -55,6 +55,7 @@ import RefOntoUML.util.RefOntoUMLResourceUtil;
 import br.ufes.inf.ontoumlplugin.model.AssociationMultiplicity;
 import br.ufes.inf.ontoumlplugin.model.OntoUMLClassType;
 import br.ufes.inf.ontoumlplugin.model.OntoUMLRelationshipType;
+import br.ufes.inf.ontoumlplugin.model.VPModelFactory;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
@@ -149,7 +150,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 		vpClass.setName(c.getName());
 		this.ontoUml2VpClasses.put(c, vpClass);
 
-		vpClass = setClassStereotype(vpClass, c);
+		vpClass = VPModelFactory.setClassStereotype(vpClass, c, this.project);
 		
 		// create superclass shape
 		IClassUIModel vpClassUi = (IClassUIModel) diagramManager.createDiagramElement(diagram, vpClass);
@@ -158,65 +159,6 @@ public class LoadOntoUMLModelController implements VPActionController {
 		this.ontoUml2VpShapes.put(c, vpClassUi);
 	}
 
-	private IClass setClassStereotype(IClass vpClass, Classifier ontoUmlElement){
-		if(ontoUmlElement instanceof RefOntoUML.Kind){
-			addStereotypeClass(vpClass, "Kind");
-		}else if(ontoUmlElement instanceof RefOntoUML.SubKind){
-			addStereotypeClass(vpClass, "SubKind");
-		}else if(ontoUmlElement instanceof RefOntoUML.Role){
-			addStereotypeClass(vpClass, "Role");
-		}else if(ontoUmlElement instanceof RefOntoUML.Phase){
-			addStereotypeClass(vpClass, "Phase");
-		}else if(ontoUmlElement instanceof RefOntoUML.Relator){
-			addStereotypeClass(vpClass, "Relator");
-		}else if(ontoUmlElement instanceof RefOntoUML.RoleMixin){
-			addStereotypeClass(vpClass, "RoleMixin");
-		}else if(ontoUmlElement instanceof RefOntoUML.Category){
-			addStereotypeClass(vpClass, "Category");
-		}else if(ontoUmlElement instanceof RefOntoUML.Quantity){
-			addStereotypeClass(vpClass, "Quantity");
-		}else if(ontoUmlElement instanceof RefOntoUML.Collective){
-			addStereotypeClass(vpClass, "Collective");
-		}else if(ontoUmlElement instanceof RefOntoUML.Mixin){
-			addStereotypeClass(vpClass, "Mixin");
-		}else if(ontoUmlElement instanceof RefOntoUML.Mode){
-			addStereotypeClass(vpClass, "Mode");
-		}else if(ontoUmlElement instanceof RefOntoUML.Quality){
-			addStereotypeClass(vpClass, "Quality");
-		}else if(ontoUmlElement instanceof RefOntoUML.DataType){
-			addStereotypeClass(vpClass, "DataType");
-		}else if(ontoUmlElement instanceof RefOntoUML.PrimitiveType){
-			addStereotypeClass(vpClass, "PrimitiveType");
-		}else if(ontoUmlElement instanceof RefOntoUML.PerceivableQuality){
-			addStereotypeClass(vpClass, "PerceivableQuality");
-		}else if(ontoUmlElement instanceof RefOntoUML.NonPerceivableQuality){
-			addStereotypeClass(vpClass, "NonPerceivableQuality");
-		}else if(ontoUmlElement instanceof RefOntoUML.NominalQuality){
-			addStereotypeClass(vpClass, "NominalQuality");
-		}else if(ontoUmlElement instanceof RefOntoUML.Enumeration){
-			addStereotypeClass(vpClass, "Enumeration");
-		}else if(ontoUmlElement instanceof RefOntoUML.MeasurementDomain){
-			addStereotypeClass(vpClass, "MeasurementDomain");
-		}
-
-		for(RefOntoUML.Property attribute : ontoUmlElement.getAttribute()){
-			IAttribute vpAttribute = IModelElementFactory.instance().createAttribute();
-			vpAttribute.setName(attribute.getName());
-			vpAttribute.setType(attribute.getType().getName());
-			AssociationMultiplicity multiplicity = new AssociationMultiplicity(attribute.getLower(), attribute.getUpper());
-			vpAttribute.setMultiplicity(multiplicity.getMultiplicityString());
-			vpClass.addAttribute(vpAttribute);
-		}
-
-		return vpClass;
-	}
-
-	private void addStereotypeClass(IClass vpClass, String stereotypeStr){
-		IStereotype stereotype = OntoUMLClassType.getStereotypeFromString(project, stereotypeStr);
-		if(stereotype != null){
-			vpClass.addStereotype(stereotype);
-		}
-	}
 
 	private void createMeronymicAssociation(DiagramManager diagramManager, IClassDiagramUIModel diagram, RefOntoUML.Meronymic association){
 		RefOntoUML.Property wholeEnd = association.wholeEnd();
@@ -242,7 +184,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 		associationToEnd.setAggregationKind(association.isIsShareable() ? IAssociationEnd.AGGREGATION_KIND_AGGREGATION :
 																			IAssociationEnd.AGGREGATION_KIND_COMPOSITED);
 		
-		associationModel = setMeronymicAssociation(associationModel, association);
+		associationModel = VPModelFactory.setMeronymicAssociation(associationModel, association, this.project);
 
 		// create association connector on diagram
 		IDiagramElement from = this.ontoUml2VpShapes.get(part),
@@ -250,49 +192,6 @@ public class LoadOntoUMLModelController implements VPActionController {
 		IAssociationUIModel associationConnector = (IAssociationUIModel) diagramManager.createConnector(diagram, associationModel, from, to, null);
 		// set to automatic calculate the initial caption position
 		associationConnector.setRequestResetCaption(true);
-	}
-
-	private IAssociation setMeronymicAssociation(IAssociation vpAssociation, RefOntoUML.Meronymic ontoUmlAssociation){
-
-		IStereotype stereotype;
-		
-		if(ontoUmlAssociation instanceof RefOntoUML.memberOf){
-			stereotype = addStereotypeAssociation(vpAssociation, "MemberOf");
-		}else if(ontoUmlAssociation instanceof RefOntoUML.componentOf){
-			stereotype = addStereotypeAssociation(vpAssociation, "ComponentOf");
-		}else if(ontoUmlAssociation instanceof RefOntoUML.subQuantityOf){
-			stereotype = addStereotypeAssociation(vpAssociation, "subQuantityOf");
-		}else{
-			stereotype = addStereotypeAssociation(vpAssociation, "subCollectionOf");
-		}
-
-		if(stereotype != null){
-			ITaggedValueContainer container = vpAssociation.getTaggedValues();
-			ITaggedValue inseparable = container.getTaggedValueByName("inseparable");
-			ITaggedValue immutableWhole = container.getTaggedValueByName("immutableWhole");
-			ITaggedValue immutablePart = container.getTaggedValueByName("immutablePart");
-			ITaggedValue essential = container.getTaggedValueByName("essential");
-			
-
-			inseparable.setValue(ontoUmlAssociation.isIsInseparable() ? "True" : "False");
-			immutableWhole.setValue(ontoUmlAssociation.isIsImmutableWhole() ? "True" : "False");
-			immutablePart.setValue(ontoUmlAssociation.isIsImmutablePart() ? "True" : "False");
-
-			if(essential != null){
-				essential.setValue(ontoUmlAssociation.isIsEssential() ? "True" : "False");
-			}
-		}
-
-		return vpAssociation;
-	}
-
-	private IStereotype addStereotypeAssociation(IAssociation vpAssociation, String stereotypeStr){
-		IStereotype stereotype = OntoUMLRelationshipType.getStereotypeFromString(project, stereotypeStr);
-		if(stereotype != null){
-			vpAssociation.addStereotype(stereotype);
-		}
-
-		return stereotype;
 	}
 
 	private void createAssociation(DiagramManager diagramManager, IClassDiagramUIModel diagram, RefOntoUML.Association association){
@@ -317,7 +216,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 		IAssociationEnd associationToEnd = (IAssociationEnd) associationModel.getToEnd();
 		associationToEnd.setMultiplicity(getMultiplicityFromValues(lowerC2, upperC2));
 		
-		associationModel = setAssociationStereotype(associationModel, association);
+		associationModel = VPModelFactory.setAssociationStereotype(associationModel, association, this.project);
 		
 		// create association connector on diagram
 		IDiagramElement from = this.ontoUml2VpShapes.get(c1),
@@ -325,23 +224,6 @@ public class LoadOntoUMLModelController implements VPActionController {
 		IAssociationUIModel associationConnector = (IAssociationUIModel) diagramManager.createConnector(diagram, associationModel, from, to, null);
 		// set to automatic calculate the initial caption position
 		associationConnector.setRequestResetCaption(true);
-	}
-
-	private IAssociation setAssociationStereotype(IAssociation vpAssociation, RefOntoUML.Association ontoUmlAssociation){
-
-		if(ontoUmlAssociation instanceof RefOntoUML.FormalAssociation){
-			addStereotypeAssociation(vpAssociation, "FormalAssociation");
-		}else if(ontoUmlAssociation instanceof RefOntoUML.Mediation){
-			addStereotypeAssociation(vpAssociation, "Mediation");
-		}else if(ontoUmlAssociation instanceof RefOntoUML.Characterization){
-			addStereotypeAssociation(vpAssociation, "Characterization");
-		}else if(ontoUmlAssociation instanceof RefOntoUML.Derivation){
-			addStereotypeAssociation(vpAssociation, "Derivation");
-		}else if(ontoUmlAssociation instanceof RefOntoUML.Structuration){
-			addStereotypeAssociation(vpAssociation, "Structuration");
-		}
-
-		return vpAssociation;
 	}
 
 	private String getMultiplicityFromValues(int lower, int upper){
