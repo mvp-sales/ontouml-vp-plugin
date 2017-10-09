@@ -6,22 +6,11 @@ import com.vp.plugin.model.IModelElement;
 import com.vp.plugin.model.ITaggedValue;
 import com.vp.plugin.model.ITaggedValueContainer;
 import com.vp.plugin.model.IClass;
-import com.vp.plugin.model.IGeneralization;
-import com.vp.plugin.model.IGeneralizationSet;
 import com.vp.plugin.model.IAssociation;
 import com.vp.plugin.model.IAssociationEnd;
 import com.vp.plugin.model.IAttribute;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import com.vp.plugin.diagram.IDiagramElement;
-import com.vp.plugin.diagram.IDiagramUIModel;
-import com.vp.plugin.diagram.IShapeTypeConstants;
-
 import RefOntoUML.Association;
-import RefOntoUML.Classifier;
 import RefOntoUML.util.RefOntoUMLFactoryUtil;
 
 

@@ -4,8 +4,6 @@ import br.ufes.inf.ontoumlplugin.project.OntoUMLPluginProjectListener;
 import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.VPPlugin;
 import com.vp.plugin.VPPluginInfo;
-import com.vp.plugin.model.*;
-import com.vp.plugin.model.factory.IModelElementFactory;
 
 public class OntoUMLPlugin implements VPPlugin {
 

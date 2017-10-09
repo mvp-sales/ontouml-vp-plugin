@@ -52,10 +52,10 @@ public class OntoUMLPluginProjectListener implements IProjectListener {
     private void addClassStereotypes(){
         String classTypes[] = {"Kind", "Subkind", "Role", "Phase", "Category", "RoleMixin",
                                 "Mixin", "Relator", "Mode", "Quality", "Collective", "Quantity",
-                                "DataType", "PerceivableQuality", "NonPerceivableQuality","NominalQuality",
+                                "DataType", "PerceivableQuality", "NonPerceivableQuality","NominalQuality",/*
                                 "MeasurementDomain", "DecimalIntervalDimension", "DecimalOrdinalDimension",
                                 "DecimalRationalDimension", "IntegerIntervalDimension", "IntegerOrdinalDimension",
-                                "IntegerRationalDimension", "StringNominalStructure", "Enumeration", "PrimitiveType"};
+                                "IntegerRationalDimension", "StringNominalStructure", "Enumeration",*/ "PrimitiveType"};
 
         for(String classType : classTypes){
             IStereotype stereotype = IModelElementFactory.instance().createStereotype();
@@ -80,10 +80,10 @@ public class OntoUMLPluginProjectListener implements IProjectListener {
 
     private void addPartWholeStereotypes() {
 
-        addPartWholeStereotype("ComponentOf", "essential", "inseparable", "immutableWhole", "immutablePart");
-        addPartWholeStereotype("MemberOf", "essential", "inseparable", "immutableWhole", "immutablePart");
-        addPartWholeStereotype("SubCollectionOf", "essential", "inseparable", "immutableWhole", "immutablePart");
-        addPartWholeStereotype("SubQuantityOf", "essential", "inseparable", "immutableWhole", "immutablePart");
+        addPartWholeStereotype("ComponentOf", "shareable","essential", "inseparable", "immutableWhole", "immutablePart");
+        addPartWholeStereotype("MemberOf", "shareable", "essential", "inseparable", "immutableWhole", "immutablePart");
+        addPartWholeStereotype("SubCollectionOf", "shareable", "essential", "inseparable", "immutableWhole", "immutablePart");
+        addPartWholeStereotype("SubQuantityOf", "shareable", "essential", "inseparable", "immutableWhole", "immutablePart");
 
     }
 

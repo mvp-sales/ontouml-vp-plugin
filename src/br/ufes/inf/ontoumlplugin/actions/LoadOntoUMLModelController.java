@@ -3,13 +3,11 @@ package br.ufes.inf.ontoumlplugin.actions;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.vp.plugin.ApplicationManager;
@@ -19,46 +17,24 @@ import com.vp.plugin.action.VPActionController;
 import com.vp.plugin.diagram.IClassDiagramUIModel;
 import com.vp.plugin.diagram.IDiagramElement;
 import com.vp.plugin.diagram.IDiagramTypeConstants;
-import com.vp.plugin.diagram.IDiagramUIModel;
 import com.vp.plugin.diagram.connector.IAssociationUIModel;
-import com.vp.plugin.diagram.connector.IGeneralizationUIModel;
 import com.vp.plugin.diagram.shape.IClassUIModel;
 import com.vp.plugin.diagram.shape.IGeneralizationSetUIModel;
-import com.vp.plugin.diagram.shape.IPackageUIModel;
 import com.vp.plugin.model.IAssociation;
 import com.vp.plugin.model.IAssociationEnd;
 import com.vp.plugin.model.IClass;
 import com.vp.plugin.model.IGeneralization;
 import com.vp.plugin.model.IGeneralizationSet;
 import com.vp.plugin.model.IModelElement;
-import com.vp.plugin.model.IMultiplicity;
-import com.vp.plugin.model.IPackage;
 import com.vp.plugin.model.IProject;
-import com.vp.plugin.model.IStereotype;
-import com.vp.plugin.model.ITaggedValue;
-import com.vp.plugin.model.ITaggedValueContainer;
-import com.vp.plugin.model.IAttribute;
 import com.vp.plugin.model.factory.IModelElementFactory;
 
 import RefOntoUML.Classifier;
-import RefOntoUML.Element;
-import RefOntoUML.FormalAssociation;
 import RefOntoUML.Generalization;
 import RefOntoUML.GeneralizationSet;
-import RefOntoUML.NamedElement;
-import RefOntoUML.PackageableElement;
-import RefOntoUML.PerceivableQuality;
-import RefOntoUML.SubKind;
-import RefOntoUML.subQuantityOf;
 import RefOntoUML.parser.OntoUMLParser;
 import RefOntoUML.util.RefOntoUMLResourceUtil;
-import br.ufes.inf.ontoumlplugin.model.AssociationMultiplicity;
-import br.ufes.inf.ontoumlplugin.model.OntoUMLClassType;
-import br.ufes.inf.ontoumlplugin.model.OntoUMLRelationshipType;
 import br.ufes.inf.ontoumlplugin.model.VPModelFactory;
-import io.reactivex.Observable;
-import io.reactivex.Scheduler;
-import io.reactivex.schedulers.Schedulers;
 
 public class LoadOntoUMLModelController implements VPActionController {
 	
@@ -270,9 +246,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 		generalizationModel.setFrom(general);
 		generalizationModel.setTo(specific);
 		// create generalization connector on diagram
-		IGeneralizationUIModel generalizationConnector = 
-			(IGeneralizationUIModel) diagramManager.createConnector
-										(diagram, generalizationModel, generalShape, specificShape, null);
+		diagramManager.createConnector(diagram, generalizationModel, generalShape, specificShape, null);
 
 		return generalizationModel;
 	}

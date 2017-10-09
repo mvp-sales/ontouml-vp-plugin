@@ -1,28 +1,19 @@
 package br.ufes.inf.ontoumlplugin.model;
 
-import java.io.File;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.vp.plugin.diagram.IDiagramElement;
 import com.vp.plugin.diagram.IDiagramUIModel;
 import com.vp.plugin.diagram.IShapeTypeConstants;
 import com.vp.plugin.model.*;
-import com.vp.plugin.model.property.IModelProperty;
 
-import RefOntoUML.Association;
-import RefOntoUML.Classifier;
-import RefOntoUML.Meronymic;
 import RefOntoUML.Package;
 import RefOntoUML.util.*;
 import io.reactivex.Observable;
-import org.jfree.util.Log;
 
 public class RefOntoUMLWrapper {
 	

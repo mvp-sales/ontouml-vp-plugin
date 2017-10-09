@@ -101,8 +101,8 @@ public class VPModelFactory {
 			ITaggedValue immutableWhole = container.getTaggedValueByName("immutableWhole");
 			ITaggedValue immutablePart = container.getTaggedValueByName("immutablePart");
 			ITaggedValue essential = container.getTaggedValueByName("essential");
+			ITaggedValue shareable = container.getTaggedValueByName("shareable");
 			
-
 			inseparable.setValue(ontoUmlAssociation.isIsInseparable() ? "True" : "False");
 			immutableWhole.setValue(ontoUmlAssociation.isIsImmutableWhole() ? "True" : "False");
 			immutablePart.setValue(ontoUmlAssociation.isIsImmutablePart() ? "True" : "False");
@@ -110,6 +110,8 @@ public class VPModelFactory {
 			if(essential != null){
 				essential.setValue(ontoUmlAssociation.isIsEssential() ? "True" : "False");
 			}
+			
+			shareable.setValue(ontoUmlAssociation.isIsShareable() ? "True" : "False");
 		}
 
 		return vpAssociation;
