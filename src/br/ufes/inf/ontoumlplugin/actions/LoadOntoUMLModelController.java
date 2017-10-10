@@ -1,7 +1,6 @@
 package br.ufes.inf.ontoumlplugin.actions;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +11,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 
 import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.DiagramManager;
+import com.vp.plugin.ViewManager;
 import com.vp.plugin.action.VPAction;
 import com.vp.plugin.action.VPActionController;
 import com.vp.plugin.diagram.IClassDiagramUIModel;
@@ -66,9 +66,10 @@ public class LoadOntoUMLModelController implements VPActionController {
 
 				buildClassDiagram(ontoUmlPackage);
 
-			} catch (IOException e) {
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				ViewManager viewManager = ApplicationManager.instance().getViewManager();
+				viewManager.showMessage(e.getMessage());
 			}
 		}
 

@@ -21,6 +21,8 @@ public class ValidateOntoUMLModelController implements VPActionController {
                                     .getDiagramManager()
                                     .getActiveDiagram();
         
+        ViewManager viewManager = ApplicationManager.instance().getViewManager();
+        
         //RefOntoUMLWrapper wrapper = RefOntoUMLWrapper.createRefOntoUMLModel(diagram);
         
         RefOntoUMLWrapper
@@ -30,9 +32,16 @@ public class ValidateOntoUMLModelController implements VPActionController {
         	.observeOn(Schedulers.trampoline())
         	.subscribe(
         		verificator -> {
-        			ViewManager viewManager = ApplicationManager.instance().getViewManager();
-        			viewManager.showMessage(verificator.getResult());
-         		}
+        			for(RefOntoUML.Element elem: verificator.getMap().keySet()){
+						viewManager.showMessage(elem.toString());
+						for(String message: verificator.getMap().get(elem)){		
+							viewManager.showMessage(message);
+						}
+    				}
+         		},
+        		err -> {
+        			viewManager.showMessage(err.getMessage());
+        		}
 			);
         	
 	

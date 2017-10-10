@@ -62,6 +62,10 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 						RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), wrapper.ontoUmlPackage);
 					}
 				}
+			},
+			err -> {
+				ViewManager viewManager = ApplicationManager.instance().getViewManager();
+				viewManager.showMessage(err.getMessage());
 			}
 		);
 	}
