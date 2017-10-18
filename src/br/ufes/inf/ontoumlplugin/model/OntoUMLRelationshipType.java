@@ -35,7 +35,7 @@ public enum OntoUMLRelationshipType {
 		IModelElement[] stereotypes = project.toModelElementArray(IModelElementFactory.MODEL_TYPE_STEREOTYPE);
 		for(IModelElement e : stereotypes){
 			IStereotype s = (IStereotype) e;
-			if(s.getName().equals(text)){
+			if(s.getName().equalsIgnoreCase(text)){
 				return s;
 			}
 		}
