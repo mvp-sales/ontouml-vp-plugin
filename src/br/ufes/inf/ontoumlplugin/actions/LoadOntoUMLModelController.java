@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.lang.model.type.PrimitiveType;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -68,6 +69,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				e.printStackTrace();
 				ViewManager viewManager = ApplicationManager.instance().getViewManager();
 				viewManager.showMessage(e.getMessage());
 			}
@@ -99,6 +101,10 @@ public class LoadOntoUMLModelController implements VPActionController {
 			createClass(diagramManager, diagram, c);
 		}
 		
+		for(PrimitiveType p : parser.getAllInstances(PrimitiveType.class)) {
+			createClass(diagramManager, diagram, (Classifier)p);
+		}
+		
 		for(Classifier c : parser.getAssociations()){
 			RefOntoUML.Association association = (RefOntoUML.Association) c;
 			if(association instanceof RefOntoUML.Meronymic){
@@ -118,6 +124,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 				createGeneralization(diagramManager, diagram, gen);
 			}
 		}
+		
 		diagramManager.layout(diagram, DiagramManager.LAYOUT_AUTO);
 		diagramManager.openDiagram(diagram);
 	}
