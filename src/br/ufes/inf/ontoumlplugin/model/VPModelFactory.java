@@ -36,23 +36,24 @@ public class VPModelFactory {
 			addStereotypeClass(vpClass, "Mixin", project);
 		}else if(ontoUmlElement instanceof RefOntoUML.Mode){
 			addStereotypeClass(vpClass, "Mode", project);
-		}else if(ontoUmlElement instanceof RefOntoUML.Quality){
-			addStereotypeClass(vpClass, "Quality", project);
-		}else if(ontoUmlElement instanceof RefOntoUML.DataType){
-			addStereotypeClass(vpClass, "DataType", project);
-		}else if(ontoUmlElement instanceof RefOntoUML.PrimitiveType){
-			addStereotypeClass(vpClass, "PrimitiveType", project);
 		}else if(ontoUmlElement instanceof RefOntoUML.PerceivableQuality){
 			addStereotypeClass(vpClass, "PerceivableQuality", project);
 		}else if(ontoUmlElement instanceof RefOntoUML.NonPerceivableQuality){
 			addStereotypeClass(vpClass, "NonPerceivableQuality", project);
 		}else if(ontoUmlElement instanceof RefOntoUML.NominalQuality){
 			addStereotypeClass(vpClass, "NominalQuality", project);
-		}else if(ontoUmlElement instanceof RefOntoUML.Enumeration){
+		}else if(ontoUmlElement instanceof RefOntoUML.Quality){
+			addStereotypeClass(vpClass, "Quality", project);
+		}else if(ontoUmlElement instanceof RefOntoUML.PrimitiveType){
+			addStereotypeClass(vpClass, "PrimitiveType", project);
+		}else if(ontoUmlElement instanceof RefOntoUML.DataType){
+			addStereotypeClass(vpClass, "DataType", project);
+		}
+		/*else if(ontoUmlElement instanceof RefOntoUML.Enumeration){
 			addStereotypeClass(vpClass, "Enumeration", project);
 		}else if(ontoUmlElement instanceof RefOntoUML.MeasurementDomain){
 			addStereotypeClass(vpClass, "MeasurementDomain", project);
-		}
+		}*/
 
 		vpClass = setVPAttributes(vpClass, ontoUmlElement);
 
@@ -101,7 +102,7 @@ public class VPModelFactory {
 			ITaggedValue immutableWhole = container.getTaggedValueByName("immutableWhole");
 			ITaggedValue immutablePart = container.getTaggedValueByName("immutablePart");
 			ITaggedValue essential = container.getTaggedValueByName("essential");
-			//ITaggedValue shareable = container.getTaggedValueByName("shareable");
+			ITaggedValue shareable = container.getTaggedValueByName("shareable");
 			
 			inseparable.setValue(ontoUmlAssociation.isIsInseparable() ? "True" : "False");
 			immutableWhole.setValue(ontoUmlAssociation.isIsImmutableWhole() ? "True" : "False");
@@ -111,7 +112,7 @@ public class VPModelFactory {
 				essential.setValue(ontoUmlAssociation.isIsEssential() ? "True" : "False");
 			}
 			
-			//shareable.setValue(ontoUmlAssociation.isIsShareable() ? "True" : "False");
+			shareable.setValue(ontoUmlAssociation.isIsShareable() ? "True" : "False");
 		}
 
 		return vpAssociation;

@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.lang.model.type.PrimitiveType;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -35,6 +34,7 @@ import RefOntoUML.Generalization;
 import RefOntoUML.GeneralizationSet;
 import RefOntoUML.parser.OntoUMLParser;
 import RefOntoUML.util.RefOntoUMLResourceUtil;
+import RefOntoUML.PrimitiveType;
 import br.ufes.inf.ontoumlplugin.model.VPModelFactory;
 
 public class LoadOntoUMLModelController implements VPActionController {
