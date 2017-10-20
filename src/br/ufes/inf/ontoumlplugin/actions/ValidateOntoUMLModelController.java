@@ -32,6 +32,7 @@ public class ValidateOntoUMLModelController implements VPActionController {
         	.observeOn(Schedulers.trampoline())
         	.subscribe(
         		verificator -> {
+        			viewManager.showMessage(verificator.getResult());
         			for(RefOntoUML.Element elem: verificator.getMap().keySet()){
 						viewManager.showMessage(elem.toString());
 						for(String message: verificator.getMap().get(elem)){		
