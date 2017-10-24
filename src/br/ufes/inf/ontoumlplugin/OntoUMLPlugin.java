@@ -7,6 +7,7 @@ import com.vp.plugin.VPPluginInfo;
 
 public class OntoUMLPlugin implements VPPlugin {
 
+	public static final String PLUGIN_ID = "br.ufes.inf.ontoumlplugin";
 	private OntoUMLPluginProjectListener projectListener = new OntoUMLPluginProjectListener();
 
 	@Override

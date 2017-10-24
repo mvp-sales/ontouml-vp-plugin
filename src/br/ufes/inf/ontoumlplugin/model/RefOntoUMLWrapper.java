@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.vp.plugin.diagram.IDiagramElement;
-import com.vp.plugin.diagram.IDiagramUIModel;
 import com.vp.plugin.diagram.IShapeTypeConstants;
 import com.vp.plugin.model.*;
 
 import RefOntoUML.Package;
 import RefOntoUML.util.*;
+import com.vp.plugin.model.factory.IModelElementFactory;
 import io.reactivex.Observable;
 
 public class RefOntoUMLWrapper {
@@ -33,29 +33,29 @@ public class RefOntoUMLWrapper {
 		this.classElements.put(vpElement, classifier);
 	}
 
-	public static Observable<RefOntoUMLWrapper> createObservableWrapper(IDiagramUIModel vpDiagram){
+	public static Observable<RefOntoUMLWrapper> createObservableWrapper(IProject vpProject){
 		return Observable.fromCallable(
 			() -> {
-				return createRefOntoUMLModel(vpDiagram);
+				return createRefOntoUMLModel(vpProject);
 			}
 		);
 	}
 	
-	public static RefOntoUMLWrapper createRefOntoUMLModel(IDiagramUIModel vpDiagram){
+	public static RefOntoUMLWrapper createRefOntoUMLModel(IProject vpProject){
 		RefOntoUMLWrapper wrapper = new RefOntoUMLWrapper();		
 
-		wrapper = addClasses(wrapper, vpDiagram);
-		wrapper = addGeneralizations(wrapper, vpDiagram);
-		wrapper = addGeneralizationSets(wrapper, vpDiagram);
-		wrapper = addAssociations(wrapper, vpDiagram);
+		wrapper = addClasses(wrapper, vpProject);
+		wrapper = addGeneralizations(wrapper, vpProject);
+		wrapper = addGeneralizationSets(wrapper, vpProject);
+		wrapper = addAssociations(wrapper, vpProject);
 
 		return wrapper;
 	}
 
-	private static RefOntoUMLWrapper addClasses(RefOntoUMLWrapper wrapper, IDiagramUIModel vpDiagram){
-		for(IDiagramElement classElement : vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_CLASS))
+	private static RefOntoUMLWrapper addClasses(RefOntoUMLWrapper wrapper, IProject vpProject){
+		for(IModelElement classElement : vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_CLASS))
 		{
-			IModelElement vpClass = classElement.getMetaModelElement();
+			IModelElement vpClass = (IClass) classElement;
 			String vpStereotype = vpClass.toStereotypeModelArray().length > 0 ?
 									vpClass.toStereotypeModelArray()[0].getName() :
 									"Subkind";
@@ -66,11 +66,11 @@ public class RefOntoUMLWrapper {
 		return wrapper;
 	}
 
-	private static RefOntoUMLWrapper addGeneralizations(RefOntoUMLWrapper wrapper, IDiagramUIModel vpDiagram){
-		for(IDiagramElement generalizationElement : 
-				vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_GENERALIZATION)) 
+	private static RefOntoUMLWrapper addGeneralizations(RefOntoUMLWrapper wrapper, IProject vpProject){
+		for(IModelElement generalizationElement :
+				vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_GENERALIZATION))
 		{ 
-			IGeneralization vpGeneralization = (IGeneralization) generalizationElement.getMetaModelElement();
+			IGeneralization vpGeneralization = (IGeneralization) generalizationElement;
 			if(vpGeneralization.getGeneralizationSet() == null){
 				RefOntoUML.Classifier parent = wrapper.getOntoUMLClassifier(vpGeneralization.getFrom()), 
 										child = wrapper.getOntoUMLClassifier(vpGeneralization.getTo()); 
@@ -81,11 +81,11 @@ public class RefOntoUMLWrapper {
 		return wrapper;
 	}
 
-	private static RefOntoUMLWrapper addGeneralizationSets(RefOntoUMLWrapper wrapper, IDiagramUIModel vpDiagram){
-		for(IDiagramElement genSetElement :
-				vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_GENERALIZATION_SET))
+	private static RefOntoUMLWrapper addGeneralizationSets(RefOntoUMLWrapper wrapper, IProject vpProject){
+		for(IModelElement genSetElement :
+				vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_GENERALIZATION_SET))
 		{
-			IGeneralizationSet vpGenSet = (IGeneralizationSet) genSetElement.getMetaModelElement();
+			IGeneralizationSet vpGenSet = (IGeneralizationSet) genSetElement;
 			Iterator genIterator = vpGenSet.generalizationIterator();
 			List<RefOntoUML.Generalization> generalizations = new ArrayList<>();
 			while(genIterator.hasNext()){
@@ -104,11 +104,11 @@ public class RefOntoUMLWrapper {
 		return wrapper;
 	}
 
-	private static RefOntoUMLWrapper addAssociations(RefOntoUMLWrapper wrapper, IDiagramUIModel vpDiagram){
-		for(IDiagramElement associationElement :
-				vpDiagram.toDiagramElementArray(IShapeTypeConstants.SHAPE_TYPE_ASSOCIATION))
+	private static RefOntoUMLWrapper addAssociations(RefOntoUMLWrapper wrapper, IProject vpProject){
+		for(IModelElement associationElement :
+				vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_ASSOCIATION))
 		{
-			IAssociation vpAssociation = (IAssociation) associationElement.getMetaModelElement();
+			IAssociation vpAssociation = (IAssociation) associationElement;
 			String vpStereotype = vpAssociation.toStereotypeArray().length > 0 ?
 					vpAssociation.toStereotypeArray()[0] : "";
 

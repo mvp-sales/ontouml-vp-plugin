@@ -6,6 +6,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
 import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.ViewManager;
 import com.vp.plugin.action.VPAction;
@@ -14,6 +15,7 @@ import com.vp.plugin.diagram.IDiagramUIModel;
 
 import RefOntoUML.util.RefOntoUMLResourceUtil;
 import br.ufes.inf.ontoumlplugin.model.RefOntoUMLWrapper;
+import com.vp.plugin.model.IProject;
 import io.reactivex.schedulers.Schedulers;
 
 public class ConvertModel2RefOntoUMLController implements VPActionController {
@@ -26,9 +28,13 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 		                        .instance()
 		                        .getDiagramManager()
 		                        .getActiveDiagram();
+		IProject project = ApplicationManager.instance().getProjectManager().getProject();
+
+		ViewManager viewManager = ApplicationManager.instance().getViewManager();
+		viewManager.clearMessages(OntoUMLPlugin.PLUGIN_ID);
 		
 		RefOntoUMLWrapper
-		.createObservableWrapper(diagram)
+		.createObservableWrapper(project)
 		.subscribeOn(Schedulers.computation())
 		.observeOn(Schedulers.trampoline())
 		.subscribe(
@@ -61,12 +67,10 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 					}else{
 						RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), wrapper.ontoUmlPackage);
 					}
+					viewManager.showMessage("Model saved at " + file.getAbsolutePath(), OntoUMLPlugin.PLUGIN_ID);
 				}
 			},
-			err -> {
-				ViewManager viewManager = ApplicationManager.instance().getViewManager();
-				viewManager.showMessage(err.getMessage());
-			}
+			err -> viewManager.showMessage(err.getMessage(), OntoUMLPlugin.PLUGIN_ID)
 		);
 	}
 

@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.vp.plugin.ApplicationManager;
@@ -50,7 +51,8 @@ public class LoadOntoUMLModelController implements VPActionController {
 
 	@Override
 	public void performAction(VPAction arg0) {
-		// TODO Auto-generated method stub
+		ViewManager viewManager = ApplicationManager.instance().getViewManager();
+		viewManager.clearMessages(OntoUMLPlugin.PLUGIN_ID);
 		
 		JFileChooser fileChooser = ApplicationManager.instance().getViewManager().createJFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Reference OntoUML (*.refontouml)", "refontouml");
@@ -66,12 +68,9 @@ public class LoadOntoUMLModelController implements VPActionController {
 				RefOntoUML.Package ontoUmlPackage = (RefOntoUML.Package) model.getContents().get(0);
 
 				buildClassDiagram(ontoUmlPackage);
-
+				viewManager.showMessage("Model loaded successfully", OntoUMLPlugin.PLUGIN_ID);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				ViewManager viewManager = ApplicationManager.instance().getViewManager();
-				viewManager.showMessage(e.getMessage());
+				viewManager.showMessage(e.getMessage(), OntoUMLPlugin.PLUGIN_ID);
 			}
 		}
 

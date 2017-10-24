@@ -1,16 +1,24 @@
 package br.ufes.inf.ontoumlplugin.project;
 
+import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
+import com.vp.plugin.ApplicationManager;
+import com.vp.plugin.ViewManager;
 import com.vp.plugin.model.*;
 import com.vp.plugin.model.factory.IModelElementFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by mvp-sales on 15/06/17.
  */
 public class OntoUMLPluginProjectListener implements IProjectListener {
 
+    private final ViewManager viewManager = ApplicationManager.instance().getViewManager();
+
     @Override
     public void projectNewed(IProject iProject) {
-        addOntoUMLStereotypes();
+        addOntoUMLStereotypes(iProject);
     }
 
     @Override
@@ -38,18 +46,25 @@ public class OntoUMLPluginProjectListener implements IProjectListener {
 
     }
 
-    private void addOntoUMLStereotypes(){
+    private void addOntoUMLStereotypes(IProject project){
 
+        Map<String, IStereotype> stereotypeMap = new HashMap<>();
+
+        for(IModelElement element : project.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_STEREOTYPE))
+        {
+            IStereotype stereotype = (IStereotype) element;
+            stereotypeMap.put(stereotype.getName(), stereotype);
+        }
         // Class Stereotypes
-        addClassStereotypes();
+        addClassStereotypes(stereotypeMap);
         // Relation Stereotypes
-        addNonPartWholeAssociationStereotypes();
+        addNonPartWholeAssociationStereotypes(stereotypeMap);
         // PartWhole Relation Stereotypes
-        addPartWholeStereotypes();
+        addPartWholeStereotypes(stereotypeMap);
 
     }
 
-    private void addClassStereotypes(){
+    private void addClassStereotypes(Map<String, IStereotype> stereotypes){
         String classTypes[] = {"Kind", "Subkind", "Role", "Phase", "Category", "RoleMixin",
                                 "Mixin", "Relator", "Mode", "Quality", "Collective", "Quantity",
                                 "DataType", "PerceivableQuality", "NonPerceivableQuality","NominalQuality",/*
@@ -58,36 +73,54 @@ public class OntoUMLPluginProjectListener implements IProjectListener {
                                 "IntegerRationalDimension", "StringNominalStructure", "Enumeration",*/ "PrimitiveType"};
 
         for(String classType : classTypes){
-            IStereotype stereotype = IModelElementFactory.instance().createStereotype();
-            stereotype.setName(classType);
-            stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_CLASS);
+            if(stereotypes.containsKey(classType)){
+                IStereotype stereotype = stereotypes.get(classType);
+                if (!stereotype.getBaseType().equals(IModelElementFactory.MODEL_TYPE_CLASS)){
+                    viewManager.showMessage("Stereotype " + classType + " already existent with base type " + stereotype.getBaseType(), OntoUMLPlugin.PLUGIN_ID);
+                }
+            }else {
+                IStereotype stereotype = IModelElementFactory.instance().createStereotype();
+                stereotype.setName(classType);
+                stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_CLASS);
+            }
         }
 
     }
 
-    private void addNonPartWholeAssociationStereotypes(){
+    private void addNonPartWholeAssociationStereotypes(Map<String, IStereotype> stereotypes){
         String associationTypes[] = new String[] {"Formal", "Mediation","Material",
                                                     "Derivation","Characterization",
                                                     "Structuration"};
 
         for(String associationType : associationTypes){
-            IStereotype stereotype = IModelElementFactory.instance().createStereotype();
-            stereotype.setName(associationType);
-            stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION);
+            if (stereotypes.containsKey(associationType)){
+                IStereotype stereotype = stereotypes.get(associationType);
+                if (!stereotype.getBaseType().equals(IModelElementFactory.MODEL_TYPE_ASSOCIATION)){
+                    viewManager.showMessage("Stereotype " + associationType + " already existent with base type " + stereotype.getBaseType(), OntoUMLPlugin.PLUGIN_ID);
+                }
+            }else {
+                IStereotype stereotype = IModelElementFactory.instance().createStereotype();
+                stereotype.setName(associationType);
+                stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION);
+            }
         }
 
     }
 
-    private void addPartWholeStereotypes() {
+    private void addPartWholeStereotypes(Map<String, IStereotype> stereotypes) {
 
-        addPartWholeStereotype("ComponentOf", "shareable","essential", "inseparable", "immutableWhole", "immutablePart");
-        addPartWholeStereotype("MemberOf", "shareable", "essential", "inseparable", "immutableWhole", "immutablePart");
-        addPartWholeStereotype("SubCollectionOf", "shareable", "essential", "inseparable", "immutableWhole", "immutablePart");
-        addPartWholeStereotype("SubQuantityOf", "shareable", "essential", "inseparable", "immutableWhole", "immutablePart");
+        addPartWholeStereotype(stereotypes, "ComponentOf", "shareable", "essential", "inseparable", "immutableWhole", "immutablePart");
+        addPartWholeStereotype(stereotypes, "MemberOf", "shareable", "essential", "inseparable", "immutableWhole", "immutablePart");
+        addPartWholeStereotype(stereotypes, "SubCollectionOf", "shareable", "essential", "inseparable", "immutableWhole", "immutablePart");
+        addPartWholeStereotype(stereotypes, "SubQuantityOf", "shareable", "essential", "inseparable", "immutableWhole", "immutablePart");
 
     }
 
-    private void addPartWholeStereotype(String name, String... taggedValues){
+    private void addPartWholeStereotype(Map<String, IStereotype> stereotypes, String name, String... taggedValues){
+        if (stereotypes.containsKey(name)){
+            viewManager.showMessage("Stereotype " + name + " already existent with base type ", OntoUMLPlugin.PLUGIN_ID);
+        }
+
         IStereotype stereotype = IModelElementFactory.instance().createStereotype();
         stereotype.setName(name);
         stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION);

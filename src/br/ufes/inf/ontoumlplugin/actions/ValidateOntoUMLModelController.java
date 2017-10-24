@@ -1,6 +1,7 @@
 package br.ufes.inf.ontoumlplugin.actions;
 
 
+import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
 import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.ViewManager;
 import com.vp.plugin.action.VPAction;
@@ -8,6 +9,7 @@ import com.vp.plugin.action.VPActionController;
 import com.vp.plugin.diagram.IDiagramUIModel;
 
 import br.ufes.inf.ontoumlplugin.model.RefOntoUMLWrapper;
+import com.vp.plugin.model.IProject;
 import io.reactivex.schedulers.Schedulers;
 
 public class ValidateOntoUMLModelController implements VPActionController {
@@ -20,29 +22,27 @@ public class ValidateOntoUMLModelController implements VPActionController {
                                     .instance()
                                     .getDiagramManager()
                                     .getActiveDiagram();
+		IProject project = ApplicationManager.instance().getProjectManager().getProject();
         
         ViewManager viewManager = ApplicationManager.instance().getViewManager();
-        
-        //RefOntoUMLWrapper wrapper = RefOntoUMLWrapper.createRefOntoUMLModel(diagram);
+        viewManager.clearMessages(OntoUMLPlugin.PLUGIN_ID);
         
         RefOntoUMLWrapper
-        	.createObservableWrapper(diagram)
+        	.createObservableWrapper(project)
         	.observeOn(Schedulers.computation())
         	.flatMap(wrapper -> RefOntoUMLWrapper.getVerificator(wrapper))
         	.observeOn(Schedulers.trampoline())
         	.subscribe(
         		verificator -> {
-        			viewManager.showMessage(verificator.getResult());
+        			viewManager.showMessage(verificator.getResult(), OntoUMLPlugin.PLUGIN_ID);
         			for(RefOntoUML.Element elem: verificator.getMap().keySet()){
-						viewManager.showMessage(elem.toString());
+						viewManager.showMessage(elem.toString(), OntoUMLPlugin.PLUGIN_ID);
 						for(String message: verificator.getMap().get(elem)){		
-							viewManager.showMessage(message);
+							viewManager.showMessage(message, OntoUMLPlugin.PLUGIN_ID);
 						}
     				}
          		},
-        		err -> {
-        			viewManager.showMessage(err.getMessage());
-        		}
+        		err -> viewManager.showMessage(err.getMessage(), OntoUMLPlugin.PLUGIN_ID)
 			);
         	
 	
