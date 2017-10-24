@@ -6,7 +6,6 @@ import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.ViewManager;
 import com.vp.plugin.action.VPAction;
 import com.vp.plugin.action.VPActionController;
-import com.vp.plugin.diagram.IDiagramUIModel;
 
 import br.ufes.inf.ontoumlplugin.model.RefOntoUMLWrapper;
 import com.vp.plugin.model.IProject;
@@ -16,12 +15,7 @@ public class ValidateOntoUMLModelController implements VPActionController {
 
 	@Override
 	public void performAction(VPAction arg0) {
-		
 
-        IDiagramUIModel diagram = ApplicationManager
-                                    .instance()
-                                    .getDiagramManager()
-                                    .getActiveDiagram();
 		IProject project = ApplicationManager.instance().getProjectManager().getProject();
         
         ViewManager viewManager = ApplicationManager.instance().getViewManager();

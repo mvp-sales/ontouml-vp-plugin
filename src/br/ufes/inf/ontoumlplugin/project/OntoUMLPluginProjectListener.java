@@ -18,7 +18,7 @@ public class OntoUMLPluginProjectListener implements IProjectListener {
 
     @Override
     public void projectNewed(IProject iProject) {
-        addOntoUMLStereotypes(iProject);
+    	
     }
 
     @Override
@@ -28,7 +28,7 @@ public class OntoUMLPluginProjectListener implements IProjectListener {
 
     @Override
     public void projectAfterOpened(IProject iProject) {
-
+    	addOntoUMLStereotypes(iProject);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class OntoUMLPluginProjectListener implements IProjectListener {
 
     private void addPartWholeStereotype(Map<String, IStereotype> stereotypes, String name, String... taggedValues){
         if (stereotypes.containsKey(name)){
-            viewManager.showMessage("Stereotype " + name + " already existent with base type ", OntoUMLPlugin.PLUGIN_ID);
+            return;
         }
 
         IStereotype stereotype = IModelElementFactory.instance().createStereotype();

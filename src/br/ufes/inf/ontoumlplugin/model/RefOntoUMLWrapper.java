@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.vp.plugin.diagram.IDiagramElement;
-import com.vp.plugin.diagram.IShapeTypeConstants;
 import com.vp.plugin.model.*;
 
 import RefOntoUML.Package;
@@ -55,7 +53,7 @@ public class RefOntoUMLWrapper {
 	private static RefOntoUMLWrapper addClasses(RefOntoUMLWrapper wrapper, IProject vpProject){
 		for(IModelElement classElement : vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_CLASS))
 		{
-			IModelElement vpClass = (IClass) classElement;
+			IClass vpClass = (IClass) classElement;
 			String vpStereotype = vpClass.toStereotypeModelArray().length > 0 ?
 									vpClass.toStereotypeModelArray()[0].getName() :
 									"Subkind";

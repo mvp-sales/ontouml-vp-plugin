@@ -11,7 +11,6 @@ import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.ViewManager;
 import com.vp.plugin.action.VPAction;
 import com.vp.plugin.action.VPActionController;
-import com.vp.plugin.diagram.IDiagramUIModel;
 
 import RefOntoUML.util.RefOntoUMLResourceUtil;
 import br.ufes.inf.ontoumlplugin.model.RefOntoUMLWrapper;
@@ -23,11 +22,6 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 	@Override
 	public void performAction(VPAction arg0) {
 
-
-		IDiagramUIModel diagram = ApplicationManager
-		                        .instance()
-		                        .getDiagramManager()
-		                        .getActiveDiagram();
 		IProject project = ApplicationManager.instance().getProjectManager().getProject();
 
 		ViewManager viewManager = ApplicationManager.instance().getViewManager();
