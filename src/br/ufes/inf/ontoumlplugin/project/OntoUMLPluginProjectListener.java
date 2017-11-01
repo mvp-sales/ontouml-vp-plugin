@@ -15,35 +15,46 @@ import java.util.Map;
 public class OntoUMLPluginProjectListener implements IProjectListener {
 
     private final ViewManager viewManager = ApplicationManager.instance().getViewManager();
+    private int stateProjectListener = UNSPECIFIED;
+    private static final int UNSPECIFIED = 0;
+    private static final int NEWED = 1;
+    private static final int PRESAVE = 2;
+    private static final int SAVED = 3;
+    private static final int RENAMED = 4;
+    private static final int OPENED = 5;
+    private static final int AFTER_OPENED = 6;
 
     @Override
     public void projectNewed(IProject iProject) {
-    	
+    	stateProjectListener = NEWED;
     }
 
     @Override
     public void projectOpened(IProject iProject) {
-
+    	stateProjectListener = OPENED;
     }
 
     @Override
     public void projectAfterOpened(IProject iProject) {
-    	addOntoUMLStereotypes(iProject);
+    	stateProjectListener = AFTER_OPENED;
     }
 
     @Override
     public void projectPreSave(IProject iProject) {
-
+    	stateProjectListener = PRESAVE;
     }
 
     @Override
     public void projectSaved(IProject iProject) {
-
+    	stateProjectListener = SAVED;
     }
 
     @Override
     public void projectRenamed(IProject iProject) {
-
+    	if(stateProjectListener == NEWED) {
+    		addOntoUMLStereotypes(iProject);
+    	}
+    	stateProjectListener = RENAMED;
     }
 
     private void addOntoUMLStereotypes(IProject project){
@@ -61,7 +72,7 @@ public class OntoUMLPluginProjectListener implements IProjectListener {
         addNonPartWholeAssociationStereotypes(stereotypeMap);
         // PartWhole Relation Stereotypes
         addPartWholeStereotypes(stereotypeMap);
-
+        viewManager.showMessage("OntoUML Stereotypes loaded successfully", OntoUMLPlugin.PLUGIN_ID);
     }
 
     private void addClassStereotypes(Map<String, IStereotype> stereotypes){

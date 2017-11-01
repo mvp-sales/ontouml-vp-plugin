@@ -91,9 +91,9 @@ public class VPModelFactory {
 		}else if(ontoUmlAssociation instanceof RefOntoUML.componentOf){
 			stereotype = addStereotypeAssociation(vpAssociation, "ComponentOf", project);
 		}else if(ontoUmlAssociation instanceof RefOntoUML.subQuantityOf){
-			stereotype = addStereotypeAssociation(vpAssociation, "subQuantityOf", project);
+			stereotype = addStereotypeAssociation(vpAssociation, "SubQuantityOf", project);
 		}else{
-			stereotype = addStereotypeAssociation(vpAssociation, "subCollectionOf", project);
+			stereotype = addStereotypeAssociation(vpAssociation, "SubCollectionOf", project);
 		}
 
 		if(stereotype != null){

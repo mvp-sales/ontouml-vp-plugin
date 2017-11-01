@@ -54,7 +54,22 @@
           toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#"> 
        	<actionController class="br.ufes.inf.ontoumlplugin.actions.LoadOntoUMLModelController"/>
       </action> 
-    </actionSet> 
+    </actionSet>
+    
+    <contextSensitiveActionSet
+                id="br.ufes.inf.ontoumlplugin.contextSensitiveActionSet">
+       <contextTypes>
+           <include type="Class"/>
+           <include type="ClassDiagram"/>
+       </contextTypes>
+       <action
+	            id="br.ufes.inf.ontoumlplugin.actions.ContextValidateModel"
+	            label="Validate OntoUML Model"
+	            style="normal"
+	            menuPath="OpenSpecification">
+	        <actionController class="br.ufes.inf.ontoumlplugin.actions.ValidateOntoUMLModelController"/>
+       </action>
+    </contextSensitiveActionSet>
  
  
   </actionSets> 

@@ -11,16 +11,9 @@ import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.vp.plugin.ApplicationManager;
-import com.vp.plugin.DiagramManager;
 import com.vp.plugin.ViewManager;
 import com.vp.plugin.action.VPAction;
 import com.vp.plugin.action.VPActionController;
-import com.vp.plugin.diagram.IClassDiagramUIModel;
-import com.vp.plugin.diagram.IDiagramElement;
-import com.vp.plugin.diagram.IDiagramTypeConstants;
-import com.vp.plugin.diagram.connector.IAssociationUIModel;
-import com.vp.plugin.diagram.shape.IClassUIModel;
-import com.vp.plugin.diagram.shape.IGeneralizationSetUIModel;
 import com.vp.plugin.model.IAssociation;
 import com.vp.plugin.model.IAssociationEnd;
 import com.vp.plugin.model.IClass;
@@ -41,12 +34,10 @@ import br.ufes.inf.ontoumlplugin.model.VPModelFactory;
 public class LoadOntoUMLModelController implements VPActionController {
 	
 	private Map<RefOntoUML.Classifier, IModelElement> ontoUml2VpClasses;
-	private Map<RefOntoUML.Classifier, IDiagramElement> ontoUml2VpShapes;
 	private final IProject project = ApplicationManager.instance().getProjectManager().getProject();
 	
 	public LoadOntoUMLModelController(){
 		this.ontoUml2VpClasses = new HashMap<>();
-		this.ontoUml2VpShapes = new HashMap<>();
 	}
 
 	@Override
@@ -83,67 +74,52 @@ public class LoadOntoUMLModelController implements VPActionController {
 	}
 
 	private void buildClassDiagram(RefOntoUML.Package ontoUmlPackage){
-		DiagramManager diagramManager = ApplicationManager
-										.instance()
-										.getDiagramManager();
-
-		IClassDiagramUIModel diagram = 
-						(IClassDiagramUIModel) diagramManager.createDiagram(IDiagramTypeConstants.DIAGRAM_TYPE_CLASS_DIAGRAM);
 				
 		OntoUMLParser parser = new OntoUMLParser(ontoUmlPackage);
 		
 		for(Classifier c : parser.getRigidClasses()){
-			createClass(diagramManager, diagram, c);
+			createClass(c);
 		}
 		
 		for(Classifier c : parser.getAntiRigidClasses()){
-			createClass(diagramManager, diagram, c);
+			createClass(c);
 		}
 		
 		for(PrimitiveType p : parser.getAllInstances(PrimitiveType.class)) {
-			createClass(diagramManager, diagram, (Classifier)p);
+			createClass((Classifier)p);
 		}
 		
 		for(Classifier c : parser.getAssociations()){
 			RefOntoUML.Association association = (RefOntoUML.Association) c;
 			if(association instanceof RefOntoUML.Meronymic){
 				RefOntoUML.Meronymic meronymicAssociation = (RefOntoUML.Meronymic) association;
-				createMeronymicAssociation(diagramManager, diagram, meronymicAssociation);
+				createMeronymicAssociation(meronymicAssociation);
 			}else{
-				createAssociation(diagramManager, diagram, association);
+				createAssociation(association);
 			}
 		}
 
 		for(RefOntoUML.GeneralizationSet genSet : parser.getAllInstances(RefOntoUML.GeneralizationSet.class)){
-			createGeneralizationSet(diagramManager, diagram, genSet);
+			createGeneralizationSet(genSet);
 		}
 
 		for(Generalization gen : parser.getAllInstances(Generalization.class)){
 			if(!isGeneralizationInsideGenSet(parser, gen)){
-				createGeneralization(diagramManager, diagram, gen);
+				createGeneralization(gen);
 			}
 		}
-		
-		diagramManager.layout(diagram, DiagramManager.LAYOUT_AUTO);
-		diagramManager.openDiagram(diagram);
 	}
 
-	private void createClass(DiagramManager diagramManager, IClassDiagramUIModel diagram, Classifier c){
+	private void createClass(Classifier c){
 		IClass vpClass = IModelElementFactory.instance().createClass();
 		vpClass.setName(c.getName());
 		this.ontoUml2VpClasses.put(c, vpClass);
 
 		vpClass = VPModelFactory.setClassStereotype(vpClass, c, this.project);
-		
-		// create superclass shape
-		IClassUIModel vpClassUi = (IClassUIModel) diagramManager.createDiagramElement(diagram, vpClass);
-		vpClassUi.setRequestResetCaption(true);
-		
-		this.ontoUml2VpShapes.put(c, vpClassUi);
 	}
 
 
-	private void createMeronymicAssociation(DiagramManager diagramManager, IClassDiagramUIModel diagram, RefOntoUML.Meronymic association){
+	private void createMeronymicAssociation(RefOntoUML.Meronymic association){
 		RefOntoUML.Property wholeEnd = association.wholeEnd();
 		RefOntoUML.Property partEnd = association.partEnd();
 		
@@ -168,16 +144,9 @@ public class LoadOntoUMLModelController implements VPActionController {
 																			IAssociationEnd.AGGREGATION_KIND_COMPOSITED);
 		
 		associationModel = VPModelFactory.setMeronymicAssociation(associationModel, association, this.project);
-
-		// create association connector on diagram
-		IDiagramElement from = this.ontoUml2VpShapes.get(part),
-						to = this.ontoUml2VpShapes.get(whole);
-		IAssociationUIModel associationConnector = (IAssociationUIModel) diagramManager.createConnector(diagram, associationModel, from, to, null);
-		// set to automatic calculate the initial caption position
-		associationConnector.setRequestResetCaption(true);
 	}
 
-	private void createAssociation(DiagramManager diagramManager, IClassDiagramUIModel diagram, RefOntoUML.Association association){
+	private void createAssociation(RefOntoUML.Association association){
 		RefOntoUML.Property p1 = association.getOwnedEnd().get(0);
 		RefOntoUML.Property p2 = association.getOwnedEnd().get(1);
 		
@@ -200,13 +169,6 @@ public class LoadOntoUMLModelController implements VPActionController {
 		associationToEnd.setMultiplicity(getMultiplicityFromValues(lowerC2, upperC2));
 		
 		associationModel = VPModelFactory.setAssociationStereotype(associationModel, association, this.project);
-		
-		// create association connector on diagram
-		IDiagramElement from = this.ontoUml2VpShapes.get(c1),
-						to = this.ontoUml2VpShapes.get(c2);
-		IAssociationUIModel associationConnector = (IAssociationUIModel) diagramManager.createConnector(diagram, associationModel, from, to, null);
-		// set to automatic calculate the initial caption position
-		associationConnector.setRequestResetCaption(true);
 	}
 
 	private String getMultiplicityFromValues(int lower, int upper){
@@ -229,31 +191,22 @@ public class LoadOntoUMLModelController implements VPActionController {
 		return result;
 	}
 
-	private void createGeneralizationSet(DiagramManager diagramManager, IClassDiagramUIModel diagram, RefOntoUML.GeneralizationSet genSet){
+	private void createGeneralizationSet(RefOntoUML.GeneralizationSet genSet){
 		IGeneralizationSet vpGenSet = IModelElementFactory.instance().createGeneralizationSet();
 		vpGenSet.setDisjoint(genSet.isIsDisjoint()); vpGenSet.setCovering(genSet.isIsCovering());
 
 		for(Generalization gen : genSet.getGeneralization()){
-			vpGenSet.addGeneralization(createGeneralization(diagramManager, diagram, gen));
+			vpGenSet.addGeneralization(createGeneralization(gen));
 		}
-
-		IGeneralizationSetUIModel vpGenSetUi = 
-			(IGeneralizationSetUIModel) diagramManager.createDiagramElement(diagram, vpGenSet);
-
-		vpGenSetUi.setRequestResetCaption(true);
 	}
 
-	private IGeneralization createGeneralization(DiagramManager diagramManager, IClassDiagramUIModel diagram, Generalization gen){
+	private IGeneralization createGeneralization(Generalization gen){
 		// create generalization relationship from superclass to subclass
 		IGeneralization generalizationModel = IModelElementFactory.instance().createGeneralization();
 		IModelElement specific = this.ontoUml2VpClasses.get(gen.getSpecific()),
 						general = this.ontoUml2VpClasses.get(gen.getGeneral());
-		IDiagramElement specificShape = this.ontoUml2VpShapes.get(gen.getSpecific()),
-						generalShape = this.ontoUml2VpShapes.get(gen.getGeneral());
 		generalizationModel.setFrom(general);
 		generalizationModel.setTo(specific);
-		// create generalization connector on diagram
-		diagramManager.createConnector(diagram, generalizationModel, generalShape, specificShape, null);
 
 		return generalizationModel;
 	}
