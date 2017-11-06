@@ -15,7 +15,7 @@ import io.reactivex.Observable;
 
 public class RefOntoUMLWrapper {
 	
-	private Map<IModelElement, RefOntoUML.Classifier> classElements; 
+	private Map<IModelElement, RefOntoUML.Classifier> classElements;
 	public final Package ontoUmlPackage;
 	
 	private RefOntoUMLWrapper(){

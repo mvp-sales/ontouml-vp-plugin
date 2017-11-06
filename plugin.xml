@@ -70,6 +70,23 @@
 	        <actionController class="br.ufes.inf.ontoumlplugin.actions.ValidateOntoUMLModelController"/>
        </action>
     </contextSensitiveActionSet>
+    
+<!--      <actionSet id="br.ufes.inf.ontoumlplugin.shapeActionSet">
+    	<action id="br.ufes.inf.ontoumlplugin.KindShapeAction"
+    		actionType="shapeAction"
+    		label="OntoUML Kind"
+    		tooltip="OntoUML Kind"
+    		icon="icons/class.png"
+    		editorToolbarPath="com.vp.diagram.ClassDiagram/Class">
+    		<shapeCreatorInfo
+    			shapeType="br.ufes.inf.ontoumlplugin.KindShape"
+    			resizable="true"
+    			captionStyle="north"
+    			multilineCaption="false" 
+    			controllerClass="br.ufes.inf.ontoumlplugin.KindShapeController"/>
+    	</action>
+    
+    </actionSet> -->
  
  
   </actionSets> 
