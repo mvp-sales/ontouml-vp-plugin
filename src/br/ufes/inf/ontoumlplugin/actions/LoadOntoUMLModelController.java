@@ -20,6 +20,7 @@ import com.vp.plugin.model.IClass;
 import com.vp.plugin.model.IGeneralization;
 import com.vp.plugin.model.IGeneralizationSet;
 import com.vp.plugin.model.IModelElement;
+import com.vp.plugin.model.IPackage;
 import com.vp.plugin.model.IProject;
 import com.vp.plugin.model.factory.IModelElementFactory;
 
@@ -44,6 +45,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 	public void performAction(VPAction arg0) {
 		ViewManager viewManager = ApplicationManager.instance().getViewManager();
 		viewManager.clearMessages(OntoUMLPlugin.PLUGIN_ID);
+		viewManager.removeMessagePaneComponent(OntoUMLPlugin.PLUGIN_ID);  
 		
 		JFileChooser fileChooser = ApplicationManager.instance().getViewManager().createJFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Reference OntoUML (*.refontouml)", "refontouml");
@@ -94,7 +96,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 			if(association instanceof RefOntoUML.Meronymic){
 				RefOntoUML.Meronymic meronymicAssociation = (RefOntoUML.Meronymic) association;
 				createMeronymicAssociation(meronymicAssociation);
-			}else{
+			}else if(!(association instanceof RefOntoUML.Derivation) ){
 				createAssociation(association);
 			}
 		}

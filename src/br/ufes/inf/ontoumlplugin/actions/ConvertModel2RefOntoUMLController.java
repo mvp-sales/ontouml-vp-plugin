@@ -26,6 +26,7 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 
 		ViewManager viewManager = ApplicationManager.instance().getViewManager();
 		viewManager.clearMessages(OntoUMLPlugin.PLUGIN_ID);
+		viewManager.removeMessagePaneComponent(OntoUMLPlugin.PLUGIN_ID);  
 		
 		RefOntoUMLWrapper
 		.createObservableWrapper(project)

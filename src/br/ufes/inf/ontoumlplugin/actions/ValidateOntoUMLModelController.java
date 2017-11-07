@@ -13,11 +13,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import com.vp.plugin.ApplicationManager;
+import com.vp.plugin.DiagramManager;
 import com.vp.plugin.ViewManager;
 import com.vp.plugin.action.VPAction;
 import com.vp.plugin.action.VPActionController;
 import com.vp.plugin.action.VPContext;
 import com.vp.plugin.action.VPContextActionController;
+import com.vp.plugin.diagram.IClassDiagramUIModel;
+import com.vp.plugin.diagram.IDiagramElement;
+import com.vp.plugin.diagram.IDiagramUIModel;
 
 import br.ufes.inf.ontoumlplugin.model.RefOntoUMLWrapper;
 import com.vp.plugin.model.IProject;
@@ -30,6 +34,7 @@ public class ValidateOntoUMLModelController implements VPActionController, VPCon
         
         ViewManager viewManager = ApplicationManager.instance().getViewManager();
         viewManager.clearMessages(OntoUMLPlugin.PLUGIN_ID);
+        viewManager.removeMessagePaneComponent(OntoUMLPlugin.PLUGIN_ID);     
         
         RefOntoUMLWrapper
         	.createObservableWrapper(project)
@@ -52,7 +57,7 @@ public class ValidateOntoUMLModelController implements VPActionController, VPCon
         				}else {
         					JButton button = new JButton(elem.toString());
 	        				button.addActionListener(
-	    						event -> System.out.println("-----------------Fui clicado-----------------")
+	    						event -> highlightDiagramElement(button.getText().replaceAll("«.*»", "").trim())
 							);
 	        				box.add(button);
         				}
@@ -93,6 +98,21 @@ public class ValidateOntoUMLModelController implements VPActionController, VPCon
 	public void update(VPAction arg0, VPContext arg1) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private static void highlightDiagramElement(String nameElement) {
+		DiagramManager diagramManager = ApplicationManager.instance().getDiagramManager();
+		
+		for(IDiagramUIModel openedDiagram : diagramManager.getOpenedDiagrams()) {
+			if(openedDiagram instanceof IClassDiagramUIModel) {
+				for(IDiagramElement diagramElement : openedDiagram.toDiagramElementArray()) {
+					if(diagramElement.getModelElement().getName().equals(nameElement)) {
+						diagramManager.highlight(diagramElement);
+						return;
+					}
+				}
+			}
+		}
 	}
 	
 }
