@@ -32,7 +32,8 @@
           actionType="generalAction" 
           label="Convert OntoUML Model to RefOntoUML" 
           tooltip="Convert OntoUML model to RefOntoUML" 
-          style="normal" 
+          style="normal"
+          icon="icons/convert_file.png" 
           toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#"> 
         <actionController class="br.ufes.inf.ontoumlplugin.actions.ConvertModel2RefOntoUMLController"/> 
       </action> 
@@ -42,6 +43,7 @@
           label="Validate OntoUML Model" 
           tooltip="Validate OntoUML Model" 
           style="normal" 
+          icon="icons/validate.png"
           toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#"> 
        	<actionController class="br.ufes.inf.ontoumlplugin.actions.ValidateOntoUMLModelController"/>
       </action> 
@@ -50,9 +52,20 @@
           actionType="generalAction" 
           label="Load OntoUML Model" 
           tooltip="Load RefOntoUML File" 
-          style="normal" 
+          style="normal"
+          icon="icons/import_file.png" 
           toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#"> 
        	<actionController class="br.ufes.inf.ontoumlplugin.actions.LoadOntoUMLModelController"/>
+      </action> 
+      <action 
+          id="br.ufes.inf.ontoumlplugin.actionset.AddOntoUMLStereotypesAction" 
+          actionType="generalAction" 
+          label="Add OntoUML Stereotypes to Project" 
+          tooltip="Adds OntoUML stereotypes to project" 
+          style="normal"
+          icon="icons/add.png" 
+          toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#"> 
+       	<actionController class="br.ufes.inf.ontoumlplugin.actions.AddOntoUMLStereotypesController"/>
       </action> 
     </actionSet>
     

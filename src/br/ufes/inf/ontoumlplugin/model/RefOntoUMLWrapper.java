@@ -54,7 +54,7 @@ public class RefOntoUMLWrapper {
 		for(IModelElement classElement : vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_CLASS))
 		{
 			IClass vpClass = (IClass) classElement;
-			String vpStereotype = vpClass.toStereotypeModelArray().length > 0 ?
+			String vpStereotype = vpClass.toStereotypeModelArray() != null ?
 									vpClass.toStereotypeModelArray()[0].getName() :
 									"Subkind";
 			RefOntoUML.Classifier ontoUmlClass = RefOntoUMLFactory.createOntoUmlClass(wrapper, vpClass, vpStereotype);
