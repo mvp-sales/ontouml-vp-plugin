@@ -32,6 +32,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 	
 	public LoadOntoUMLModelController(){
 		this.ontoUml2VpClasses = new HashMap<>();
+		this.ontoUml2VpPackage = new HashMap<>();
 	}
 
 	@Override
@@ -68,14 +69,15 @@ public class LoadOntoUMLModelController implements VPActionController {
 
 	}
 
-	private void iteratePackages(RefOntoUML.Package ontoUmlPackage) {
+	private void iteratePackages(RefOntoUML.Package ontoUmlPackage, IPackage vpPackage) {
 	    for (EObject obj : ontoUmlPackage.eContents()) {
 	        if (obj instanceof RefOntoUML.Package) {
 	            RefOntoUML.Package oumlPackage = (RefOntoUML.Package) obj;
 	            IPackage childPackage = IModelElementFactory.instance().createPackage();
 	            childPackage.setName(oumlPackage.getName());
 	            this.ontoUml2VpPackage.put(oumlPackage, childPackage);
-	            iteratePackages(oumlPackage);
+	            vpPackage.addChild(childPackage);
+	            iteratePackages(oumlPackage, childPackage);
             }
         }
     }
@@ -143,44 +145,11 @@ public class LoadOntoUMLModelController implements VPActionController {
         IPackage modelVpPackage = IModelElementFactory.instance().createPackage();
         modelVpPackage.setName(model.getName());
         this.ontoUml2VpPackage.put(model, modelVpPackage);
-        iteratePackages(model);
+        iteratePackages(model, modelVpPackage);
         iterateClasses();
         iterateAssociations();
         iterateGeneralizationSets();
         iterateGeneralizations();
-		/*OntoUMLParser parser = new OntoUMLParser(ontoUmlPackage);
-		
-		for(Classifier c : parser.getRigidClasses()){
-			createClass(c);
-		}
-		
-		for(Classifier c : parser.getAntiRigidClasses()){
-			createClass(c);
-		}
-		
-		for(PrimitiveType p : parser.getAllInstances(PrimitiveType.class)) {
-			createClass((Classifier)p);
-		}
-		
-		for(Classifier c : parser.getAssociations()){
-			RefOntoUML.Association association = (RefOntoUML.Association) c;
-			if(association instanceof RefOntoUML.Meronymic){
-				RefOntoUML.Meronymic meronymicAssociation = (RefOntoUML.Meronymic) association;
-				createMeronymicAssociation(meronymicAssociation);
-			}else if(!(association instanceof RefOntoUML.Derivation) ){
-				createAssociation(association);
-			}
-		}
-
-		for(RefOntoUML.GeneralizationSet genSet : parser.getAllInstances(RefOntoUML.GeneralizationSet.class)){
-			createGeneralizationSet(genSet);
-		}
-
-		for(Generalization gen : parser.getAllInstances(Generalization.class)){
-			if(!isGeneralizationInsideGenSet(parser, gen)){
-				createGeneralization(gen);
-			}
-		}*/
 	}
 
 	private void createClass(Classifier c, IPackage vpPackage){
