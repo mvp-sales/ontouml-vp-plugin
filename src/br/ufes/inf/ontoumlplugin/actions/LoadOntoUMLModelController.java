@@ -7,34 +7,28 @@ import java.util.Map;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import RefOntoUML.*;
 import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
+import com.vp.plugin.model.*;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.ViewManager;
 import com.vp.plugin.action.VPAction;
 import com.vp.plugin.action.VPActionController;
-import com.vp.plugin.model.IAssociation;
-import com.vp.plugin.model.IAssociationEnd;
-import com.vp.plugin.model.IClass;
-import com.vp.plugin.model.IGeneralization;
-import com.vp.plugin.model.IGeneralizationSet;
-import com.vp.plugin.model.IModelElement;
-import com.vp.plugin.model.IProject;
 import com.vp.plugin.model.factory.IModelElementFactory;
 
-import RefOntoUML.Classifier;
-import RefOntoUML.Generalization;
-import RefOntoUML.GeneralizationSet;
 import RefOntoUML.parser.OntoUMLParser;
 import RefOntoUML.util.RefOntoUMLResourceUtil;
-import RefOntoUML.PrimitiveType;
 import br.ufes.inf.ontoumlplugin.model.VPModelFactory;
 
 public class LoadOntoUMLModelController implements VPActionController {
 	
 	private Map<RefOntoUML.Classifier, IModelElement> ontoUml2VpClasses;
+	private Map<RefOntoUML.Package, IPackage> ontoUml2VpPackage;
 	private final IProject project = ApplicationManager.instance().getProjectManager().getProject();
+	private OntoUMLParser ontoUmlParser;
 	
 	public LoadOntoUMLModelController(){
 		this.ontoUml2VpClasses = new HashMap<>();
@@ -74,9 +68,87 @@ public class LoadOntoUMLModelController implements VPActionController {
 
 	}
 
+	private void iteratePackages(RefOntoUML.Package ontoUmlPackage) {
+	    for (EObject obj : ontoUmlPackage.eContents()) {
+	        if (obj instanceof RefOntoUML.Package) {
+	            RefOntoUML.Package oumlPackage = (RefOntoUML.Package) obj;
+	            IPackage childPackage = IModelElementFactory.instance().createPackage();
+	            childPackage.setName(oumlPackage.getName());
+	            this.ontoUml2VpPackage.put(oumlPackage, childPackage);
+	            iteratePackages(oumlPackage);
+            }
+        }
+    }
+
+    private void iterateClasses() {
+	    for (Map.Entry<RefOntoUML.Package, IPackage> entry : ontoUml2VpPackage.entrySet()) {
+	        RefOntoUML.Package key = entry.getKey();
+	        IPackage value = entry.getValue();
+	        for (EObject obj : key.eContents()) {
+	            if (obj instanceof RefOntoUML.Class || obj instanceof RefOntoUML.DataType ) {
+                    createClass((Classifier)obj, value);
+                }
+            }
+        }
+    }
+
+    private void iterateAssociations() {
+        for (Map.Entry<RefOntoUML.Package, IPackage> entry : ontoUml2VpPackage.entrySet()) {
+            RefOntoUML.Package key = entry.getKey();
+            IPackage value = entry.getValue();
+            for (EObject obj : key.eContents()) {
+                if (obj instanceof RefOntoUML.Association) {
+                    RefOntoUML.Association association = (RefOntoUML.Association) obj;
+                    if(association instanceof RefOntoUML.Meronymic){
+                        RefOntoUML.Meronymic meronymicAssociation = (RefOntoUML.Meronymic) association;
+                        createMeronymicAssociation(meronymicAssociation, value);
+                    }else if(!(association instanceof RefOntoUML.Derivation) ){
+                        createAssociation(association, value);
+                    }
+                }
+            }
+        }
+    }
+
+    private void iterateGeneralizationSets() {
+        for (Map.Entry<RefOntoUML.Package, IPackage> entry : ontoUml2VpPackage.entrySet()) {
+            RefOntoUML.Package key = entry.getKey();
+            IPackage value = entry.getValue();
+            for (EObject obj : key.eContents()) {
+                if (obj instanceof RefOntoUML.GeneralizationSet) {
+                   createGeneralizationSet((GeneralizationSet)obj, value);
+                }
+            }
+        }
+    }
+
+    private void iterateGeneralizations() {
+        for (Map.Entry<RefOntoUML.Package, IPackage> entry : ontoUml2VpPackage.entrySet()) {
+            RefOntoUML.Package key = entry.getKey();
+            IPackage value = entry.getValue();
+            for (EObject obj : key.eContents()) {
+                if (obj instanceof RefOntoUML.Generalization) {
+                    RefOntoUML.Generalization gen = (RefOntoUML.Generalization) obj;
+                    if(!isGeneralizationInsideGenSet(ontoUmlParser, gen)) {
+                        value.addChild(createGeneralization(gen));
+                    }
+                }
+            }
+        }
+    }
+
 	private void buildClassDiagram(RefOntoUML.Package ontoUmlPackage){
-				
-		OntoUMLParser parser = new OntoUMLParser(ontoUmlPackage);
+	    ontoUmlParser = new OntoUMLParser(ontoUmlPackage);
+        RefOntoUML.Package model = ontoUmlParser.getModel();
+        IPackage modelVpPackage = IModelElementFactory.instance().createPackage();
+        modelVpPackage.setName(model.getName());
+        this.ontoUml2VpPackage.put(model, modelVpPackage);
+        iteratePackages(model);
+        iterateClasses();
+        iterateAssociations();
+        iterateGeneralizationSets();
+        iterateGeneralizations();
+		/*OntoUMLParser parser = new OntoUMLParser(ontoUmlPackage);
 		
 		for(Classifier c : parser.getRigidClasses()){
 			createClass(c);
@@ -108,19 +180,20 @@ public class LoadOntoUMLModelController implements VPActionController {
 			if(!isGeneralizationInsideGenSet(parser, gen)){
 				createGeneralization(gen);
 			}
-		}
+		}*/
 	}
 
-	private void createClass(Classifier c){
+	private void createClass(Classifier c, IPackage vpPackage){
 		IClass vpClass = IModelElementFactory.instance().createClass();
 		vpClass.setName(c.getName());
 		this.ontoUml2VpClasses.put(c, vpClass);
 
 		vpClass = VPModelFactory.setClassStereotype(vpClass, c, this.project);
+		vpPackage.addChild(vpClass);
 	}
 
 
-	private void createMeronymicAssociation(RefOntoUML.Meronymic association){
+	private void createMeronymicAssociation(Meronymic association, IPackage vpPackage){
 		RefOntoUML.Property wholeEnd = association.wholeEnd();
 		RefOntoUML.Property partEnd = association.partEnd();
 		
@@ -145,9 +218,10 @@ public class LoadOntoUMLModelController implements VPActionController {
 																			IAssociationEnd.AGGREGATION_KIND_COMPOSITED);
 		
 		associationModel = VPModelFactory.setMeronymicAssociation(associationModel, association, this.project);
+		vpPackage.addChild(associationModel);
 	}
 
-	private void createAssociation(RefOntoUML.Association association){
+	private void createAssociation(Association association, IPackage vpPackage){
 		RefOntoUML.Property p1 = association.getOwnedEnd().get(0);
 		RefOntoUML.Property p2 = association.getOwnedEnd().get(1);
 		
@@ -170,6 +244,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 		associationToEnd.setMultiplicity(getMultiplicityFromValues(lowerC2, upperC2));
 		
 		associationModel = VPModelFactory.setAssociationStereotype(associationModel, association, this.project);
+		vpPackage.addChild(associationModel);
 	}
 
 	private String getMultiplicityFromValues(int lower, int upper){
@@ -192,13 +267,14 @@ public class LoadOntoUMLModelController implements VPActionController {
 		return result;
 	}
 
-	private void createGeneralizationSet(RefOntoUML.GeneralizationSet genSet){
+	private void createGeneralizationSet(GeneralizationSet genSet, IPackage vpPackage){
 		IGeneralizationSet vpGenSet = IModelElementFactory.instance().createGeneralizationSet();
 		vpGenSet.setDisjoint(genSet.isIsDisjoint()); vpGenSet.setCovering(genSet.isIsCovering());
 
 		for(Generalization gen : genSet.getGeneralization()){
 			vpGenSet.addGeneralization(createGeneralization(gen));
 		}
+		vpPackage.addChild(vpGenSet);
 	}
 
 	private IGeneralization createGeneralization(Generalization gen){
