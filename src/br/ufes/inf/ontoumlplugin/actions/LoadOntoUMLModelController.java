@@ -125,7 +125,7 @@ public class LoadOntoUMLModelController implements VPActionController {
     }
 
     private void iterateGeneralizations() {
-        for (Map.Entry<RefOntoUML.Package, IPackage> entry : ontoUml2VpPackage.entrySet()) {
+/*        for (Map.Entry<RefOntoUML.Package, IPackage> entry : ontoUml2VpPackage.entrySet()) {
             RefOntoUML.Package key = entry.getKey();
             IPackage value = entry.getValue();
             for (EObject obj : key.eContents()) {
@@ -136,7 +136,12 @@ public class LoadOntoUMLModelController implements VPActionController {
                     }
                 }
             }
-        }
+        }*/
+    	for(Generalization gen : ontoUmlParser.getAllInstances(Generalization.class)){ 
+	      if(!isGeneralizationInsideGenSet(ontoUmlParser, gen)){ 
+	        createGeneralization(gen); 
+	      } 
+	    }
     }
 
 	private void buildClassDiagram(RefOntoUML.Package ontoUmlPackage){
@@ -146,9 +151,9 @@ public class LoadOntoUMLModelController implements VPActionController {
         modelVpPackage.setName(model.getName());
         this.ontoUml2VpPackage.put(model, modelVpPackage);
         iteratePackages(model, modelVpPackage);
-        iterateClasses();
-        iterateAssociations();
-        iterateGeneralizationSets();
+        //iterateClasses();
+        //iterateAssociations();
+        //iterateGeneralizationSets();
         iterateGeneralizations();
 	}
 
@@ -187,7 +192,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 																			IAssociationEnd.AGGREGATION_KIND_COMPOSITED);
 		
 		associationModel = VPModelFactory.setMeronymicAssociation(associationModel, association, this.project);
-		vpPackage.addChild(associationModel);
+		//vpPackage.addChild(associationModel);
 	}
 
 	private void createAssociation(Association association, IPackage vpPackage){
@@ -213,7 +218,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 		associationToEnd.setMultiplicity(getMultiplicityFromValues(lowerC2, upperC2));
 		
 		associationModel = VPModelFactory.setAssociationStereotype(associationModel, association, this.project);
-		vpPackage.addChild(associationModel);
+		//vpPackage.addChild(associationModel);
 	}
 
 	private String getMultiplicityFromValues(int lower, int upper){
@@ -243,7 +248,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 		for(Generalization gen : genSet.getGeneralization()){
 			vpGenSet.addGeneralization(createGeneralization(gen));
 		}
-		vpPackage.addChild(vpGenSet);
+		//vpPackage.addChild(vpGenSet);
 	}
 
 	private IGeneralization createGeneralization(Generalization gen){

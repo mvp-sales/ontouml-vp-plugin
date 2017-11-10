@@ -21,59 +21,63 @@ public class RefOntoUMLFactory {
 		RefOntoUML.Classifier classifier;
 		OntoUMLClassType classType = OntoUMLClassType.fromString(stereotype);
 		
+		RefOntoUML.Package elementPackage = vpElement.getParent() == null ?
+				wrapper.ontoUmlPackage :
+				wrapper.getOntoUMLPackage(vpElement.getParent());
+		
 		if(classType == null){
-			classifier = RefOntoUMLFactoryUtil.createSubKind(vpElement.getName(), wrapper.ontoUmlPackage);
+			classifier = RefOntoUMLFactoryUtil.createSubKind(vpElement.getName(), elementPackage);
 		}else{
 		
 			switch(classType){
 				default:
 				case KIND:
-					classifier = RefOntoUMLFactoryUtil.createKind(vpElement.getName(), wrapper.ontoUmlPackage);
+					classifier = RefOntoUMLFactoryUtil.createKind(vpElement.getName(), elementPackage);
 					break;
 				case SUBKIND:
-					classifier = RefOntoUMLFactoryUtil.createSubKind(vpElement.getName(), wrapper.ontoUmlPackage);
+					classifier = RefOntoUMLFactoryUtil.createSubKind(vpElement.getName(), elementPackage);
 					break;
 				case ROLE:
-					classifier = RefOntoUMLFactoryUtil.createRole(vpElement.getName(), wrapper.ontoUmlPackage);
+					classifier = RefOntoUMLFactoryUtil.createRole(vpElement.getName(), elementPackage);
 					break;
 				case PHASE:
-					classifier = RefOntoUMLFactoryUtil.createPhase(vpElement.getName(), wrapper.ontoUmlPackage);		
+					classifier = RefOntoUMLFactoryUtil.createPhase(vpElement.getName(), elementPackage);		
 					break;
 				case COLLECTIVE:
-					classifier = RefOntoUMLFactoryUtil.createCollective(vpElement.getName(), wrapper.ontoUmlPackage);
+					classifier = RefOntoUMLFactoryUtil.createCollective(vpElement.getName(), elementPackage);
 					break;
 				case QUANTITY:
-					classifier = RefOntoUMLFactoryUtil.createQuantity(vpElement.getName(), wrapper.ontoUmlPackage);
+					classifier = RefOntoUMLFactoryUtil.createQuantity(vpElement.getName(), elementPackage);
 					break;
 				case CATEGORY:
-					classifier = RefOntoUMLFactoryUtil.createCategory(vpElement.getName(), wrapper.ontoUmlPackage);
+					classifier = RefOntoUMLFactoryUtil.createCategory(vpElement.getName(), elementPackage);
 					break;
 				case ROLEMIXIN:
-					classifier = RefOntoUMLFactoryUtil.createRoleMixin(vpElement.getName(), wrapper.ontoUmlPackage);
+					classifier = RefOntoUMLFactoryUtil.createRoleMixin(vpElement.getName(), elementPackage);
 					break;
 				case RELATOR:
-					classifier = RefOntoUMLFactoryUtil.createRelator(vpElement.getName(), wrapper.ontoUmlPackage);
+					classifier = RefOntoUMLFactoryUtil.createRelator(vpElement.getName(), elementPackage);
 					break;
 				case MIXIN:
-					classifier = RefOntoUMLFactoryUtil.createMixin(vpElement.getName(), wrapper.ontoUmlPackage);
+					classifier = RefOntoUMLFactoryUtil.createMixin(vpElement.getName(), elementPackage);
 					break;
 				case MODE:
-					classifier = RefOntoUMLFactoryUtil.createMode(vpElement.getName(), wrapper.ontoUmlPackage);
+					classifier = RefOntoUMLFactoryUtil.createMode(vpElement.getName(), elementPackage);
 					break;
 				case PERCEIVABLE_QUALITY:
-					classifier = RefOntoUMLFactoryUtil.createPerceivableQuality(vpElement.getName(), wrapper.ontoUmlPackage);
+					classifier = RefOntoUMLFactoryUtil.createPerceivableQuality(vpElement.getName(), elementPackage);
 					break;
 				case NON_PERCEIVABLE_QUALITY:
-					classifier = RefOntoUMLFactoryUtil.createNonPerceivableQuality(vpElement.getName(), wrapper.ontoUmlPackage);
+					classifier = RefOntoUMLFactoryUtil.createNonPerceivableQuality(vpElement.getName(), elementPackage);
 					break;
 				case NOMINAL_QUALITY:
-					classifier = RefOntoUMLFactoryUtil.createNominalQuality(vpElement.getName(), wrapper.ontoUmlPackage);
+					classifier = RefOntoUMLFactoryUtil.createNominalQuality(vpElement.getName(), elementPackage);
 					break;
 				case DATA_TYPE:
-					classifier = RefOntoUMLFactoryUtil.createDataType(vpElement.getName(), wrapper.ontoUmlPackage);
+					classifier = RefOntoUMLFactoryUtil.createDataType(vpElement.getName(), elementPackage);
 					break;
 				case PRIMITIVE_TYPE:
-					classifier = RefOntoUMLFactoryUtil.createPrimitiveType(vpElement.getName(), wrapper.ontoUmlPackage);
+					classifier = RefOntoUMLFactoryUtil.createPrimitiveType(vpElement.getName(), elementPackage);
 					break;
 			}
 		}
@@ -149,6 +153,10 @@ public class RefOntoUMLFactory {
 		AssociationMultiplicity multFrom = new AssociationMultiplicity(assEndFrom.getMultiplicity());
 		AssociationMultiplicity multTo = new AssociationMultiplicity(assEndTo.getMultiplicity());
 		
+		RefOntoUML.Package elementPackage = vpAssociation.getParent() == null ?
+				wrapper.ontoUmlPackage :
+				wrapper.getOntoUMLPackage(vpAssociation.getParent());
+		
 		if(type == null){
 			association = RefOntoUMLFactoryUtil.createAssociation
 					(source, 
@@ -158,7 +166,7 @@ public class RefOntoUMLFactory {
 						target, 
 						multTo.getMinMultiplicity(), 
 						multTo.getMaxMultiplicity(), 
-						wrapper.ontoUmlPackage);
+						elementPackage);
 		}else{
 			switch(type){
 				default:
@@ -170,7 +178,7 @@ public class RefOntoUMLFactory {
 										target, 
 										multTo.getMinMultiplicity(), 
 										multTo.getMaxMultiplicity(), 
-										wrapper.ontoUmlPackage);
+										elementPackage);
 				case CHARACTERIZATION:
 					if(target instanceof RefOntoUML.Mode){
 						association = RefOntoUMLFactoryUtil.createCharacterization
@@ -181,7 +189,7 @@ public class RefOntoUMLFactory {
 											source, 
 											multFrom.getMinMultiplicity(), 
 											multFrom.getMaxMultiplicity(), 
-											wrapper.ontoUmlPackage);
+											elementPackage);
 					}else{
 						association = RefOntoUMLFactoryUtil.createCharacterization
 										(source, 
@@ -191,7 +199,7 @@ public class RefOntoUMLFactory {
 											target, 
 											multTo.getMinMultiplicity(), 
 											multTo.getMaxMultiplicity(), 
-											wrapper.ontoUmlPackage);
+											elementPackage);
 					}
 					break;
 				case MEDIATION:
@@ -204,7 +212,7 @@ public class RefOntoUMLFactory {
 											source, 
 											multFrom.getMinMultiplicity(), 
 											multFrom.getMaxMultiplicity(), 
-											wrapper.ontoUmlPackage);
+											elementPackage);
 					}else{
 						association = RefOntoUMLFactoryUtil.createMediation
 										(source, 
@@ -214,7 +222,7 @@ public class RefOntoUMLFactory {
 											target, 
 											multTo.getMinMultiplicity(), 
 											multTo.getMaxMultiplicity(), 
-											wrapper.ontoUmlPackage);
+											elementPackage);
 					}
 					break;
 				case FORMAL_ASSOCIATION:
@@ -226,7 +234,7 @@ public class RefOntoUMLFactory {
 										target, 
 										multTo.getMinMultiplicity(), 
 										multTo.getMaxMultiplicity(), 
-										wrapper.ontoUmlPackage);
+										elementPackage);
 					break;
 				case MATERIAL_ASSOCIATION:
 					association = RefOntoUMLFactoryUtil.createMaterialAssociation
@@ -237,7 +245,7 @@ public class RefOntoUMLFactory {
 										target, 
 										multTo.getMinMultiplicity(), 
 										multTo.getMaxMultiplicity(), 
-										wrapper.ontoUmlPackage);
+										elementPackage);
 					break;
 				case STRUCTURATION:
 					association = RefOntoUMLFactoryUtil.createStructuration
@@ -248,7 +256,7 @@ public class RefOntoUMLFactory {
 										target, 
 										multTo.getMinMultiplicity(), 
 										multTo.getMaxMultiplicity(), 
-										wrapper.ontoUmlPackage);
+										elementPackage);
 					break;
 			}
 		}
@@ -285,6 +293,10 @@ public class RefOntoUMLFactory {
 			multPart = new AssociationMultiplicity(assEndFrom.getMultiplicity());
 		}
 		
+		RefOntoUML.Package elementPackage = vpAssociation.getParent() == null ?
+				wrapper.ontoUmlPackage :
+				wrapper.getOntoUMLPackage(vpAssociation.getParent());
+		
 		switch(type){
 			default:
 			case COMPONENT_OF:
@@ -296,7 +308,7 @@ public class RefOntoUMLFactory {
 						part, 
 						multPart.getMinMultiplicity(), 
 						multPart.getMaxMultiplicity(), 
-						wrapper.ontoUmlPackage);
+						elementPackage);
 				break;
 			case MEMBER_OF:
 				association = RefOntoUMLFactoryUtil.createMemberOf
@@ -307,7 +319,7 @@ public class RefOntoUMLFactory {
 					part, 
 					multPart.getMinMultiplicity(), 
 					multPart.getMaxMultiplicity(), 
-					wrapper.ontoUmlPackage);
+					elementPackage);
 				break;
 			case SUBQUANTITY_OF:
 				association = RefOntoUMLFactoryUtil.createSubQuantityOf
@@ -318,7 +330,7 @@ public class RefOntoUMLFactory {
 					part, 
 					multPart.getMinMultiplicity(), 
 					multPart.getMaxMultiplicity(), 
-					wrapper.ontoUmlPackage);
+					elementPackage);
 				break;
 			case SUBCOLLECTION_OF:
 				association = RefOntoUMLFactoryUtil.createSubCollectionOf
@@ -329,7 +341,7 @@ public class RefOntoUMLFactory {
 					part, 
 					multPart.getMinMultiplicity(), 
 					multPart.getMaxMultiplicity(), 
-					wrapper.ontoUmlPackage);
+					elementPackage);
 				break;
 		}
 		
