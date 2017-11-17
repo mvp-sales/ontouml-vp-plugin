@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import RefOntoUML.*;
 import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
 import org.eclipse.emf.ecore.resource.Resource;
 
@@ -23,12 +24,8 @@ import com.vp.plugin.model.IModelElement;
 import com.vp.plugin.model.IProject;
 import com.vp.plugin.model.factory.IModelElementFactory;
 
-import RefOntoUML.Classifier;
-import RefOntoUML.Generalization;
-import RefOntoUML.GeneralizationSet;
 import RefOntoUML.parser.OntoUMLParser;
 import RefOntoUML.util.RefOntoUMLResourceUtil;
-import RefOntoUML.PrimitiveType;
 import br.ufes.inf.ontoumlplugin.model.VPModelFactory;
 
 public class LoadOntoUMLModelController implements VPActionController {
@@ -78,16 +75,19 @@ public class LoadOntoUMLModelController implements VPActionController {
 				
 		OntoUMLParser parser = new OntoUMLParser(ontoUmlPackage);
 		
-		for(Classifier c : parser.getRigidClasses()){
+/*		for(Classifier c : parser.getRigidClasses()){
 			createClass(c);
 		}
 		
 		for(Classifier c : parser.getAntiRigidClasses()){
 			createClass(c);
+		}*/
+		for (RefOntoUML.Class ontoUmlClass : parser.getAllInstances(RefOntoUML.Class.class)) {
+			createClass(ontoUmlClass);
 		}
 		
-		for(PrimitiveType p : parser.getAllInstances(PrimitiveType.class)) {
-			createClass((Classifier)p);
+		for(DataType p : parser.getAllInstances(DataType.class)) {
+			createClass(p);
 		}
 		
 		for(Classifier c : parser.getAssociations()){
@@ -202,7 +202,6 @@ public class LoadOntoUMLModelController implements VPActionController {
 	}
 
 	private IGeneralization createGeneralization(Generalization gen){
-		// create generalization relationship from superclass to subclass
 		IGeneralization generalizationModel = IModelElementFactory.instance().createGeneralization();
 		IModelElement specific = this.ontoUml2VpClasses.get(gen.getSpecific()),
 						general = this.ontoUml2VpClasses.get(gen.getGeneral());

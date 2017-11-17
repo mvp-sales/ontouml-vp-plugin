@@ -31,9 +31,9 @@ public enum OntoUMLClassType {
 	
 	public static OntoUMLClassType fromString(String text) {
 	    for (OntoUMLClassType b : OntoUMLClassType.values()) {
-	      if (b.text.equalsIgnoreCase(text)) {
-	        return b;
-	      }
+			if (b.text.equalsIgnoreCase(text)) {
+				return b;
+			}
 	    }
 	    return null;
 	}

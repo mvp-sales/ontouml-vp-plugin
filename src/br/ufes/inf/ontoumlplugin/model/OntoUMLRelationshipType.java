@@ -24,9 +24,9 @@ public enum OntoUMLRelationshipType {
 	
 	public static OntoUMLRelationshipType fromString(String text) {
 	    for (OntoUMLRelationshipType b : OntoUMLRelationshipType.values()) {
-	      if (b.text.equalsIgnoreCase(text)) {
-	        return b;
-	      }
+			if (b.text.equalsIgnoreCase(text)) {
+				return b;
+			}
 	    }
 	    return null;
 	}
