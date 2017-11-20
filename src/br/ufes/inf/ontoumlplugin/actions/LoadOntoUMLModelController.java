@@ -74,14 +74,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 	private void buildClassDiagram(RefOntoUML.Package ontoUmlPackage){
 				
 		OntoUMLParser parser = new OntoUMLParser(ontoUmlPackage);
-		
-/*		for(Classifier c : parser.getRigidClasses()){
-			createClass(c);
-		}
-		
-		for(Classifier c : parser.getAntiRigidClasses()){
-			createClass(c);
-		}*/
+
 		for (RefOntoUML.Class ontoUmlClass : parser.getAllInstances(RefOntoUML.Class.class)) {
 			createClass(ontoUmlClass);
 		}

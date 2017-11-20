@@ -95,14 +95,144 @@
     </contextSensitiveActionSet>
     
     <actionSet id="br.ufes.inf.ontoumlplugin.shapeActionSet">
-        <action id="br.ufes.inf.ontoumlplugin.KindShapeAction"
+        <action id="br.ufes.inf.ontoumlplugin.CategoryShapeAction"
             actionType="shapeModelAction"
-            label="OntoUML Kind"
-            tooltip="OntoUML Kind"
+            label="OntoUML Category"
+            tooltip="OntoUML br.ufes.inf.ontoumlplugin.shapes.CategoryShapeController"
             icon="icons/class.png"
             editorToolbarPath="com.vp.diagram.ClassDiagram/Class">
             <shapeModelCreatorInfo
-                controllerClass="br.ufes.inf.ontoumlplugin.shapes.KindShapeController"/>
+                controllerClass="br.ufes.inf.ontoumlplugin.shapes.CategoryShapeController"/>
+        </action>
+
+        <action id="br.ufes.inf.ontoumlplugin.CollectiveShapeAction"
+                actionType="shapeModelAction"
+                label="OntoUML Collective"
+                tooltip="OntoUML br.ufes.inf.ontoumlplugin.shapes.CollectiveShapeController"
+                icon="icons/class.png"
+                editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.CategoryShapeAction">
+            <shapeModelCreatorInfo
+                    controllerClass="br.ufes.inf.ontoumlplugin.shapes.CollectiveShapeController"/>
+        </action>
+
+        <action id="br.ufes.inf.ontoumlplugin.KindShapeAction"
+                actionType="shapeModelAction"
+                label="OntoUML Kind"
+                tooltip="OntoUML Kind"
+                icon="icons/class.png"
+                editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.CollectiveShapeAction">
+            <shapeModelCreatorInfo
+                    controllerClass="br.ufes.inf.ontoumlplugin.shapes.KindShapeController"/>
+        </action>
+
+        <action id="br.ufes.inf.ontoumlplugin.MixinShapeAction"
+                actionType="shapeModelAction"
+                label="OntoUML Mixin"
+                tooltip="OntoUML Mixin"
+                icon="icons/class.png"
+                editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.KindShapeAction">
+            <shapeModelCreatorInfo
+                    controllerClass="br.ufes.inf.ontoumlplugin.shapes.MixinShapeController"/>
+        </action>
+
+        <action id="br.ufes.inf.ontoumlplugin.ModeShapeAction"
+                actionType="shapeModelAction"
+                label="OntoUML Mode"
+                tooltip="OntoUML Mode"
+                icon="icons/class.png"
+                editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.MixinShapeAction">
+            <shapeModelCreatorInfo
+                    controllerClass="br.ufes.inf.ontoumlplugin.shapes.ModeShapeController"/>
+        </action>
+
+        <action id="br.ufes.inf.ontoumlplugin.NominalQualityShapeAction"
+                actionType="shapeModelAction"
+                label="OntoUML NominalQuality"
+                tooltip="OntoUML NominalQuality"
+                icon="icons/class.png"
+                editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.ModeShapeAction">
+            <shapeModelCreatorInfo
+                    controllerClass="br.ufes.inf.ontoumlplugin.shapes.NominalQualityShapeController"/>
+        </action>
+
+        <action id="br.ufes.inf.ontoumlplugin.NonPerceivableQualityShapeAction"
+                actionType="shapeModelAction"
+                label="OntoUML NonPerceivableQuality"
+                tooltip="OntoUML NonPerceivableQuality"
+                icon="icons/class.png"
+                editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.NominalQualityShapeAction">
+            <shapeModelCreatorInfo
+                    controllerClass="br.ufes.inf.ontoumlplugin.shapes.NonPerceivableQualityShapeController"/>
+        </action>
+
+        <action id="br.ufes.inf.ontoumlplugin.PerceivableQualityShapeAction"
+                actionType="shapeModelAction"
+                label="OntoUML PerceivableQuality"
+                tooltip="OntoUML PerceivableQuality"
+                icon="icons/class.png"
+                editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.NonPerceivableQualityShapeAction">
+            <shapeModelCreatorInfo
+                    controllerClass="br.ufes.inf.ontoumlplugin.shapes.PerceivableQualityShapeController"/>
+        </action>
+
+        <action id="br.ufes.inf.ontoumlplugin.PhaseShapeAction"
+                actionType="shapeModelAction"
+                label="OntoUML Phase"
+                tooltip="OntoUML Phase"
+                icon="icons/class.png"
+                editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.PerceivableQualityShapeAction">
+            <shapeModelCreatorInfo
+                    controllerClass="br.ufes.inf.ontoumlplugin.shapes.PhaseShapeController"/>
+        </action>
+
+        <action id="br.ufes.inf.ontoumlplugin.QuantityShapeAction"
+                actionType="shapeModelAction"
+                label="OntoUML Quantity"
+                tooltip="OntoUML Quantity"
+                icon="icons/class.png"
+                editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.PhaseShapeAction">
+            <shapeModelCreatorInfo
+                    controllerClass="br.ufes.inf.ontoumlplugin.shapes.QuantityShapeController"/>
+        </action>
+
+        <action id="br.ufes.inf.ontoumlplugin.RelatorShapeAction"
+                actionType="shapeModelAction"
+                label="OntoUML Relator"
+                tooltip="OntoUML Relator"
+                icon="icons/class.png"
+                editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.QuantityShapeAction">
+            <shapeModelCreatorInfo
+                    controllerClass="br.ufes.inf.ontoumlplugin.shapes.RelatorShapeController"/>
+        </action>
+
+        <action id="br.ufes.inf.ontoumlplugin.RoleShapeAction"
+                actionType="shapeModelAction"
+                label="OntoUML Role"
+                tooltip="OntoUML Role"
+                icon="icons/class.png"
+                editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.RelatorShapeAction">
+            <shapeModelCreatorInfo
+                    controllerClass="br.ufes.inf.ontoumlplugin.shapes.RoleShapeController"/>
+        </action>
+
+        <action id="br.ufes.inf.ontoumlplugin.RoleMixinShapeAction"
+                actionType="shapeModelAction"
+                label="OntoUML RoleMixin"
+                tooltip="OntoUML RoleMixin"
+                icon="icons/class.png"
+                editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.RoleShapeAction">
+            <shapeModelCreatorInfo
+                    controllerClass="br.ufes.inf.ontoumlplugin.shapes.RoleMixinShapeController"/>
+        </action>
+
+        <action id="br.ufes.inf.ontoumlplugin.SubKindShapeAction"
+                actionType="shapeModelAction"
+                label="OntoUML SubKind"
+                tooltip="OntoUML SubKind"
+                icon="icons/class.png"
+                editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.RoleMixinShapeAction">
+            <shapeModelCreatorInfo
+                    controllerClass="br.ufes.inf.ontoumlplugin.shapes.SubKindShapeController"/>
         </action>
 
     </actionSet>
