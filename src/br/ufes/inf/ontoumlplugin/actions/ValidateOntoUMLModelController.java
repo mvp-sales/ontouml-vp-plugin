@@ -38,7 +38,7 @@ public class ValidateOntoUMLModelController implements VPActionController, VPCon
         
         RefOntoUMLWrapper
         	.createObservableWrapper(project)
-        	.observeOn(Schedulers.computation())
+        	.subscribeOn(Schedulers.computation())
         	.flatMap(RefOntoUMLWrapper::getVerificator)
         	.observeOn(Schedulers.trampoline())
         	.subscribe(

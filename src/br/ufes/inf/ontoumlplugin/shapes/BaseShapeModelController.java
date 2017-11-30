@@ -26,25 +26,20 @@ public abstract class BaseShapeModelController implements VPShapeModelCreationCo
         IProject project = ApplicationManager.instance().getProjectManager().getProject();
         IDiagramUIModel lDiagram = ApplicationManager.instance().getDiagramManager().getActiveDiagram();
 
-        // create model
-        IClass lClass = createModelElement(project, lDiagram);
-
-        iShapeUIModel.setModelElement(lClass);
+        IClass classElement = (IClass) iShapeUIModel.getModelElement();
+        createModelElement(classElement, project, lDiagram);
     }
 
-    private IClass createModelElement(IProject project, IDiagramUIModel diagramModel) {
-        IClass lClass; // class will be created in this action
+    private IClass createModelElement(IClass lClass, IProject project, IDiagramUIModel diagramModel) {
         IModelElement[] lPeers;
         IModelElement lOwner = diagramModel.getParentModel();
         if (lOwner != null) {
             // create Class in Owner
             lPeers = lOwner.toChildArray(IModelElementFactory.MODEL_TYPE_CLASS);
-            lClass = (IClass) lOwner.createChild(IModelElementFactory.MODEL_TYPE_CLASS);
         }
         else {
             // create Class in Root
             lPeers = ApplicationManager.instance().getProjectManager().getProject().toModelElementArray(IModelElementFactory.MODEL_TYPE_CLASS);
-            lClass = IModelElementFactory.instance().createClass();
         }
         lClass.addStereotype(OntoUMLClassType.getStereotypeFromString(project, stereotypeName));
 

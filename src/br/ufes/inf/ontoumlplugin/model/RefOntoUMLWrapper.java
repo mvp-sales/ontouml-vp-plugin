@@ -28,11 +28,7 @@ public class RefOntoUMLWrapper {
 	}
 
 	public static Observable<RefOntoUMLWrapper> createObservableWrapper(IProject vpProject){
-		return Observable.fromCallable(
-			() -> {
-				return createRefOntoUMLModel(vpProject);
-			}
-		);
+		return Observable.fromCallable(() -> createRefOntoUMLModel(vpProject));
 	}
 	
 	public static RefOntoUMLWrapper createRefOntoUMLModel(IProject vpProject){
