@@ -2,16 +2,70 @@ package br.ufes.inf.ontoumlplugin.utils;
 
 import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
 import com.vp.plugin.ApplicationManager;
+import com.vp.plugin.DiagramManager;
 import com.vp.plugin.ViewManager;
+import com.vp.plugin.diagram.IClassDiagramUIModel;
+import com.vp.plugin.diagram.IDiagramElement;
+import com.vp.plugin.diagram.IDiagramUIModel;
 import com.vp.plugin.model.*;
 import com.vp.plugin.model.factory.IModelElementFactory;
 
+import javax.swing.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CommonUtils {
 
     private static ViewManager viewManager = ApplicationManager.instance().getViewManager();
+
+    public static void highlightDiagramElement(String nameElement) {
+        DiagramManager diagramManager = ApplicationManager.instance().getDiagramManager();
+
+        for(IDiagramUIModel openedDiagram : diagramManager.getOpenedDiagrams()) {
+            if(openedDiagram instanceof IClassDiagramUIModel) {
+                for(IDiagramElement diagramElement : openedDiagram.toDiagramElementArray()) {
+                    if(diagramElement.getModelElement().getName().equals(nameElement)) {
+                        diagramManager.highlight(diagramElement);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    public static void showModelErrors(String resultMessage, Map<String, ArrayList<String>> erroredElements, ViewManager viewManager) {
+        JPanel container = new JPanel();
+        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+        JLabel resultLabel = new JLabel(resultMessage);
+        container.add(resultLabel);
+        for(String elem: erroredElements.keySet()){
+            JPanel box = new JPanel();
+            box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
+            String elementName = elem.replaceAll("«.*»", "").trim();
+            if(elementName.isEmpty()) {
+                JLabel label = new JLabel(elem);
+                box.add(label);
+            }else {
+                JButton button = new JButton(elem);
+                button.addActionListener(
+                        event -> CommonUtils.highlightDiagramElement(button.getText().replaceAll("«.*»", "").trim())
+                );
+                box.add(button);
+            }
+
+            for(String message: erroredElements.get(elem)){
+                JLabel label = new JLabel(message);
+                box.add(label);
+            }
+            box.setBorder(BorderFactory.createEmptyBorder(8,4,8,4));
+            box.doLayout();
+            container.add(box);
+        }
+        container.doLayout();
+        JScrollPane containerFather = new JScrollPane(container);
+        viewManager.showMessagePaneComponent(OntoUMLPlugin.PLUGIN_ID, "Error log", containerFather);
+    }
 
     public static void addOntoUMLStereotypes(IProject project){
 
@@ -34,10 +88,7 @@ public class CommonUtils {
     private static void addClassStereotypes(Map<String, IStereotype> stereotypes){
         String classTypes[] = {"Kind", "Subkind", "Role", "Phase", "Category", "RoleMixin",
                 "Mixin", "Relator", "Mode", "Quality", "Collective", "Quantity",
-                "DataType", "PerceivableQuality", "NonPerceivableQuality","NominalQuality",/*
-                                "MeasurementDomain", "DecimalIntervalDimension", "DecimalOrdinalDimension",
-                                "DecimalRationalDimension", "IntegerIntervalDimension", "IntegerOrdinalDimension",
-                                "IntegerRationalDimension", "StringNominalStructure",*/ };
+                "DataType", "PerceivableQuality", "NonPerceivableQuality","NominalQuality"};
 
         for(String classType : classTypes){
             if(stereotypes.containsKey(classType)){
@@ -81,7 +132,11 @@ public class CommonUtils {
             }else {
                 IStereotype stereotype = IModelElementFactory.instance().createStereotype();
                 stereotype.setName(associationType);
-                stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION);
+                if (associationType.equalsIgnoreCase("derivation")) {
+                    stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION_CLASS);
+                }else {
+                    stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION);
+                }
             }
         }
 

@@ -7,7 +7,7 @@ import com.vp.plugin.model.factory.IModelElementFactory;
 
 public enum OntoUMLRelationshipType {
 
-	FORMAL_ASSOCIATION("FormalAssociation"), MEDIATION("Mediation"), CHARACTERIZATION("Characterization"), 
+	COMMON_ASSOCIATION(""), FORMAL_ASSOCIATION("FormalAssociation"), MEDIATION("Mediation"), CHARACTERIZATION("Characterization"),
 	DERIVATION("Derivation"), MATERIAL_ASSOCIATION("MaterialAssociation"),COMPONENT_OF("ComponentOf"), 
 	MEMBER_OF("MemberOf"), SUBCOLLECTION_OF("SubCollectionOf"), SUBQUANTITY_OF("SubQuantityOf"),
 	STRUCTURATION("Structuration");
@@ -28,7 +28,7 @@ public enum OntoUMLRelationshipType {
 				return b;
 			}
 	    }
-	    return null;
+	    return COMMON_ASSOCIATION;
 	}
 
 	public static IStereotype getStereotypeFromString(IProject project, String text){

@@ -2,6 +2,7 @@ package br.ufes.inf.ontoumlplugin.model;
 
 import java.util.*;
 
+import RefOntoUML.Association;
 import com.vp.plugin.model.*;
 
 import RefOntoUML.Package;
@@ -11,33 +12,33 @@ import io.reactivex.Observable;
 
 public class RefOntoUMLWrapper {
 	
-	private Map<IModelElement, RefOntoUML.Classifier> classElements;
+	private Map<IModelElement, RefOntoUML.Classifier> classifierElements;
 	public final Package ontoUmlPackage;
 	
 	private RefOntoUMLWrapper(){
-		this.ontoUmlPackage = RefOntoUMLFactoryUtil.createPackage("package1");
-		this.classElements = new HashMap<>();
+		this.ontoUmlPackage = RefOntoUMLFactoryUtil.createPackage("OntoUMLModel");
+		this.classifierElements = new HashMap<>();
 	}
 	
 	public RefOntoUML.Classifier getOntoUMLClassifier(IModelElement vpElement){
-		return classElements.get(vpElement);
+		return classifierElements.get(vpElement);
 	}
 	
-	public void addOntoUMLClassifier(IModelElement vpElement, RefOntoUML.Classifier classifier){
-		this.classElements.put(vpElement, classifier);
+	private void addOntoUMLClassifier(IModelElement vpElement, RefOntoUML.Classifier classifier){
+		this.classifierElements.put(vpElement, classifier);
 	}
 
 	public static Observable<RefOntoUMLWrapper> createObservableWrapper(IProject vpProject){
 		return Observable.fromCallable(() -> createRefOntoUMLModel(vpProject));
 	}
 	
-	public static RefOntoUMLWrapper createRefOntoUMLModel(IProject vpProject){
+	private static RefOntoUMLWrapper createRefOntoUMLModel(IProject vpProject){
 		RefOntoUMLWrapper wrapper = new RefOntoUMLWrapper();		
 
 		wrapper = addClasses(wrapper, vpProject);
+		wrapper = addAssociations(wrapper, vpProject);
 		wrapper = addGeneralizations(wrapper, vpProject);
 		wrapper = addGeneralizationSets(wrapper, vpProject);
-		wrapper = addAssociations(wrapper, vpProject);
 
 		return wrapper;
 	}
@@ -87,8 +88,15 @@ public class RefOntoUMLWrapper {
 				
 				generalizations.add(generalization);
 			}
+
 			RefOntoUMLFactoryUtil.createGeneralizationSet
-							(generalizations, vpGenSet.isDisjoint(), vpGenSet.isCovering(), wrapper.ontoUmlPackage);
+			(
+				generalizations,
+				vpGenSet.getName(),
+				vpGenSet.isDisjoint(),
+				vpGenSet.isCovering(),
+				wrapper.ontoUmlPackage
+			);
 		} 
 
 		return wrapper;
@@ -102,14 +110,23 @@ public class RefOntoUMLWrapper {
 			String vpStereotype = vpAssociation.toStereotypeArray().length > 0 ?
 					vpAssociation.toStereotypeArray()[0] : "";
 
-			RefOntoUMLFactory.createOntoUMLAssociation(wrapper, vpAssociation, vpStereotype);
+			Association association = RefOntoUMLFactory.createOntoUMLAssociation(wrapper, vpAssociation, vpStereotype);
+			wrapper.classifierElements.put(vpAssociation, association);
+		}
+
+		for(IModelElement associationElement :
+				vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_ASSOCIATION_CLASS))
+		{
+			IAssociationClass vpAssociationClass = (IAssociationClass) associationElement;
+			Association association = RefOntoUMLFactory.createOntoUMLDerivation(wrapper, vpAssociationClass);
+			wrapper.classifierElements.put(vpAssociationClass, association);
 		}
 
 		return wrapper;
 	}
 	
 	RefOntoUML.Classifier getOntoUMLClassFromName(String className){
-		for(Map.Entry<IModelElement, RefOntoUML.Classifier> entry : this.classElements.entrySet()){
+		for(Map.Entry<IModelElement, RefOntoUML.Classifier> entry : this.classifierElements.entrySet()){
 			IModelElement elem = entry.getKey();
 			if(elem.getName().equals(className)){
 				return entry.getValue();

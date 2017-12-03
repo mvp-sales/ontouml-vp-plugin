@@ -12,12 +12,7 @@ public enum OntoUMLClassType {
 	RELATOR("Relator"), MODE("Mode"), QUALITY("Quality"),
 	
 	DATA_TYPE("DataType"), PERCEIVABLE_QUALITY("PerceivableQuality"),
-	NON_PERCEIVABLE_QUALITY("NonPerceivableQuality"), NOMINAL_QUALITY("NominalQuality"),
-	MEASUREMENT_DOMAIN("MeasurementDomain"), ENUMERATION("Enumeration"),
-	STRING_NOMINAL_STRUCTURE("StringNominalStructure"), DECIMAL_INTERVAL_DIMENSION("DecimalIntervalDimension"),
-	DECIMAL_ORDINAL_DIMENSION("DecimalOrdinalDimension"), DECIMAL_RATIONAL_DIMENSION("DecimalRationalDimension"),
-	INTEGER_INTERVAL_DIMENSION("IntegerIntervalDimension"), INTEGER_ORDINAL_DIMENSION("IntegerOrdinalDimension"),
-	INTEGER_RATIONAL_DIMENSION("IntegerRationalDimension"), PRIMITIVE_TYPE("PrimitiveType");
+	NON_PERCEIVABLE_QUALITY("NonPerceivableQuality"), NOMINAL_QUALITY("NominalQuality"), ENUMERATION("enumeration"), PRIMITIVE_TYPE("primitive");
 	
 	private String text;
 	
@@ -35,7 +30,7 @@ public enum OntoUMLClassType {
 				return b;
 			}
 	    }
-	    return null;
+	    return SUBKIND;
 	}
 
 	public static IStereotype getStereotypeFromString(IProject project, String text){

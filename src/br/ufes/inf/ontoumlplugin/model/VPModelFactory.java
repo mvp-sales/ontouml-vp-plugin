@@ -45,15 +45,12 @@ public class VPModelFactory {
 		}else if(ontoUmlElement instanceof RefOntoUML.Quality){
 			addStereotypeClass(vpClass, "Quality", project);
 		}else if(ontoUmlElement instanceof RefOntoUML.PrimitiveType){
-			addStereotypeClass(vpClass, "PrimitiveType", project);
+			vpClass.addStereotype("primitive");
+		}else if(ontoUmlElement instanceof RefOntoUML.Enumeration){
+			vpClass.addStereotype("enumeration");
 		}else if(ontoUmlElement instanceof RefOntoUML.DataType){
 			addStereotypeClass(vpClass, "DataType", project);
 		}
-		/*else if(ontoUmlElement instanceof RefOntoUML.Enumeration){
-			addStereotypeClass(vpClass, "Enumeration", project);
-		}else if(ontoUmlElement instanceof RefOntoUML.MeasurementDomain){
-			addStereotypeClass(vpClass, "MeasurementDomain", project);
-		}*/
 
 		vpClass = setVPAttributes(vpClass, ontoUmlElement);
 

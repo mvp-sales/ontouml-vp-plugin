@@ -19,8 +19,6 @@ import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
 
 public class AddOntoUMLStereotypesController implements VPActionController {
 
-    private final ViewManager viewManager = ApplicationManager.instance().getViewManager();
-	
 	@Override
 	public void performAction(VPAction arg0) {
 		// TODO Auto-generated method stub

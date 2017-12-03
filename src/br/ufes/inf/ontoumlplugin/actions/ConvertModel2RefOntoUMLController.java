@@ -1,12 +1,17 @@
 package br.ufes.inf.ontoumlplugin.actions;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import RefOntoUML.Element;
 import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
+import br.ufes.inf.ontoumlplugin.utils.CommonUtils;
 import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.ViewManager;
 import com.vp.plugin.action.VPAction;
@@ -18,6 +23,8 @@ import com.vp.plugin.model.IProject;
 import io.reactivex.schedulers.Schedulers;
 
 public class ConvertModel2RefOntoUMLController implements VPActionController {
+
+	private RefOntoUMLWrapper modelWrapper;
 
 	@Override
 	public void performAction(VPAction arg0) {
@@ -31,38 +38,23 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 		RefOntoUMLWrapper
 		.createObservableWrapper(project)
 		.subscribeOn(Schedulers.computation())
+		.flatMap(
+			wrapper -> {
+				this.modelWrapper = wrapper;
+				return RefOntoUMLWrapper.getVerificator(wrapper);
+			}
+		)
 		.observeOn(Schedulers.trampoline())
 		.subscribe(
-			wrapper -> {
-				JFileChooser fileChooser = ApplicationManager.instance().getViewManager().createJFileChooser();
-				FileNameExtensionFilter filter = new FileNameExtensionFilter("Reference OntoUML (*.refontouml)", "refontouml");
-				fileChooser.setFileFilter(filter);
-				fileChooser.setDialogTitle("Selecione o diretório de destino");
-				fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
-				int returnValue = fileChooser.showSaveDialog(null);
-				
-				if(returnValue == JFileChooser.APPROVE_OPTION){
-					File outputFolder = fileChooser.getCurrentDirectory();
-					String fileName = fileChooser.getSelectedFile().getName();
-					if(!fileName.contains(".refontouml")){
-						fileName += ".refontouml";
+			verificator -> {
+				if (!verificator.getMap().isEmpty()){
+					Map<String, ArrayList<String>> erroredElements = new HashMap<>();
+					for(Map.Entry<Element, ArrayList<String>> entry: verificator.getMap().entrySet()){
+						erroredElements.put(entry.getKey().toString(), entry.getValue());
 					}
-					File file = new File(outputFolder.getAbsolutePath() + File.separator + fileName);
-					if(file.exists()){
-						int result = JOptionPane.showConfirmDialog(null,"The file exists, overwrite?","Existing file",JOptionPane.YES_NO_CANCEL_OPTION);
-						switch(result){
-							case JOptionPane.YES_OPTION:
-								RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), wrapper.ontoUmlPackage);
-								return;
-							case JOptionPane.NO_OPTION:
-							case JOptionPane.CLOSED_OPTION:
-							case JOptionPane.CANCEL_OPTION:
-								return;
-						}
-					}else{
-						RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), wrapper.ontoUmlPackage);
-					}
-					viewManager.showMessage("Model saved at " + file.getAbsolutePath(), OntoUMLPlugin.PLUGIN_ID);
+					CommonUtils.showModelErrors(verificator.getTimingMessage(), erroredElements, viewManager);
+				}else {
+					showSaveDialog(viewManager);
 				}
 			},
 			err -> viewManager.showMessage(err.getMessage(), OntoUMLPlugin.PLUGIN_ID)
@@ -74,7 +66,37 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 		// TODO Auto-generated method stub
 		
 	}
-	
-	
 
+	private void showSaveDialog(ViewManager viewManager) {
+		JFileChooser fileChooser = ApplicationManager.instance().getViewManager().createJFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Reference OntoUML (*.refontouml)", "refontouml");
+		fileChooser.setFileFilter(filter);
+		fileChooser.setDialogTitle("Selecione o diretório de destino");
+		fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+		int returnValue = fileChooser.showSaveDialog(null);
+
+		if (returnValue == JFileChooser.APPROVE_OPTION) {
+			File outputFolder = fileChooser.getCurrentDirectory();
+			String fileName = fileChooser.getSelectedFile().getName();
+			if (!fileName.contains(".refontouml")) {
+				fileName += ".refontouml";
+			}
+			File file = new File(outputFolder.getAbsolutePath() + File.separator + fileName);
+			if (file.exists()) {
+				int result = JOptionPane.showConfirmDialog(null, "The file exists, overwrite?", "Existing file", JOptionPane.YES_NO_CANCEL_OPTION);
+				switch (result) {
+					case JOptionPane.YES_OPTION:
+						RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), modelWrapper.ontoUmlPackage);
+						return;
+					case JOptionPane.NO_OPTION:
+					case JOptionPane.CLOSED_OPTION:
+					case JOptionPane.CANCEL_OPTION:
+						return;
+				}
+			} else {
+				RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), modelWrapper.ontoUmlPackage);
+			}
+			viewManager.showMessage("Model saved at " + file.getAbsolutePath(), OntoUMLPlugin.PLUGIN_ID);
+		}
+	}
 }

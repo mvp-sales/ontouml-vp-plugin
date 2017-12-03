@@ -1,9 +1,13 @@
 package br.ufes.inf.ontoumlplugin.actions;
 
 
+import RefOntoUML.Element;
 import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
 
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -12,16 +16,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import br.ufes.inf.ontoumlplugin.utils.CommonUtils;
 import com.vp.plugin.ApplicationManager;
-import com.vp.plugin.DiagramManager;
 import com.vp.plugin.ViewManager;
 import com.vp.plugin.action.VPAction;
 import com.vp.plugin.action.VPActionController;
 import com.vp.plugin.action.VPContext;
 import com.vp.plugin.action.VPContextActionController;
-import com.vp.plugin.diagram.IClassDiagramUIModel;
-import com.vp.plugin.diagram.IDiagramElement;
-import com.vp.plugin.diagram.IDiagramUIModel;
 
 import br.ufes.inf.ontoumlplugin.model.RefOntoUMLWrapper;
 import com.vp.plugin.model.IProject;
@@ -43,37 +44,12 @@ public class ValidateOntoUMLModelController implements VPActionController, VPCon
         	.observeOn(Schedulers.trampoline())
         	.subscribe(
         		verificator -> {
-        			JPanel container = new JPanel();
-        			container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-        			JLabel resultLabel = new JLabel(verificator.getTimingMessage());
-        			container.add(resultLabel);
-        			for(RefOntoUML.Element elem: verificator.getMap().keySet()){
-        				JPanel box = new JPanel();
-        				box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
-        				String elementName = elem.toString().replaceAll("«.*»", "").trim();
-        				if(elementName.isEmpty()) {
-        					JLabel label = new JLabel(elem.toString());
-        					box.add(label);
-        				}else {
-        					JButton button = new JButton(elem.toString());
-	        				button.addActionListener(
-	    						event -> highlightDiagramElement(button.getText().replaceAll("«.*»", "").trim())
-							);
-	        				box.add(button);
-        				}
-        				
-						for(String message: verificator.getMap().get(elem)){		
-							JLabel label = new JLabel(message);
-							box.add(label);
-						}
-						box.setBorder(BorderFactory.createEmptyBorder(8,4,8,4));
-						box.doLayout();
-						container.add(box);
-    				}
-        			container.doLayout();
-        			JScrollPane containerFather = new JScrollPane(container);
-        			viewManager.showMessagePaneComponent(OntoUMLPlugin.PLUGIN_ID, "Error log", containerFather);
-         		},
+        			Map<String, ArrayList<String>> erroredElements = new HashMap<>();
+					for(Map.Entry<Element, ArrayList<String>> entry: verificator.getMap().entrySet()){
+						erroredElements.put(entry.getKey().toString(), entry.getValue());
+					}
+					CommonUtils.showModelErrors(verificator.getTimingMessage(), erroredElements, viewManager);
+				},
         		err -> viewManager.showMessage(err.getMessage(), OntoUMLPlugin.PLUGIN_ID)
 			);
 	}
@@ -98,21 +74,6 @@ public class ValidateOntoUMLModelController implements VPActionController, VPCon
 	public void update(VPAction arg0, VPContext arg1) {
 		// TODO Auto-generated method stub
 		
-	}
-	
-	private static void highlightDiagramElement(String nameElement) {
-		DiagramManager diagramManager = ApplicationManager.instance().getDiagramManager();
-		
-		for(IDiagramUIModel openedDiagram : diagramManager.getOpenedDiagrams()) {
-			if(openedDiagram instanceof IClassDiagramUIModel) {
-				for(IDiagramElement diagramElement : openedDiagram.toDiagramElementArray()) {
-					if(diagramElement.getModelElement().getName().equals(nameElement)) {
-						diagramManager.highlight(diagramElement);
-						return;
-					}
-				}
-			}
-		}
 	}
 	
 }
