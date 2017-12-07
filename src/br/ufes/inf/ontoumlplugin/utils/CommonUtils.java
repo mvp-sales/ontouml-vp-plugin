@@ -1,6 +1,9 @@
 package br.ufes.inf.ontoumlplugin.utils;
 
+import RefOntoUML.Element;
 import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
+import br.ufes.inf.ontoumlplugin.model.OntoUMLClassType;
+import br.ufes.inf.ontoumlplugin.model.OntoUMLRelationshipType;
 import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.DiagramManager;
 import com.vp.plugin.ViewManager;
@@ -19,13 +22,14 @@ public class CommonUtils {
 
     private static ViewManager viewManager = ApplicationManager.instance().getViewManager();
 
-    public static void highlightDiagramElement(String nameElement) {
+    private static void highlightDiagramElement(String nameElement) {
         DiagramManager diagramManager = ApplicationManager.instance().getDiagramManager();
 
         for(IDiagramUIModel openedDiagram : diagramManager.getOpenedDiagrams()) {
             if(openedDiagram instanceof IClassDiagramUIModel) {
                 for(IDiagramElement diagramElement : openedDiagram.toDiagramElementArray()) {
-                    if(diagramElement.getModelElement().getName().equals(nameElement)) {
+                    IModelElement modelElement = diagramElement.getMetaModelElement();
+                    if(modelElement.getName() != null && modelElement.getName().equals(nameElement)) {
                         diagramManager.highlight(diagramElement);
                         return;
                     }
@@ -34,20 +38,20 @@ public class CommonUtils {
         }
     }
 
-    public static void showModelErrors(String resultMessage, Map<String, ArrayList<String>> erroredElements, ViewManager viewManager) {
+    public static void showModelErrors(String resultMessage, Map<Element, ArrayList<String>> erroredElements, ViewManager viewManager) {
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         JLabel resultLabel = new JLabel(resultMessage);
         container.add(resultLabel);
-        for(String elem: erroredElements.keySet()){
+        for(Element elem: erroredElements.keySet()){
             JPanel box = new JPanel();
             box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
-            String elementName = elem.replaceAll("«.*»", "").trim();
+            String elementName = elem.toString().replaceAll("«.*»", "").trim();
             if(elementName.isEmpty()) {
-                JLabel label = new JLabel(elem);
+                JLabel label = new JLabel(elem.toString());
                 box.add(label);
             }else {
-                JButton button = new JButton(elem);
+                JButton button = new JButton(elem.toString());
                 button.addActionListener(
                         event -> CommonUtils.highlightDiagramElement(button.getText().replaceAll("«.*»", "").trim())
                 );
@@ -82,13 +86,11 @@ public class CommonUtils {
         addNonPartWholeAssociationStereotypes(stereotypeMap);
         // PartWhole Relation Stereotypes
         addPartWholeStereotypes(stereotypeMap);
-        viewManager.showMessage("OntoUML Stereotypes loaded successfully", OntoUMLPlugin.PLUGIN_ID);
+        viewManager.showMessage("OntoUML stereotypes added successfully to project " + project.getName(), OntoUMLPlugin.PLUGIN_ID);
     }
 
     private static void addClassStereotypes(Map<String, IStereotype> stereotypes){
-        String classTypes[] = {"Kind", "Subkind", "Role", "Phase", "Category", "RoleMixin",
-                "Mixin", "Relator", "Mode", "Quality", "Collective", "Quantity",
-                "DataType", "PerceivableQuality", "NonPerceivableQuality","NominalQuality"};
+        String classTypes[] = AppConstants.CLASS_STEREOTYPES;
 
         for(String classType : classTypes){
             if(stereotypes.containsKey(classType)){
@@ -101,14 +103,14 @@ public class CommonUtils {
                 stereotype.setName(classType);
                 stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_CLASS);
 
-                if (classType.equalsIgnoreCase("collective")) {
+                if (classType.equalsIgnoreCase(OntoUMLClassType.COLLECTIVE.getText())) {
                     ITaggedValueDefinitionContainer taggedValueDefinitionContainer =
                             IModelElementFactory.instance().createTaggedValueDefinitionContainer();
 
                     ITaggedValueDefinition taggedValueDefinition =
                             taggedValueDefinitionContainer.createTaggedValueDefinition();
                     taggedValueDefinition.setType(ITaggedValueDefinition.TYPE_BOOLEAN);
-                    taggedValueDefinition.setName("isExtensional");
+                    taggedValueDefinition.setName(AppConstants.IS_EXTENSIONAL);
                     taggedValueDefinition.setDefaultValue("False");
 
                     stereotype.setTaggedValueDefinitions(taggedValueDefinitionContainer);
@@ -119,9 +121,7 @@ public class CommonUtils {
     }
 
     private static void addNonPartWholeAssociationStereotypes(Map<String, IStereotype> stereotypes){
-        String associationTypes[] = new String[] {"Formal", "Mediation","Material",
-                "Derivation","Characterization",
-                "Structuration"};
+        String associationTypes[] = AppConstants.ASSOCIATION_STEREOTYPES;
 
         for(String associationType : associationTypes){
             if (stereotypes.containsKey(associationType)){
@@ -132,7 +132,7 @@ public class CommonUtils {
             }else {
                 IStereotype stereotype = IModelElementFactory.instance().createStereotype();
                 stereotype.setName(associationType);
-                if (associationType.equalsIgnoreCase("derivation")) {
+                if (associationType.equalsIgnoreCase(OntoUMLRelationshipType.DERIVATION.getText())) {
                     stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION_CLASS);
                 }else {
                     stereotype.setBaseType(IModelElementFactory.MODEL_TYPE_ASSOCIATION);
@@ -144,10 +144,10 @@ public class CommonUtils {
 
     private static void addPartWholeStereotypes(Map<String, IStereotype> stereotypes) {
 
-        addPartWholeStereotype(stereotypes, "ComponentOf", "shareable", "essential", "inseparable", "immutableWhole", "immutablePart");
-        addPartWholeStereotype(stereotypes, "MemberOf", "shareable", "essential", "inseparable", "immutableWhole", "immutablePart");
-        addPartWholeStereotype(stereotypes, "SubCollectionOf", "shareable", "essential", "inseparable", "immutableWhole", "immutablePart");
-        addPartWholeStereotype(stereotypes, "SubQuantityOf", "shareable", "essential", "inseparable", "immutableWhole", "immutablePart");
+        addPartWholeStereotype(stereotypes, OntoUMLRelationshipType.COMPONENT_OF.getText(), AppConstants.MERONYMIC_ASSOCIATIONS_TAGGED_VALUES);
+        addPartWholeStereotype(stereotypes, OntoUMLRelationshipType.MEMBER_OF.getText(), AppConstants.MERONYMIC_ASSOCIATIONS_TAGGED_VALUES);
+        addPartWholeStereotype(stereotypes, OntoUMLRelationshipType.SUBCOLLECTION_OF.getText(), AppConstants.MERONYMIC_ASSOCIATIONS_TAGGED_VALUES);
+        addPartWholeStereotype(stereotypes, OntoUMLRelationshipType.SUBQUANTITY_OF.getText(), AppConstants.MERONYMIC_ASSOCIATIONS_TAGGED_VALUES);
 
     }
 

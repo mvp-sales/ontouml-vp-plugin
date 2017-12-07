@@ -28,7 +28,7 @@ import br.ufes.inf.ontoumlplugin.model.RefOntoUMLWrapper;
 import com.vp.plugin.model.IProject;
 import io.reactivex.schedulers.Schedulers;
 
-public class ValidateOntoUMLModelController implements VPActionController, VPContextActionController {
+public class CheckOntoUMLModelController implements VPActionController, VPContextActionController {
 	
 	public static void validateModel() {
 		IProject project = ApplicationManager.instance().getProjectManager().getProject();
@@ -43,13 +43,7 @@ public class ValidateOntoUMLModelController implements VPActionController, VPCon
         	.flatMap(RefOntoUMLWrapper::getVerificator)
         	.observeOn(Schedulers.trampoline())
         	.subscribe(
-        		verificator -> {
-        			Map<String, ArrayList<String>> erroredElements = new HashMap<>();
-					for(Map.Entry<Element, ArrayList<String>> entry: verificator.getMap().entrySet()){
-						erroredElements.put(entry.getKey().toString(), entry.getValue());
-					}
-					CommonUtils.showModelErrors(verificator.getTimingMessage(), erroredElements, viewManager);
-				},
+        		verificator -> CommonUtils.showModelErrors(verificator.getTimingMessage(), verificator.getMap(), viewManager),
         		err -> viewManager.showMessage(err.getMessage(), OntoUMLPlugin.PLUGIN_ID)
 			);
 	}

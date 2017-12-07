@@ -13,67 +13,71 @@ import java.util.ArrayList;
 
 public class RefOntoUMLFactory {
     public static RefOntoUML.Classifier createOntoUmlClass(RefOntoUMLWrapper wrapper, 
-                                                            IModelElement vpElement, String stereotype)
+                                                            IModelElement vpClass, String stereotype)
 	{
 		RefOntoUML.Classifier classifier;
 		OntoUMLClassType classType = OntoUMLClassType.fromString(stereotype);
 
+		RefOntoUML.Package elementPackage = vpClass.getParent() == null || wrapper.getOntoUMLPackage(vpClass.getParent()) == null?
+				wrapper.ontoUmlPackage :
+				wrapper.getOntoUMLPackage(vpClass.getParent());
+
 		switch(classType){
 			default:
 			case SUBKIND:
-				classifier = RefOntoUMLFactoryUtil.createSubKind(vpElement.getName(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createSubKind(vpClass.getName(), elementPackage);
 				break;
 			case KIND:
-				classifier = RefOntoUMLFactoryUtil.createKind(vpElement.getName(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createKind(vpClass.getName(), elementPackage);
 				break;
 			case ROLE:
-				classifier = RefOntoUMLFactoryUtil.createRole(vpElement.getName(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createRole(vpClass.getName(), elementPackage);
 				break;
 			case PHASE:
-				classifier = RefOntoUMLFactoryUtil.createPhase(vpElement.getName(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createPhase(vpClass.getName(), elementPackage);
 				break;
 			case COLLECTIVE:
-				classifier = RefOntoUMLFactoryUtil.createCollective(vpElement.getName(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createCollective(vpClass.getName(), elementPackage);
 				break;
 			case QUANTITY:
-				classifier = RefOntoUMLFactoryUtil.createQuantity(vpElement.getName(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createQuantity(vpClass.getName(), elementPackage);
 				break;
 			case CATEGORY:
-				classifier = RefOntoUMLFactoryUtil.createCategory(vpElement.getName(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createCategory(vpClass.getName(), elementPackage);
 				break;
 			case ROLEMIXIN:
-				classifier = RefOntoUMLFactoryUtil.createRoleMixin(vpElement.getName(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createRoleMixin(vpClass.getName(), elementPackage);
 				break;
 			case RELATOR:
-				classifier = RefOntoUMLFactoryUtil.createRelator(vpElement.getName(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createRelator(vpClass.getName(), elementPackage);
 				break;
 			case MIXIN:
-				classifier = RefOntoUMLFactoryUtil.createMixin(vpElement.getName(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createMixin(vpClass.getName(), elementPackage);
 				break;
 			case MODE:
-				classifier = RefOntoUMLFactoryUtil.createMode(vpElement.getName(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createMode(vpClass.getName(), elementPackage);
 				break;
 			case PERCEIVABLE_QUALITY:
-				classifier = RefOntoUMLFactoryUtil.createPerceivableQuality(vpElement.getName(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createPerceivableQuality(vpClass.getName(), elementPackage);
 				break;
 			case NON_PERCEIVABLE_QUALITY:
-				classifier = RefOntoUMLFactoryUtil.createNonPerceivableQuality(vpElement.getName(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createNonPerceivableQuality(vpClass.getName(), elementPackage);
 				break;
 			case NOMINAL_QUALITY:
-				classifier = RefOntoUMLFactoryUtil.createNominalQuality(vpElement.getName(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createNominalQuality(vpClass.getName(), elementPackage);
 				break;
 			case DATA_TYPE:
-				classifier = RefOntoUMLFactoryUtil.createDataType(vpElement.getName(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createDataType(vpClass.getName(), elementPackage);
 				break;
 			case PRIMITIVE_TYPE:
-				classifier = RefOntoUMLFactoryUtil.createPrimitiveType(vpElement.getName(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createPrimitiveType(vpClass.getName(), elementPackage);
 				break;
 			case ENUMERATION:
-				classifier = RefOntoUMLFactoryUtil.createEnumeration(vpElement.getName(), new ArrayList<String>(), wrapper.ontoUmlPackage);
+				classifier = RefOntoUMLFactoryUtil.createEnumeration(vpClass.getName(), new ArrayList<String>(), elementPackage);
 				break;
 		}
 
-		classifier = addOntoUMLAtributes(classifier, wrapper, vpElement);
+		classifier = addOntoUMLAtributes(classifier, wrapper, vpClass);
 		
 		return classifier;
     }
@@ -142,6 +146,10 @@ public class RefOntoUMLFactory {
 		AssociationMultiplicity multFrom = new AssociationMultiplicity(assEndFrom.getMultiplicity());
 		AssociationMultiplicity multTo = new AssociationMultiplicity(assEndTo.getMultiplicity());
 
+		RefOntoUML.Package elementPackage = vpAssociation.getParent() == null || wrapper.getOntoUMLPackage(vpAssociation.getParent()) == null ?
+				wrapper.ontoUmlPackage :
+				wrapper.getOntoUMLPackage(vpAssociation.getParent());
+
 		switch(type){
 			default:
 			case COMMON_ASSOCIATION:
@@ -153,7 +161,7 @@ public class RefOntoUMLFactory {
 									target,
 									multTo.getMinMultiplicity(),
 									multTo.getMaxMultiplicity(),
-									wrapper.ontoUmlPackage);
+									elementPackage);
 				break;
 			case CHARACTERIZATION:
 				if(target instanceof RefOntoUML.Mode){
@@ -165,7 +173,7 @@ public class RefOntoUMLFactory {
 										source,
 										multFrom.getMinMultiplicity(),
 										multFrom.getMaxMultiplicity(),
-										wrapper.ontoUmlPackage);
+										elementPackage);
 				}else{
 					association = RefOntoUMLFactoryUtil.createCharacterization
 									(source,
@@ -175,7 +183,7 @@ public class RefOntoUMLFactory {
 										target,
 										multTo.getMinMultiplicity(),
 										multTo.getMaxMultiplicity(),
-										wrapper.ontoUmlPackage);
+										elementPackage);
 				}
 				break;
 			case MEDIATION:
@@ -188,7 +196,7 @@ public class RefOntoUMLFactory {
 										source,
 										multFrom.getMinMultiplicity(),
 										multFrom.getMaxMultiplicity(),
-										wrapper.ontoUmlPackage);
+										elementPackage);
 				}else{
 					association = RefOntoUMLFactoryUtil.createMediation
 									(source,
@@ -198,7 +206,7 @@ public class RefOntoUMLFactory {
 										target,
 										multTo.getMinMultiplicity(),
 										multTo.getMaxMultiplicity(),
-										wrapper.ontoUmlPackage);
+										elementPackage);
 				}
 				break;
 			case FORMAL_ASSOCIATION:
@@ -210,7 +218,7 @@ public class RefOntoUMLFactory {
 									target,
 									multTo.getMinMultiplicity(),
 									multTo.getMaxMultiplicity(),
-									wrapper.ontoUmlPackage);
+									elementPackage);
 				break;
 			case MATERIAL_ASSOCIATION:
 				association = RefOntoUMLFactoryUtil.createMaterialAssociation
@@ -221,7 +229,7 @@ public class RefOntoUMLFactory {
 									target,
 									multTo.getMinMultiplicity(),
 									multTo.getMaxMultiplicity(),
-									wrapper.ontoUmlPackage);
+									elementPackage);
 				break;
 			case STRUCTURATION:
 				association = RefOntoUMLFactoryUtil.createStructuration
@@ -232,7 +240,7 @@ public class RefOntoUMLFactory {
 									target,
 									multTo.getMinMultiplicity(),
 									multTo.getMaxMultiplicity(),
-									wrapper.ontoUmlPackage);
+									elementPackage);
 				break;
 		}
 		
@@ -267,6 +275,10 @@ public class RefOntoUMLFactory {
 			part = wrapper.getOntoUMLClassifier(vpAssociation.getFrom());
 			multPart = new AssociationMultiplicity(assEndFrom.getMultiplicity());
 		}
+
+		RefOntoUML.Package elementPackage = vpAssociation.getParent() == null || wrapper.getOntoUMLPackage(vpAssociation.getParent()) == null ?
+				wrapper.ontoUmlPackage :
+				wrapper.getOntoUMLPackage(vpAssociation.getParent());
 		
 		switch(type){
 			default:
@@ -279,7 +291,7 @@ public class RefOntoUMLFactory {
 						part, 
 						multPart.getMinMultiplicity(), 
 						multPart.getMaxMultiplicity(), 
-						wrapper.ontoUmlPackage);
+						elementPackage);
 				break;
 			case MEMBER_OF:
 				association = RefOntoUMLFactoryUtil.createMemberOf
@@ -290,7 +302,7 @@ public class RefOntoUMLFactory {
 					part, 
 					multPart.getMinMultiplicity(), 
 					multPart.getMaxMultiplicity(), 
-					wrapper.ontoUmlPackage);
+					elementPackage);
 				break;
 			case SUBQUANTITY_OF:
 				association = RefOntoUMLFactoryUtil.createSubQuantityOf
@@ -301,7 +313,7 @@ public class RefOntoUMLFactory {
 					part, 
 					multPart.getMinMultiplicity(), 
 					multPart.getMaxMultiplicity(), 
-					wrapper.ontoUmlPackage);
+					elementPackage);
 				break;
 			case SUBCOLLECTION_OF:
 				association = RefOntoUMLFactoryUtil.createSubCollectionOf
@@ -312,7 +324,7 @@ public class RefOntoUMLFactory {
 					part, 
 					multPart.getMinMultiplicity(), 
 					multPart.getMaxMultiplicity(), 
-					wrapper.ontoUmlPackage);
+					elementPackage);
 				break;
 		}
 		
@@ -348,9 +360,9 @@ public class RefOntoUMLFactory {
 	public static RefOntoUML.Derivation createOntoUMLDerivation
 			(RefOntoUMLWrapper wrapper, IAssociationClass vpAssClass)
 	{
-		Derivation ontoUmlDerivation;
+		//Derivation ontoUmlDerivation;
 		RefOntoUML.Classifier relator, material;
-		if (wrapper.getOntoUMLClassifier(vpAssClass.getFrom()) instanceof IClass) {
+		if (vpAssClass.getFrom() instanceof IClass) {
 			relator = wrapper.getOntoUMLClassifier(vpAssClass.getFrom());
 			material = wrapper.getOntoUMLClassifier(vpAssClass.getTo());
 		}else {
@@ -358,6 +370,10 @@ public class RefOntoUMLFactory {
 			material = wrapper.getOntoUMLClassifier(vpAssClass.getFrom());
 		}
 
-		return RefOntoUMLFactoryUtil.createDerivation((Association) material, relator, wrapper.ontoUmlPackage);
+		RefOntoUML.Package elementPackage = vpAssClass.getParent() == null || wrapper.getOntoUMLPackage(vpAssClass.getParent()) == null ?
+				wrapper.ontoUmlPackage :
+				wrapper.getOntoUMLPackage(vpAssClass.getParent());
+
+		return RefOntoUMLFactoryUtil.createDerivation((Association) material, relator, elementPackage);
 	}
 }

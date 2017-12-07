@@ -48,11 +48,7 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 		.subscribe(
 			verificator -> {
 				if (!verificator.getMap().isEmpty()){
-					Map<String, ArrayList<String>> erroredElements = new HashMap<>();
-					for(Map.Entry<Element, ArrayList<String>> entry: verificator.getMap().entrySet()){
-						erroredElements.put(entry.getKey().toString(), entry.getValue());
-					}
-					CommonUtils.showModelErrors(verificator.getTimingMessage(), erroredElements, viewManager);
+					CommonUtils.showModelErrors(verificator.getTimingMessage(), verificator.getMap(), viewManager);
 				}else {
 					showSaveDialog(viewManager);
 				}

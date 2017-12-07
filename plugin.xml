@@ -18,6 +18,7 @@
       <library path="lib/reactive-streams-1.0.0.jar" relativePath="true" />
       <library path="lib/rxjava-2.1.0.jar" relativePath="true" />
       <library path="lib/rxjava-reactive-streams-1.2.1.jar" relativePath="true" />
+      <library path="lib/BrowserLauncher2-all-1_3.jar" relativePath="true"/>
    </runtime>
 	
 	<actionSets> 
@@ -26,47 +27,68 @@
       <toolbar 
           id="br.ufes.inf.ontoumlplugin.actions.toolbar1" 
           orientation="north" 
-          index="last"/> 
-      <action 
-          id="br.ufes.inf.ontoumlplugin.actionset.ConvertModelToRefOntoUML" 
-          actionType="generalAction" 
-          label="Convert OntoUML Model to RefOntoUML" 
-          tooltip="Convert OntoUML model to RefOntoUML" 
-          style="normal"
-          icon="icons/convert_file.png" 
-          toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#"> 
-        <actionController class="br.ufes.inf.ontoumlplugin.actions.ConvertModel2RefOntoUMLController"/> 
-      </action> 
-      <action 
-          id="br.ufes.inf.ontoumlplugin.actionset.ValidateOntoUMLModelAction" 
-          actionType="generalAction" 
-          label="Validate OntoUML Model" 
-          tooltip="Validate OntoUML Model" 
-          style="normal" 
-          icon="icons/validate.png"
-          toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#"> 
-       	<actionController class="br.ufes.inf.ontoumlplugin.actions.ValidateOntoUMLModelController"/>
-      </action> 
-      <action 
-          id="br.ufes.inf.ontoumlplugin.actionset.LoadOntoUMLModelAction" 
-          actionType="generalAction" 
-          label="Load OntoUML Model" 
-          tooltip="Load RefOntoUML File" 
-          style="normal"
-          icon="icons/import_file.png" 
-          toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#"> 
-       	<actionController class="br.ufes.inf.ontoumlplugin.actions.LoadOntoUMLModelController"/>
-      </action> 
-      <action 
-          id="br.ufes.inf.ontoumlplugin.actionset.AddOntoUMLStereotypesAction" 
-          actionType="generalAction" 
-          label="Add OntoUML Stereotypes to Project" 
-          tooltip="Adds OntoUML stereotypes to project" 
-          style="normal"
-          icon="icons/add.png" 
-          toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#"> 
-       	<actionController class="br.ufes.inf.ontoumlplugin.actions.AddOntoUMLStereotypesController"/>
-      </action>
+          index="last"/>
+        <action
+                id="br.ufes.inf.ontoumlplugin.actionset.AddOntoUMLStereotypesAction"
+                actionType="generalAction"
+                label="Add OntoUML Stereotypes to Project"
+                tooltip="Adds OntoUML stereotypes to project"
+                style="normal"
+                icon="icons/add.png"
+                toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#">
+            <actionController class="br.ufes.inf.ontoumlplugin.actions.AddOntoUMLStereotypesController"/>
+        </action>
+        <action
+                id="br.ufes.inf.ontoumlplugin.actionset.LoadOntoUMLModelAction"
+                actionType="generalAction"
+                label="Load OntoUML Model"
+                tooltip="Load RefOntoUML File"
+                style="normal"
+                icon="icons/import_file.png"
+                toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/br.ufes.inf.ontoumlplugin.actionset.AddOntoUMLStereotypesAction">
+            <actionController class="br.ufes.inf.ontoumlplugin.actions.LoadOntoUMLModelController"/>
+        </action>
+        <action
+                id="br.ufes.inf.ontoumlplugin.actionset.FillEmptyAssociationsAction"
+                actionType="generalAction"
+                label="Fill Empty Associations"
+                tooltip="Set stereotypes to associations"
+                style="normal"
+                icon="icons/import_file.png"
+                toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/br.ufes.inf.ontoumlplugin.actionset.LoadOntoUMLModelAction">
+            <actionController class="br.ufes.inf.ontoumlplugin.actions.FillEmptyAssociationsController"/>
+        </action>
+
+        <action
+              id="br.ufes.inf.ontoumlplugin.actionset.CheckOntoUMLModelAction"
+              actionType="generalAction"
+              label="Check OntoUML Model"
+              tooltip="Execute a syntactic verification on the OntoUML Model"
+              style="normal"
+              icon="icons/validate.png"
+              toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/br.ufes.inf.ontoumlplugin.actionset.FillEmptyAssociationsAction">
+            <actionController class="br.ufes.inf.ontoumlplugin.actions.CheckOntoUMLModelController"/>
+        </action>
+        <action
+                id="br.ufes.inf.ontoumlplugin.actionset.ConvertModelToRefOntoUML"
+                actionType="generalAction"
+                label="Convert OntoUML Model to RefOntoUML"
+                tooltip="Convert OntoUML model to RefOntoUML"
+                style="normal"
+                icon="icons/convert_file.png"
+                toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/br.ufes.inf.ontoumlplugin.actionset.CheckOntoUMLModelAction">
+            <actionController class="br.ufes.inf.ontoumlplugin.actions.ConvertModel2RefOntoUMLController"/>
+        </action>
+        <action
+                id="br.ufes.inf.ontoumlplugin.actionset.OntoUMLSpecification"
+                actionType="generalAction"
+                label="OntoUML Specification"
+                tooltip="Open OntoUML Elements Specification in the browser"
+                style="normal"
+                icon="icons/convert_file.png"
+                toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/br.ufes.inf.ontoumlplugin.actionset.ConvertModelToRefOntoUML">
+            <actionController class="br.ufes.inf.ontoumlplugin.actions.OntoUMLSpecificationController"/>
+        </action>
 <!--        <action
             id="br.ufes.inf.ontoumlplugin.actionset.AlloyTransformationAction"
             actionType="generalAction"
@@ -86,11 +108,11 @@
            <include type="ClassDiagram"/>
        </contextTypes>
        <action
-	            id="br.ufes.inf.ontoumlplugin.actions.ContextValidateModel"
-	            label="Validate OntoUML Model"
+	            id="br.ufes.inf.ontoumlplugin.actions.ContextCheckModel"
+	            label="Check OntoUML Model"
 	            style="normal"
 	            menuPath="OpenSpecification">
-	        <actionController class="br.ufes.inf.ontoumlplugin.actions.ValidateOntoUMLModelController"/>
+	        <actionController class="br.ufes.inf.ontoumlplugin.actions.CheckOntoUMLModelController"/>
        </action>
     </contextSensitiveActionSet>
     
@@ -98,7 +120,7 @@
 
         <action id="br.ufes.inf.ontoumlplugin.KindShapeAction"
                 actionType="shapeModelAction"
-                label="OntoUML Kind"
+                label="OntoUML «Kind»"
                 tooltip="OntoUML Kind"
                 icon="icons/class.png"
                 editorToolbarPath="com.vp.diagram.ClassDiagram/Class">
@@ -108,7 +130,7 @@
 
         <action id="br.ufes.inf.ontoumlplugin.SubKindShapeAction"
                 actionType="shapeModelAction"
-                label="OntoUML SubKind"
+                label="OntoUML «SubKind»"
                 tooltip="OntoUML SubKind"
                 icon="icons/class.png"
                 editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.KindShapeAction">
@@ -118,7 +140,7 @@
 
         <action id="br.ufes.inf.ontoumlplugin.RoleShapeAction"
                 actionType="shapeModelAction"
-                label="OntoUML Role"
+                label="OntoUML «Role»"
                 tooltip="OntoUML Role"
                 icon="icons/class.png"
                 editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.SubKindShapeAction">
@@ -128,7 +150,7 @@
 
         <action id="br.ufes.inf.ontoumlplugin.PhaseShapeAction"
                 actionType="shapeModelAction"
-                label="OntoUML Phase"
+                label="OntoUML «Phase»"
                 tooltip="OntoUML Phase"
                 icon="icons/class.png"
                 editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.RoleShapeAction">
@@ -138,7 +160,7 @@
 
         <action id="br.ufes.inf.ontoumlplugin.CollectiveShapeAction"
                 actionType="shapeModelAction"
-                label="OntoUML Collective"
+                label="OntoUML «Collective»"
                 tooltip="OntoUML br.ufes.inf.ontoumlplugin.shapes.CollectiveShapeController"
                 icon="icons/class.png"
                 editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.PhaseShapeAction">
@@ -148,7 +170,7 @@
 
         <action id="br.ufes.inf.ontoumlplugin.QuantityShapeAction"
                 actionType="shapeModelAction"
-                label="OntoUML Quantity"
+                label="OntoUML «Quantity»"
                 tooltip="OntoUML Quantity"
                 icon="icons/class.png"
                 editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.CollectiveShapeAction">
@@ -158,7 +180,7 @@
 
         <action id="br.ufes.inf.ontoumlplugin.CategoryShapeAction"
                 actionType="shapeModelAction"
-                label="OntoUML Category"
+                label="OntoUML «Category»"
                 tooltip="OntoUML br.ufes.inf.ontoumlplugin.shapes.CategoryShapeController"
                 icon="icons/class.png"
                 editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.QuantityShapeAction">
@@ -168,7 +190,7 @@
 
         <action id="br.ufes.inf.ontoumlplugin.RoleMixinShapeAction"
                 actionType="shapeModelAction"
-                label="OntoUML RoleMixin"
+                label="OntoUML «RoleMixin»"
                 tooltip="OntoUML RoleMixin"
                 icon="icons/class.png"
                 editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.CategoryShapeAction">
@@ -178,7 +200,7 @@
 
         <action id="br.ufes.inf.ontoumlplugin.MixinShapeAction"
                 actionType="shapeModelAction"
-                label="OntoUML Mixin"
+                label="OntoUML «Mixin»"
                 tooltip="OntoUML Mixin"
                 icon="icons/class.png"
                 editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.RoleMixinShapeAction">
@@ -188,7 +210,7 @@
 
         <action id="br.ufes.inf.ontoumlplugin.RelatorShapeAction"
                 actionType="shapeModelAction"
-                label="OntoUML Relator"
+                label="OntoUML «Relator»"
                 tooltip="OntoUML Relator"
                 icon="icons/class.png"
                 editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.MixinShapeAction">
@@ -198,7 +220,7 @@
 
         <action id="br.ufes.inf.ontoumlplugin.ModeShapeAction"
                 actionType="shapeModelAction"
-                label="OntoUML Mode"
+                label="OntoUML «Mode»"
                 tooltip="OntoUML Mode"
                 icon="icons/class.png"
                 editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.RelatorShapeAction">
@@ -208,7 +230,7 @@
 
         <action id="br.ufes.inf.ontoumlplugin.NominalQualityShapeAction"
                 actionType="shapeModelAction"
-                label="OntoUML NominalQuality"
+                label="OntoUML «NominalQuality»"
                 tooltip="OntoUML NominalQuality"
                 icon="icons/class.png"
                 editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.ModeShapeAction">
@@ -218,7 +240,7 @@
 
         <action id="br.ufes.inf.ontoumlplugin.NonPerceivableQualityShapeAction"
                 actionType="shapeModelAction"
-                label="OntoUML NonPerceivableQuality"
+                label="OntoUML «NonPerceivableQuality»"
                 tooltip="OntoUML NonPerceivableQuality"
                 icon="icons/class.png"
                 editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.NominalQualityShapeAction">
@@ -228,7 +250,7 @@
 
         <action id="br.ufes.inf.ontoumlplugin.PerceivableQualityShapeAction"
                 actionType="shapeModelAction"
-                label="OntoUML PerceivableQuality"
+                label="OntoUML «PerceivableQuality»"
                 tooltip="OntoUML PerceivableQuality"
                 icon="icons/class.png"
                 editorToolbarPath="com.vp.diagram.ClassDiagram/br.ufes.inf.ontoumlplugin.NonPerceivableQualityShapeAction">

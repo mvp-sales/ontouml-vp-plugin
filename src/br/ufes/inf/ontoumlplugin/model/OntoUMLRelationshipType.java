@@ -7,8 +7,8 @@ import com.vp.plugin.model.factory.IModelElementFactory;
 
 public enum OntoUMLRelationshipType {
 
-	COMMON_ASSOCIATION(""), FORMAL_ASSOCIATION("FormalAssociation"), MEDIATION("Mediation"), CHARACTERIZATION("Characterization"),
-	DERIVATION("Derivation"), MATERIAL_ASSOCIATION("MaterialAssociation"),COMPONENT_OF("ComponentOf"), 
+	COMMON_ASSOCIATION(""), FORMAL_ASSOCIATION("Formal"), MEDIATION("Mediation"), CHARACTERIZATION("Characterization"),
+	DERIVATION("Derivation"), MATERIAL_ASSOCIATION("Material"),COMPONENT_OF("ComponentOf"),
 	MEMBER_OF("MemberOf"), SUBCOLLECTION_OF("SubCollectionOf"), SUBQUANTITY_OF("SubQuantityOf"),
 	STRUCTURATION("Structuration");
 	

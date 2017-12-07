@@ -1,16 +1,9 @@
 package br.ufes.inf.ontoumlplugin.project;
 
-import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
-import br.ufes.inf.ontoumlplugin.actions.ValidateOntoUMLModelController;
+import br.ufes.inf.ontoumlplugin.actions.CheckOntoUMLModelController;
 
 import br.ufes.inf.ontoumlplugin.utils.CommonUtils;
-import com.vp.plugin.ApplicationManager;
-import com.vp.plugin.ViewManager;
 import com.vp.plugin.model.*;
-import com.vp.plugin.model.factory.IModelElementFactory;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by mvp-sales on 15/06/17.
@@ -49,7 +42,7 @@ public class OntoUMLPluginProjectListener implements IProjectListener {
     @Override
     public void projectSaved(IProject iProject) {
     	stateProjectListener = SAVED;
-    	ValidateOntoUMLModelController.validateModel();
+    	CheckOntoUMLModelController.validateModel();
     }
 
     @Override

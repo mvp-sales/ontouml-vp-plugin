@@ -3,6 +3,7 @@ package br.ufes.inf.ontoumlplugin.model;
 import java.util.*;
 
 import RefOntoUML.Association;
+import RefOntoUML.Derivation;
 import com.vp.plugin.model.*;
 
 import RefOntoUML.Package;
@@ -13,15 +14,21 @@ import io.reactivex.Observable;
 public class RefOntoUMLWrapper {
 	
 	private Map<IModelElement, RefOntoUML.Classifier> classifierElements;
-	public final Package ontoUmlPackage;
+	private Map<IModelElement, RefOntoUML.Package> modelPackages;
+	public Package ontoUmlPackage;
 	
 	private RefOntoUMLWrapper(){
 		this.ontoUmlPackage = RefOntoUMLFactoryUtil.createPackage("OntoUMLModel");
+		this.modelPackages = new HashMap<>();
 		this.classifierElements = new HashMap<>();
 	}
 	
 	public RefOntoUML.Classifier getOntoUMLClassifier(IModelElement vpElement){
 		return classifierElements.get(vpElement);
+	}
+
+	public RefOntoUML.Package getOntoUMLPackage(IModelElement vpElement) {
+		return this.modelPackages.get(vpElement);
 	}
 	
 	private void addOntoUMLClassifier(IModelElement vpElement, RefOntoUML.Classifier classifier){
@@ -35,21 +42,53 @@ public class RefOntoUMLWrapper {
 	private static RefOntoUMLWrapper createRefOntoUMLModel(IProject vpProject){
 		RefOntoUMLWrapper wrapper = new RefOntoUMLWrapper();		
 
+		wrapper = addPackages(wrapper, vpProject);
 		wrapper = addClasses(wrapper, vpProject);
 		wrapper = addAssociations(wrapper, vpProject);
 		wrapper = addGeneralizations(wrapper, vpProject);
 		wrapper = addGeneralizationSets(wrapper, vpProject);
+		wrapper = addComments(wrapper, vpProject);
 
 		return wrapper;
+	}
+
+	private static RefOntoUMLWrapper addPackages(RefOntoUMLWrapper wrapper, IProject vpProject) {
+		for(IModelElement packageElement : vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_PACKAGE))
+		{
+			IPackage vpPackage = (IPackage) packageElement;
+			RefOntoUML.Package ontoUmlPackage = wrapper.getOrCreatePackage(vpPackage);
+			if (vpPackage.getParent() != null){
+				IPackage vpParentPackage = (IPackage) vpPackage.getParent();
+				Package parentPackage = wrapper.getOrCreatePackage(vpParentPackage);
+				parentPackage.getPackagedElement().add(ontoUmlPackage);
+			} else {
+				wrapper.ontoUmlPackage = ontoUmlPackage;
+			}
+			wrapper.modelPackages.put(vpPackage, ontoUmlPackage);
+		}
+
+		return wrapper;
+	}
+
+	private Package getOrCreatePackage(IPackage vpPackage) {
+		Package ontoUmlPackage;
+		if (!this.modelPackages.containsKey(vpPackage)){
+			ontoUmlPackage = RefOntoUMLFactoryUtil.createPackage(vpPackage.getName());
+			ontoUmlPackage.setName(vpPackage.getName());
+			this.modelPackages.put(vpPackage, ontoUmlPackage);
+		}else{
+			ontoUmlPackage = this.modelPackages.get(vpPackage);
+		}
+		return ontoUmlPackage;
 	}
 
 	private static RefOntoUMLWrapper addClasses(RefOntoUMLWrapper wrapper, IProject vpProject){
 		for(IModelElement classElement : vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_CLASS))
 		{
 			IClass vpClass = (IClass) classElement;
-			String vpStereotype = vpClass.toStereotypeModelArray() != null ?
-									vpClass.toStereotypeModelArray()[0].getName() :
-									"Subkind";
+			String vpStereotype = vpClass.toStereotypeArray().length != 0?
+									vpClass.toStereotypeArray()[0] :
+									OntoUMLClassType.SUBKIND.getText();
 			RefOntoUML.Classifier ontoUmlClass = RefOntoUMLFactory.createOntoUmlClass(wrapper, vpClass, vpStereotype);
 			wrapper.addOntoUMLClassifier(vpClass, ontoUmlClass);
 		}
@@ -89,13 +128,17 @@ public class RefOntoUMLWrapper {
 				generalizations.add(generalization);
 			}
 
+			RefOntoUML.Package ontoUmlPackage = vpGenSet.getParent() == null ?
+					wrapper.ontoUmlPackage :
+					wrapper.modelPackages.get(vpGenSet.getParent());
+
 			RefOntoUMLFactoryUtil.createGeneralizationSet
 			(
 				generalizations,
 				vpGenSet.getName(),
 				vpGenSet.isDisjoint(),
 				vpGenSet.isCovering(),
-				wrapper.ontoUmlPackage
+				ontoUmlPackage
 			);
 		} 
 
@@ -118,8 +161,37 @@ public class RefOntoUMLWrapper {
 				vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_ASSOCIATION_CLASS))
 		{
 			IAssociationClass vpAssociationClass = (IAssociationClass) associationElement;
-			Association association = RefOntoUMLFactory.createOntoUMLDerivation(wrapper, vpAssociationClass);
-			wrapper.classifierElements.put(vpAssociationClass, association);
+			Derivation derivation = RefOntoUMLFactory.createOntoUMLDerivation(wrapper, vpAssociationClass);
+			wrapper.classifierElements.put(vpAssociationClass, derivation);
+		}
+
+		/*for (IModelElement element : wrapper.modelPackages.keySet()) {
+		    IPackage pkg = (IPackage) element;
+		    for (IModelElement child : pkg.toChildArray()) {
+                System.out.println(child.getModelType() + " - " + child.getName());
+            }
+        }*/
+
+		return wrapper;
+	}
+
+	private static RefOntoUMLWrapper addComments(RefOntoUMLWrapper wrapper, IProject vpProject) {
+		for(IModelElement anchorElement :
+				vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_ANCHOR))
+		{
+			IModelElement container;
+			INOTE note;
+			IAnchor vpAnchor = (IAnchor) anchorElement;
+			if (vpAnchor.getFrom() instanceof INOTE){
+				container = vpAnchor.getTo();
+				note = (INOTE) vpAnchor.getFrom();
+			} else {
+				container = vpAnchor.getFrom();
+				note = (INOTE) vpAnchor.getTo();
+			}
+			if (wrapper.classifierElements.containsKey(container)) {
+				RefOntoUMLFactoryUtil.createComment(note.toString(), wrapper.classifierElements.get(container));
+			}
 		}
 
 		return wrapper;

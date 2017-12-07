@@ -12,6 +12,6 @@ public class KindShapeController extends BaseShapeModelController {
 
     public KindShapeController() {
         this.classBaseName = "KindClass";
-        this.stereotypeName = "Kind";
+        this.stereotypeName = OntoUMLClassType.KIND.getText();
     }
 }
