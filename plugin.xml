@@ -54,7 +54,7 @@
                 label="Fill Empty Associations"
                 tooltip="Set stereotypes to associations"
                 style="normal"
-                icon="icons/import_file.png"
+                icon="icons/fill_empty_ass.png"
                 toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/br.ufes.inf.ontoumlplugin.actionset.LoadOntoUMLModelAction">
             <actionController class="br.ufes.inf.ontoumlplugin.actions.FillEmptyAssociationsController"/>
         </action>
@@ -85,7 +85,7 @@
                 label="OntoUML Specification"
                 tooltip="Open OntoUML Elements Specification in the browser"
                 style="normal"
-                icon="icons/convert_file.png"
+                icon="icons/ontouml_spec.png"
                 toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/br.ufes.inf.ontoumlplugin.actionset.ConvertModelToRefOntoUML">
             <actionController class="br.ufes.inf.ontoumlplugin.actions.OntoUMLSpecificationController"/>
         </action>

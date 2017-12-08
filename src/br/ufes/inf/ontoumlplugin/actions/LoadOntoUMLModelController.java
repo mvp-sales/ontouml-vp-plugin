@@ -44,7 +44,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 		JFileChooser fileChooser = ApplicationManager.instance().getViewManager().createJFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Reference OntoUML (*.refontouml)", "refontouml");
 		fileChooser.setFileFilter(filter);
-		fileChooser.setDialogTitle("Selecione o arquivo RefOntoUML");
+		fileChooser.setDialogTitle("Select the RefOntoUML file");
 		fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
 		int returnValue = fileChooser.showOpenDialog(null);
 		
@@ -119,12 +119,6 @@ public class LoadOntoUMLModelController implements VPActionController {
 				createGeneralization(gen);
 			}
 		}
-
-		/*for(IPackage pg : this.ontoUml2VpPackage.values()) {
-		    for (IModelElement child : pg.toChildArray()) {
-                System.out.println(child.getModelType() + " - " + child.getName());
-            }
-        }*/
 	}
 
 	private IPackage getPackage(Package ontoUmlPackage) {
