@@ -11,7 +11,10 @@ import RefOntoUML.*;
 import RefOntoUML.Package;
 import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
 import br.ufes.inf.ontoumlplugin.model.OntoUMLRelationshipType;
+import br.ufes.inf.ontoumlplugin.model.OntoUml2VpConverter;
 import com.vp.plugin.model.*;
+import io.reactivex.Completable;
+import io.reactivex.schedulers.Schedulers;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import com.vp.plugin.ApplicationManager;
@@ -26,18 +29,11 @@ import br.ufes.inf.ontoumlplugin.model.VPModelFactory;
 
 public class LoadOntoUMLModelController implements VPActionController {
 
-	private Map<RefOntoUML.Package, IPackage> ontoUml2VpPackage;
-	private Map<RefOntoUML.Classifier, IModelElement> ontoUml2VpClasses;
 	private final IProject project = ApplicationManager.instance().getProjectManager().getProject();
-	
-	public LoadOntoUMLModelController(){
-		this.ontoUml2VpPackage = new HashMap<>();
-		this.ontoUml2VpClasses = new HashMap<>();
-	}
+	private final ViewManager viewManager = ApplicationManager.instance().getViewManager();
 
 	@Override
 	public void performAction(VPAction arg0) {
-		ViewManager viewManager = ApplicationManager.instance().getViewManager();
 		viewManager.clearMessages(OntoUMLPlugin.PLUGIN_ID);
 		viewManager.removeMessagePaneComponent(OntoUMLPlugin.PLUGIN_ID);  
 		
@@ -55,7 +51,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 				RefOntoUML.Package ontoUmlPackage = (RefOntoUML.Package) model.getContents().get(0);
 
 				buildClassDiagram(ontoUmlPackage);
-				viewManager.showMessage("Model loaded successfully", OntoUMLPlugin.PLUGIN_ID);
+				//viewManager.showMessage("Model loaded successfully", OntoUMLPlugin.PLUGIN_ID);
 			} catch (Exception e) {
 				viewManager.showMessage(e.getMessage(), OntoUMLPlugin.PLUGIN_ID);
 			}
@@ -70,8 +66,20 @@ public class LoadOntoUMLModelController implements VPActionController {
 	}
 
 	private void buildClassDiagram(RefOntoUML.Package ontoUmlPackage){
-				
-		OntoUMLParser parser = new OntoUMLParser(ontoUmlPackage);
+		OntoUml2VpConverter ontoUml2VpConverter = new OntoUml2VpConverter(project);
+		Completable.fromCallable(
+			() -> {
+				ontoUml2VpConverter.transform(ontoUmlPackage);
+				return Completable.complete();
+			}
+		)
+		.subscribeOn(Schedulers.computation())
+		.observeOn(Schedulers.trampoline())
+		.subscribe(
+			() -> viewManager.showMessage("Model loaded successfully", OntoUMLPlugin.PLUGIN_ID),
+			err -> viewManager.showMessage(err.getMessage(), OntoUMLPlugin.PLUGIN_ID)
+		);
+		/*OntoUMLParser parser = new OntoUMLParser(ontoUmlPackage);
 
 		for (Package modelPackage : parser.getAllInstances(Package.class)) {
 		    IPackage modelVpPackage = getPackage(modelPackage);
@@ -118,10 +126,10 @@ public class LoadOntoUMLModelController implements VPActionController {
 			if(gen.getGeneralizationSet().isEmpty()){
 				createGeneralization(gen);
 			}
-		}
+		}*/
 	}
 
-	private IPackage getPackage(Package ontoUmlPackage) {
+	/*private IPackage getPackage(Package ontoUmlPackage) {
 	    IPackage vpPackage;
         if (!this.ontoUml2VpPackage.containsKey(ontoUmlPackage)){
             vpPackage = IModelElementFactory.instance().createPackage();
@@ -250,6 +258,6 @@ public class LoadOntoUMLModelController implements VPActionController {
 		generalizationModel.setTo(specific);
 
 		return generalizationModel;
-	}
+	}*/
 
 }

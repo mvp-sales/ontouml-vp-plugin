@@ -1,26 +1,25 @@
 package br.ufes.inf.ontoumlplugin.model;
 
-import RefOntoUML.Association;
-import RefOntoUML.Classifier;
-import RefOntoUML.Derivation;
+import RefOntoUML.*;
 import RefOntoUML.Package;
 import RefOntoUML.util.RefOntoUMLFactoryUtil;
 import com.vp.plugin.model.*;
 import com.vp.plugin.model.factory.IModelElementFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Vp2OntoUmlConverter {
 
     private Map<IModelElement, Classifier> classifierElements;
     private Map<IModelElement, RefOntoUML.Package> modelPackages;
+    private Map<IGeneralization, Generalization> generalizationElements;
     private Package rootPackage;
     private IProject vpProject;
 
     public Vp2OntoUmlConverter(IProject project) {
         this.classifierElements = new HashMap<>();
         this.modelPackages = new HashMap<>();
+        this.generalizationElements = new HashMap<>();
         this.vpProject = project;
     }
 
@@ -34,10 +33,14 @@ public class Vp2OntoUmlConverter {
         return null;
     }
 
-    public Package transform(IProject entry) {
+    public Package transform() {
         addPackages();
+        addClasses();
+        addAssociations();
+        addGeneralizations();
+        addGeneralizationSets();
 
-        return null;
+        return rootPackage;
     }
 
     private void addPackages() {
@@ -111,21 +114,111 @@ public class Vp2OntoUmlConverter {
             String vpStereotype = vpAssociation.toStereotypeArray().length > 0 ?
                     vpAssociation.toStereotypeArray()[0] : "";
 
-            RefOntoUML.Classifier source = this.classifierElements.get(vpAssociation.getFrom()),
-                    target = this.classifierElements.get(vpAssociation.getTo());
+            OntoUMLRelationshipType relationType = OntoUMLRelationshipType.fromString(vpStereotype);
+            RefOntoUML.Package containerPackage =
+                    vpAssociation.getParent() == null || modelPackages.get(vpAssociation.getParent()) == null ?
+                    rootPackage : modelPackages.get(vpAssociation.getParent());
+            Association ontoUmlAssociation;
+            switch(relationType) {
+                default:
+                case COMMON_ASSOCIATION:
+                case CHARACTERIZATION:
+                case MEDIATION:
+                case FORMAL_ASSOCIATION:
+                case MATERIAL_ASSOCIATION:
+                case STRUCTURATION:
+                    RefOntoUML.Classifier source = this.classifierElements.get(vpAssociation.getFrom()),
+                            target = this.classifierElements.get(vpAssociation.getTo());
+                    ontoUmlAssociation = RefOntoUMLFactory.createCommonAssociation(source, target, containerPackage, vpAssociation, relationType);
+                    break;
+                case COMPONENT_OF:
+                case MEMBER_OF:
+                case SUBQUANTITY_OF:
+                case SUBCOLLECTION_OF:
+                    IAssociationEnd assEndFrom = (IAssociationEnd) vpAssociation.getFromEnd();
+                    String aggregationKind = assEndFrom.getAggregationKind();
 
-            RefOntoUML.Package containerPackage = vpAssociation.getParent() == null || modelPackages.get(vpAssociation.getParent()) == null ? rootPackage : modelPackages.get(vpAssociation.getParent());
+                    Classifier whole, part;
 
-            Association association = RefOntoUMLFactory.createOntoUMLAssociation(wrapper, vpAssociation, vpStereotype);
-            this.classifierElements.put(vpAssociation, association);
+                    if(aggregationKind.equals(IAssociationEnd.AGGREGATION_KIND_COMPOSITED) ||
+                            aggregationKind.equals(IAssociationEnd.AGGREGATION_KIND_SHARED)){
+                        whole = this.classifierElements.get(vpAssociation.getFrom());
+                        part = this.classifierElements.get(vpAssociation.getTo());
+                    }else{
+                        aggregationKind = ((IAssociationEnd)vpAssociation.getToEnd()).getAggregationKind();
+                        whole = this.classifierElements.get(vpAssociation.getTo());
+                        part = this.classifierElements.get(vpAssociation.getFrom());
+                    }
+
+                    ontoUmlAssociation = RefOntoUMLFactory.createMeronymicAssociation(whole, part, containerPackage, vpAssociation, aggregationKind, relationType);
+                    break;
+
+            }
+
+            this.classifierElements.put(vpAssociation, ontoUmlAssociation);
         }
 
         for(IModelElement associationElement :
                 vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_ASSOCIATION_CLASS))
         {
-            IAssociationClass vpAssociationClass = (IAssociationClass) associationElement;
-            Derivation derivation = RefOntoUMLFactory.createOntoUMLDerivation(wrapper, vpAssociationClass);
-            this.classifierElements.put(vpAssociationClass, derivation);
+            IAssociationClass vpAssClass = (IAssociationClass) associationElement;
+            RefOntoUML.Classifier relator, material;
+            if (vpAssClass.getFrom() instanceof IClass) {
+                relator = this.classifierElements.get(vpAssClass.getFrom());
+                material = this.classifierElements.get(vpAssClass.getTo());
+            }else {
+                relator = this.classifierElements.get(vpAssClass.getTo());
+                material = this.classifierElements.get(vpAssClass.getFrom());
+            }
+
+            RefOntoUML.Package containerPackage = vpAssClass.getParent() == null || !this.modelPackages.containsKey(vpAssClass.getParent()) ?
+                    rootPackage :
+                    this.modelPackages.get(vpAssClass.getParent());
+
+            Derivation derivation = RefOntoUMLFactory.createOntoUMLDerivation(relator, material, containerPackage, vpAssClass);
+            this.classifierElements.put(vpAssClass, derivation);
+        }
+    }
+
+    private void addGeneralizations() {
+        for(IModelElement generalizationElement :
+                vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_GENERALIZATION))
+        {
+            IGeneralization vpGeneralization = (IGeneralization) generalizationElement;
+            RefOntoUML.Classifier parent = this.classifierElements.get(vpGeneralization.getFrom()),
+                    child = this.classifierElements.get(vpGeneralization.getTo());
+            Generalization ontoUmlGen = RefOntoUMLFactoryUtil.createGeneralization(child, parent);
+            this.generalizationElements.put(vpGeneralization, ontoUmlGen);
+        }
+    }
+
+    private void addGeneralizationSets() {
+        for(IModelElement genSetElement :
+                vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_GENERALIZATION_SET))
+        {
+            IGeneralizationSet vpGenSet = (IGeneralizationSet) genSetElement;
+            Iterator genIterator = vpGenSet.generalizationIterator();
+            List<Generalization> genSetList = new ArrayList<>();
+            while(genIterator.hasNext()){
+                IGeneralization gen = (IGeneralization) genIterator.next();
+                RefOntoUML.Generalization ontoUmlGen =
+                        this.generalizationElements.get(gen);
+
+                genSetList.add(ontoUmlGen);
+            }
+
+            RefOntoUML.Package containerPackage = vpGenSet.getParent() == null || !this.modelPackages.containsKey(vpGenSet.getParent()) ?
+                    rootPackage :
+                    this.modelPackages.get(vpGenSet.getParent());
+
+            RefOntoUMLFactoryUtil.createGeneralizationSet
+            (
+                    genSetList,
+                    vpGenSet.getName(),
+                    vpGenSet.isDisjoint(),
+                    vpGenSet.isCovering(),
+                    containerPackage
+            );
         }
     }
 

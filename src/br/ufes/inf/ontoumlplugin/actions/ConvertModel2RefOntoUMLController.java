@@ -18,13 +18,10 @@ import com.vp.plugin.action.VPAction;
 import com.vp.plugin.action.VPActionController;
 
 import RefOntoUML.util.RefOntoUMLResourceUtil;
-import br.ufes.inf.ontoumlplugin.model.RefOntoUMLWrapper;
 import com.vp.plugin.model.IProject;
 import io.reactivex.schedulers.Schedulers;
 
 public class ConvertModel2RefOntoUMLController implements VPActionController {
-
-	private RefOntoUMLWrapper modelWrapper;
 
 	@Override
 	public void performAction(VPAction arg0) {
@@ -35,7 +32,7 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 		viewManager.clearMessages(OntoUMLPlugin.PLUGIN_ID);
 		viewManager.removeMessagePaneComponent(OntoUMLPlugin.PLUGIN_ID);  
 		
-		RefOntoUMLWrapper
+		/*RefOntoUMLWrapper
 		.createObservableWrapper(project)
 		.subscribeOn(Schedulers.computation())
 		.flatMap(
@@ -54,7 +51,7 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 				}
 			},
 			err -> viewManager.showMessage(err.getMessage(), OntoUMLPlugin.PLUGIN_ID)
-		);
+		);*/
 	}
 
 	@Override
@@ -63,7 +60,7 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 		
 	}
 
-	private void showSaveDialog(ViewManager viewManager) {
+	/*private void showSaveDialog(ViewManager viewManager) {
 		JFileChooser fileChooser = ApplicationManager.instance().getViewManager().createJFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Reference OntoUML (*.refontouml)", "refontouml");
 		fileChooser.setFileFilter(filter);
@@ -94,5 +91,5 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 			}
 			viewManager.showMessage("Model saved at " + file.getAbsolutePath(), OntoUMLPlugin.PLUGIN_ID);
 		}
-	}
+	}*/
 }
