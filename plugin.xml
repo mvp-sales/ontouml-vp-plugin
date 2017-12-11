@@ -89,7 +89,7 @@
                 toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/br.ufes.inf.ontoumlplugin.actionset.ConvertModelToRefOntoUML">
             <actionController class="br.ufes.inf.ontoumlplugin.actions.OntoUMLSpecificationController"/>
         </action>
-<!--        <action
+        <action
             id="br.ufes.inf.ontoumlplugin.actionset.AlloyTransformationAction"
             actionType="generalAction"
             label="Alloy Analyzer"
@@ -98,7 +98,7 @@
             icon="icons/add.png"
             toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#">
             <actionController class="br.ufes.inf.ontoumlplugin.actions.AlloyTransformationController"/>
-        </action>-->
+        </action>
     </actionSet>
     
     <contextSensitiveActionSet
