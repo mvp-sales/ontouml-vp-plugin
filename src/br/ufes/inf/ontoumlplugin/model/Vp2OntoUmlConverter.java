@@ -73,12 +73,46 @@ public class Vp2OntoUmlConverter {
     }
 
     private void addClasses(){
-        for(IModelElement classElement : vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_CLASS))
+        IModelElement[] classElements = vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_CLASS);
+        for(IModelElement classElement : classElements)
         {
             IClass vpClass = (IClass) classElement;
             String vpStereotype = vpClass.toStereotypeArray().length != 0?
                     vpClass.toStereotypeArray()[0] :
                     OntoUMLClassType.SUBKIND.getText();
+
+            if (!vpStereotype.equalsIgnoreCase(OntoUMLClassType.PRIMITIVE_TYPE.getText())) continue;
+
+            RefOntoUML.Package containerPackage = vpClass.getParent() == null || modelPackages.get(vpClass.getParent()) == null ? rootPackage : modelPackages.get(vpClass.getParent());
+            RefOntoUML.Classifier ontoUmlClass = RefOntoUMLFactory.createOntoUmlClass(containerPackage, vpClass, vpStereotype);
+            ontoUmlClass = addOntoUMLAttributes(ontoUmlClass, vpClass);
+            this.classifierElements.put(vpClass, ontoUmlClass);
+        }
+
+        for(IModelElement classElement : classElements)
+        {
+            IClass vpClass = (IClass) classElement;
+            String vpStereotype = vpClass.toStereotypeArray().length != 0?
+                    vpClass.toStereotypeArray()[0] :
+                    OntoUMLClassType.SUBKIND.getText();
+
+            if (!vpStereotype.equalsIgnoreCase(OntoUMLClassType.DATA_TYPE.getText())) continue;
+
+            RefOntoUML.Package containerPackage = vpClass.getParent() == null || modelPackages.get(vpClass.getParent()) == null ? rootPackage : modelPackages.get(vpClass.getParent());
+            RefOntoUML.Classifier ontoUmlClass = RefOntoUMLFactory.createOntoUmlClass(containerPackage, vpClass, vpStereotype);
+            ontoUmlClass = addOntoUMLAttributes(ontoUmlClass, vpClass);
+            this.classifierElements.put(vpClass, ontoUmlClass);
+        }
+
+        for(IModelElement classElement : classElements)
+        {
+            IClass vpClass = (IClass) classElement;
+            String vpStereotype = vpClass.toStereotypeArray().length != 0?
+                    vpClass.toStereotypeArray()[0] :
+                    OntoUMLClassType.SUBKIND.getText();
+
+            if (vpStereotype.equalsIgnoreCase(OntoUMLClassType.PRIMITIVE_TYPE.getText()) ||
+                    vpStereotype.equalsIgnoreCase(OntoUMLClassType.DATA_TYPE.getText())) continue;
 
             RefOntoUML.Package containerPackage = vpClass.getParent() == null || modelPackages.get(vpClass.getParent()) == null ? rootPackage : modelPackages.get(vpClass.getParent());
             RefOntoUML.Classifier ontoUmlClass = RefOntoUMLFactory.createOntoUmlClass(containerPackage, vpClass, vpStereotype);
