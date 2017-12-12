@@ -58,6 +58,10 @@ public class Vp2OntoUmlConverter {
             }
             modelPackages.put(vpPackage, ontoUmlPackage);
         }
+
+        if (rootPackage == null) {
+            rootPackage = RefOntoUMLFactoryUtil.createPackage(vpProject.getName());
+        }
     }
 
     private Package getOrCreatePackage(IPackage vpPackage) {

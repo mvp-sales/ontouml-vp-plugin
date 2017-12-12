@@ -32,7 +32,7 @@
                 id="br.ufes.inf.ontoumlplugin.actionset.AddOntoUMLStereotypesAction"
                 actionType="generalAction"
                 label="Add OntoUML Stereotypes to Project"
-                tooltip="Adds OntoUML stereotypes to project"
+                tooltip="Add OntoUML stereotypes to current project"
                 style="normal"
                 icon="icons/add.png"
                 toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#">
@@ -70,13 +70,23 @@
             <actionController class="br.ufes.inf.ontoumlplugin.actions.CheckOntoUMLModelController"/>
         </action>
         <action
+                id="br.ufes.inf.ontoumlplugin.actionset.AlloyTransformationAction"
+                actionType="generalAction"
+                label="Alloy Analyzer"
+                tooltip="Use Alloy Analyzer to simulate your model"
+                style="normal"
+                icon="icons/alloy_button.png"
+                toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/br.ufes.inf.ontoumlplugin.actionset.CheckOntoUMLModelAction">
+            <actionController class="br.ufes.inf.ontoumlplugin.actions.AlloyTransformationController"/>
+        </action>
+        <action
                 id="br.ufes.inf.ontoumlplugin.actionset.ConvertModelToRefOntoUML"
                 actionType="generalAction"
                 label="Convert OntoUML Model to RefOntoUML"
                 tooltip="Convert OntoUML model to RefOntoUML"
                 style="normal"
                 icon="icons/convert_file.png"
-                toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/br.ufes.inf.ontoumlplugin.actionset.CheckOntoUMLModelAction">
+                toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/br.ufes.inf.ontoumlplugin.actionset.AlloyTransformationAction">
             <actionController class="br.ufes.inf.ontoumlplugin.actions.ConvertModel2RefOntoUMLController"/>
         </action>
         <action
@@ -89,16 +99,6 @@
                 toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/br.ufes.inf.ontoumlplugin.actionset.ConvertModelToRefOntoUML">
             <actionController class="br.ufes.inf.ontoumlplugin.actions.OntoUMLSpecificationController"/>
         </action>
-<!--        <action
-            id="br.ufes.inf.ontoumlplugin.actionset.AlloyTransformationAction"
-            actionType="generalAction"
-            label="Alloy Analyzer"
-            tooltip="Use Alloy Analyzer"
-            style="normal"
-            icon="icons/add.png"
-            toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/#">
-            <actionController class="br.ufes.inf.ontoumlplugin.actions.AlloyTransformationController"/>
-        </action>-->
     </actionSet>
     
     <contextSensitiveActionSet
