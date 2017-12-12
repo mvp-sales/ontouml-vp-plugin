@@ -15,53 +15,38 @@ public class VPModelFactory {
 	
 	public static IClass setClassStereotype(IClass vpClass, Classifier ontoUmlElement, IProject project){
 		if(ontoUmlElement instanceof RefOntoUML.Kind){
-			//addStereotypeClass(vpClass, "Kind", project);
             vpClass.addStereotype(OntoUMLClassType.KIND.getText());
 		}else if(ontoUmlElement instanceof RefOntoUML.SubKind){
-			//addStereotypeClass(vpClass, "SubKind", project);
             vpClass.addStereotype(OntoUMLClassType.SUBKIND.getText());
 		}else if(ontoUmlElement instanceof RefOntoUML.Role){
-			//addStereotypeClass(vpClass, "Role", project);
             vpClass.addStereotype(OntoUMLClassType.ROLE.getText());
 		}else if(ontoUmlElement instanceof RefOntoUML.Phase){
-			//addStereotypeClass(vpClass, "Phase", project);
             vpClass.addStereotype(OntoUMLClassType.PHASE.getText());
 		}else if(ontoUmlElement instanceof RefOntoUML.Relator){
-			//addStereotypeClass(vpClass, "Relator", project);
             vpClass.addStereotype(OntoUMLClassType.RELATOR.getText());
 		}else if(ontoUmlElement instanceof RefOntoUML.RoleMixin){
-			//addStereotypeClass(vpClass, "RoleMixin", project);
             vpClass.addStereotype(OntoUMLClassType.ROLEMIXIN.getText());
 		}else if(ontoUmlElement instanceof RefOntoUML.Category){
-			//addStereotypeClass(vpClass, "Category", project);
             vpClass.addStereotype(OntoUMLClassType.CATEGORY.getText());
 		}else if(ontoUmlElement instanceof RefOntoUML.Quantity){
-			//addStereotypeClass(vpClass, "Quantity", project);
             vpClass.addStereotype(OntoUMLClassType.QUANTITY.getText());
 		}else if(ontoUmlElement instanceof RefOntoUML.Collective){
-			//addStereotypeClass(vpClass, "Collective", project);
             vpClass.addStereotype(OntoUMLClassType.COLLECTIVE.getText());
 		}else if(ontoUmlElement instanceof RefOntoUML.Mixin){
-			//addStereotypeClass(vpClass, "Mixin", project);
             vpClass.addStereotype(OntoUMLClassType.MIXIN.getText());
 		}else if(ontoUmlElement instanceof RefOntoUML.Mode){
-			//addStereotypeClass(vpClass, "Mode", project);
             vpClass.addStereotype(OntoUMLClassType.MODE.getText());
 		}else if(ontoUmlElement instanceof RefOntoUML.PerceivableQuality){
-			//addStereotypeClass(vpClass, "PerceivableQuality", project);
             vpClass.addStereotype(OntoUMLClassType.PERCEIVABLE_QUALITY.getText());
 		}else if(ontoUmlElement instanceof RefOntoUML.NonPerceivableQuality){
-			//addStereotypeClass(vpClass, "NonPerceivableQuality", project);
             vpClass.addStereotype(OntoUMLClassType.NON_PERCEIVABLE_QUALITY.getText());
 		}else if(ontoUmlElement instanceof RefOntoUML.NominalQuality){
-			//addStereotypeClass(vpClass, "NominalQuality", project);
             vpClass.addStereotype(OntoUMLClassType.NOMINAL_QUALITY.getText());
 		}else if(ontoUmlElement instanceof RefOntoUML.PrimitiveType){
 			vpClass.addStereotype(OntoUMLClassType.PRIMITIVE_TYPE.getText());
 		}else if(ontoUmlElement instanceof RefOntoUML.Enumeration){
 			vpClass.addStereotype(OntoUMLClassType.ENUMERATION.getText());
 		}else if(ontoUmlElement instanceof RefOntoUML.DataType){
-			//addStereotypeClass(vpClass, "DataType", project);
             vpClass.addStereotype(OntoUMLClassType.DATA_TYPE.getText());
 		}
 

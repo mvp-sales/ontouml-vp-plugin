@@ -10,7 +10,10 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import RefOntoUML.Element;
+import RefOntoUML.Package;
+import RefOntoUML.parser.SyntacticVerificator;
 import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
+import br.ufes.inf.ontoumlplugin.model.Vp2OntoUmlConverter;
 import br.ufes.inf.ontoumlplugin.utils.CommonUtils;
 import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.ViewManager;
@@ -18,13 +21,13 @@ import com.vp.plugin.action.VPAction;
 import com.vp.plugin.action.VPActionController;
 
 import RefOntoUML.util.RefOntoUMLResourceUtil;
-import br.ufes.inf.ontoumlplugin.model.RefOntoUMLWrapper;
 import com.vp.plugin.model.IProject;
+import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 
 public class ConvertModel2RefOntoUMLController implements VPActionController {
 
-	private RefOntoUMLWrapper modelWrapper;
+	private Package refontoumlPackage;
 
 	@Override
 	public void performAction(VPAction arg0) {
@@ -33,22 +36,28 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 
 		ViewManager viewManager = ApplicationManager.instance().getViewManager();
 		viewManager.clearMessages(OntoUMLPlugin.PLUGIN_ID);
-		viewManager.removeMessagePaneComponent(OntoUMLPlugin.PLUGIN_ID);  
-		
-		RefOntoUMLWrapper
-		.createObservableWrapper(project)
-		.subscribeOn(Schedulers.computation())
-		.flatMap(
-			wrapper -> {
-				this.modelWrapper = wrapper;
-				return RefOntoUMLWrapper.getVerificator(wrapper);
-			}
+		viewManager.removeMessagePaneComponent(OntoUMLPlugin.PLUGIN_ID);
+
+		Vp2OntoUmlConverter vp2OntoUmlConverter = new Vp2OntoUmlConverter(project);
+
+		Observable.fromCallable(vp2OntoUmlConverter::transform)
+			.subscribeOn(Schedulers.computation())
+			.map(
+				ontoUmlPackage -> {
+					this.refontoumlPackage = ontoUmlPackage;
+					SyntacticVerificator verificator = new SyntacticVerificator();
+					verificator.run(ontoUmlPackage);
+					return verificator;
+				}
 		)
 		.observeOn(Schedulers.trampoline())
 		.subscribe(
-			verificator -> {
-				if (!verificator.getMap().isEmpty()){
-					CommonUtils.showModelErrors(verificator.getTimingMessage(), verificator.getMap(), viewManager);
+			syntacticVerificator -> {
+				if (!syntacticVerificator.getMap().isEmpty()){
+					CommonUtils.showModelErrors(
+						syntacticVerificator.getTimingMessage(),
+						syntacticVerificator.getMap(), viewManager
+					);
 				}else {
 					showSaveDialog(viewManager);
 				}
@@ -82,7 +91,7 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 				int result = JOptionPane.showConfirmDialog(null, "The file exists, overwrite?", "Existing file", JOptionPane.YES_NO_CANCEL_OPTION);
 				switch (result) {
 					case JOptionPane.YES_OPTION:
-						RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), modelWrapper.ontoUmlPackage);
+						RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), refontoumlPackage);
 						return;
 					case JOptionPane.NO_OPTION:
 					case JOptionPane.CLOSED_OPTION:
@@ -90,7 +99,7 @@ public class ConvertModel2RefOntoUMLController implements VPActionController {
 						return;
 				}
 			} else {
-				RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), modelWrapper.ontoUmlPackage);
+				RefOntoUMLResourceUtil.saveModel(file.getAbsolutePath(), refontoumlPackage);
 			}
 			viewManager.showMessage("Model saved at " + file.getAbsolutePath(), OntoUMLPlugin.PLUGIN_ID);
 		}
