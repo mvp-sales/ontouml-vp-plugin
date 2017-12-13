@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ASCII"?>
+<RefOntoUML:Model xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:RefOntoUML="http://nemo.inf.ufes.br/ontouml/refontouml" xmi:id="_9V1wgN-sEeemzLDb8mST8A" name="Model">
+  <packagedElement xsi:type="RefOntoUML:Kind" xmi:id="_9V1wgd-sEeemzLDb8mST8A" name="Pessoa" visibility="public"/>
+  <packagedElement xsi:type="RefOntoUML:SubKind" xmi:id="_9V1wgt-sEeemzLDb8mST8A" name="Homem" visibility="public">
+    <ownedComment xmi:id="_9V1wg9-sEeemzLDb8mST8A" body="you and me will all go down in history with a sad statue liberty and a generation that didn't agree"/>
+    <generalization xmi:id="_9V1whN-sEeemzLDb8mST8A" general="_9V1wgd-sEeemzLDb8mST8A" generalizationSet="_9V1wmt-sEeemzLDb8mST8A"/>
+  </packagedElement>
+  <packagedElement xsi:type="RefOntoUML:SubKind" xmi:id="_9V1whd-sEeemzLDb8mST8A" name="Mulher" visibility="public">
+    <generalization xmi:id="_9V1wht-sEeemzLDb8mST8A" general="_9V1wgd-sEeemzLDb8mST8A" generalizationSet="_9V1wmt-sEeemzLDb8mST8A"/>
+  </packagedElement>
+  <packagedElement xsi:type="RefOntoUML:Role" xmi:id="_9V1wh9-sEeemzLDb8mST8A" name="Marido" visibility="public">
+    <generalization xmi:id="_9V1wiN-sEeemzLDb8mST8A" general="_9V1wgt-sEeemzLDb8mST8A"/>
+  </packagedElement>
+  <packagedElement xsi:type="RefOntoUML:Role" xmi:id="_9V1wid-sEeemzLDb8mST8A" name="Esposa" visibility="public">
+    <generalization xmi:id="_9V1wit-sEeemzLDb8mST8A" general="_9V1whd-sEeemzLDb8mST8A"/>
+  </packagedElement>
+  <packagedElement xsi:type="RefOntoUML:Relator" xmi:id="_9V1wi9-sEeemzLDb8mST8A" name="Casamento" visibility="public"/>
+  <packagedElement xsi:type="RefOntoUML:Mediation" xmi:id="_9V1wjN-sEeemzLDb8mST8A" name="Mediation1" visibility="public" memberEnd="_9V1wjd-sEeemzLDb8mST8A _9V1wkN-sEeemzLDb8mST8A" navigableOwnedEnd="_9V1wjd-sEeemzLDb8mST8A _9V1wkN-sEeemzLDb8mST8A">
+    <ownedEnd xmi:id="_9V1wjd-sEeemzLDb8mST8A" name="marriage" type="_9V1wi9-sEeemzLDb8mST8A" association="_9V1wjN-sEeemzLDb8mST8A">
+      <upperValue xsi:type="RefOntoUML:LiteralUnlimitedNatural" xmi:id="_9V1wjt-sEeemzLDb8mST8A" value="1"/>
+      <lowerValue xsi:type="RefOntoUML:LiteralInteger" xmi:id="_9V1wj9-sEeemzLDb8mST8A" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_9V1wkN-sEeemzLDb8mST8A" name="husband" type="_9V1wh9-sEeemzLDb8mST8A" isReadOnly="true" association="_9V1wjN-sEeemzLDb8mST8A">
+      <upperValue xsi:type="RefOntoUML:LiteralUnlimitedNatural" xmi:id="_9V1wkd-sEeemzLDb8mST8A" value="1"/>
+      <lowerValue xsi:type="RefOntoUML:LiteralInteger" xmi:id="_9V1wkt-sEeemzLDb8mST8A" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xsi:type="RefOntoUML:Mediation" xmi:id="_9V1wk9-sEeemzLDb8mST8A" name="Mediation2" visibility="public" memberEnd="_9V1wlN-sEeemzLDb8mST8A _9V1wl9-sEeemzLDb8mST8A" navigableOwnedEnd="_9V1wlN-sEeemzLDb8mST8A _9V1wl9-sEeemzLDb8mST8A">
+    <ownedEnd xmi:id="_9V1wlN-sEeemzLDb8mST8A" name="marriage" type="_9V1wi9-sEeemzLDb8mST8A" association="_9V1wk9-sEeemzLDb8mST8A">
+      <upperValue xsi:type="RefOntoUML:LiteralUnlimitedNatural" xmi:id="_9V1wld-sEeemzLDb8mST8A" value="1"/>
+      <lowerValue xsi:type="RefOntoUML:LiteralInteger" xmi:id="_9V1wlt-sEeemzLDb8mST8A" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_9V1wl9-sEeemzLDb8mST8A" name="wife" type="_9V1wid-sEeemzLDb8mST8A" isReadOnly="true" association="_9V1wk9-sEeemzLDb8mST8A">
+      <upperValue xsi:type="RefOntoUML:LiteralUnlimitedNatural" xmi:id="_9V1wmN-sEeemzLDb8mST8A" value="1"/>
+      <lowerValue xsi:type="RefOntoUML:LiteralInteger" xmi:id="_9V1wmd-sEeemzLDb8mST8A" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xsi:type="RefOntoUML:GeneralizationSet" xmi:id="_9V1wmt-sEeemzLDb8mST8A" name="" isCovering="true" isDisjoint="true" generalization="_9V1whN-sEeemzLDb8mST8A _9V1wht-sEeemzLDb8mST8A"/>
+</RefOntoUML:Model>
