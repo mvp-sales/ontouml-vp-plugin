@@ -19,6 +19,10 @@
       <library path="lib/rxjava-2.1.0.jar" relativePath="true" />
       <library path="lib/rxjava-reactive-streams-1.2.1.jar" relativePath="true" />
       <library path="lib/BrowserLauncher2-all-1_3.jar" relativePath="true"/>
+       <library path="lib/menthor-ocl.jar" relativePath="true" />
+       <library path="lib/menthor-alloy.jar" relativePath="true" />
+       <library path="lib/menthor-ontouml2alloy.jar" relativePath="true" />
+       <library path="lib/alloy4.2.jar" relativePath="true" />
    </runtime>
 	
 	<actionSets> 
