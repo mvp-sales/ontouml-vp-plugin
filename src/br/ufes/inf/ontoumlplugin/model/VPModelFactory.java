@@ -130,7 +130,7 @@ public class VPModelFactory {
 
 		if(ontoUmlAssociation instanceof RefOntoUML.FormalAssociation){
 			//addStereotypeAssociation(vpAssociation, "Formal", project);
-			vpAssociation.addStereotype(OntoUMLRelationshipType.FORMAL_ASSOCIATION.getText());
+			vpAssociation.addStereotype(OntoUMLRelationshipType.FORMAL.getText());
 		}else if(ontoUmlAssociation instanceof RefOntoUML.Mediation){
 			//addStereotypeAssociation(vpAssociation, "Mediation", project);
 			vpAssociation.addStereotype(OntoUMLRelationshipType.MEDIATION.getText());
@@ -139,10 +139,7 @@ public class VPModelFactory {
 			vpAssociation.addStereotype(OntoUMLRelationshipType.CHARACTERIZATION.getText());
 		}else if(ontoUmlAssociation instanceof RefOntoUML.MaterialAssociation){
 			//addStereotypeAssociation(vpAssociation, "Material", project);
-			vpAssociation.addStereotype(OntoUMLRelationshipType.MATERIAL_ASSOCIATION.getText());
-		}else if (ontoUmlAssociation instanceof RefOntoUML.Structuration) {
-			//addStereotypeAssociation(vpAssociation, "Structuration", project);
-			vpAssociation.addStereotype(OntoUMLRelationshipType.STRUCTURATION.getText());
+			vpAssociation.addStereotype(OntoUMLRelationshipType.MATERIAL.getText());
 		}
 
 		return vpAssociation;

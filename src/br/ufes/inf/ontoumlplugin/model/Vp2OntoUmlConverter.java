@@ -39,6 +39,7 @@ public class Vp2OntoUmlConverter {
         addAssociations();
         addGeneralizations();
         addGeneralizationSets();
+        addComments();
 
         return rootPackage;
     }
@@ -162,9 +163,8 @@ public class Vp2OntoUmlConverter {
                 case COMMON_ASSOCIATION:
                 case CHARACTERIZATION:
                 case MEDIATION:
-                case FORMAL_ASSOCIATION:
-                case MATERIAL_ASSOCIATION:
-                case STRUCTURATION:
+                case FORMAL:
+                case MATERIAL:
                     RefOntoUML.Classifier source = this.classifierElements.get(vpAssociation.getFrom()),
                             target = this.classifierElements.get(vpAssociation.getTo());
                     ontoUmlAssociation = RefOntoUMLFactory.createCommonAssociation(source, target, containerPackage, vpAssociation, relationType);
@@ -258,6 +258,22 @@ public class Vp2OntoUmlConverter {
                     containerPackage
             );
         }
+    }
+
+    private void addComments() {
+        /*for (IModelElement element : vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_ANCHOR)) {
+            IAnchor anchor = (IAnchor) element;
+            if (anchor.getTo() instanceof INOTE) {
+                INOTE note = (INOTE) anchor.getTo();
+                Classifier classifier = classifierElements.get(anchor.getFrom());
+                RefOntoUMLFactoryUtil.createComment(note.toString(), classifier);
+            } else {
+                INOTE note = (INOTE) anchor.getFrom();
+                Classifier classifier = classifierElements.get(anchor.getTo());
+                IComment[] ccc = note.toCommentArray();
+                RefOntoUMLFactoryUtil.createComment(note.toString(), classifier);
+            }
+        }*/
     }
 
 

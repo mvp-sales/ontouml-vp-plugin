@@ -25,12 +25,11 @@ public class AppConstants {
     };
 
     public static final String[] ASSOCIATION_STEREOTYPES = {
-            OntoUMLRelationshipType.FORMAL_ASSOCIATION.getText(),
+            OntoUMLRelationshipType.FORMAL.getText(),
             OntoUMLRelationshipType.MEDIATION.getText(),
-            OntoUMLRelationshipType.MATERIAL_ASSOCIATION.getText(),
+            OntoUMLRelationshipType.MATERIAL.getText(),
             OntoUMLRelationshipType.DERIVATION.getText(),
-            OntoUMLRelationshipType.CHARACTERIZATION.getText(),
-            OntoUMLRelationshipType.STRUCTURATION.getText()
+            OntoUMLRelationshipType.CHARACTERIZATION.getText()
     };
 
     public static final String[] MERONYMIC_ASSOCIATIONS_TAGGED_VALUES = {

@@ -55,8 +55,8 @@
         <action
                 id="br.ufes.inf.ontoumlplugin.actionset.FillEmptyAssociationsAction"
                 actionType="generalAction"
-                label="Fill Empty Associations"
-                tooltip="Set stereotypes to associations"
+                label="Infer Stereotypes for associations"
+                tooltip="Infer stereotypes for associations"
                 style="normal"
                 icon="icons/fill_empty_ass.png"
                 toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/br.ufes.inf.ontoumlplugin.actionset.LoadOntoUMLModelAction">

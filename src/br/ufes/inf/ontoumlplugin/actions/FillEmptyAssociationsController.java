@@ -23,9 +23,9 @@ public class FillEmptyAssociationsController implements VPActionController {
         for (IModelElement me : currentProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_ASSOCIATION_CLASS)) {
             IAssociationClass derivation = (IAssociationClass) me;
             if (derivation.getFrom() instanceof IAssociation) {
-                derivation.getFrom().addStereotype(OntoUMLRelationshipType.MATERIAL_ASSOCIATION.getText());
+                derivation.getFrom().addStereotype(OntoUMLRelationshipType.MATERIAL.getText());
             } else if (derivation.getTo() instanceof IAssociation) {
-                derivation.getTo().addStereotype(OntoUMLRelationshipType.MATERIAL_ASSOCIATION.getText());
+                derivation.getTo().addStereotype(OntoUMLRelationshipType.MATERIAL.getText());
             }
             derivation.addStereotype(OntoUMLRelationshipType.DERIVATION.getText());
         }

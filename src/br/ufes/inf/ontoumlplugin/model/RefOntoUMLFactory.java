@@ -3,7 +3,6 @@ package br.ufes.inf.ontoumlplugin.model;
 
 
 import RefOntoUML.Classifier;
-import RefOntoUML.Derivation;
 import RefOntoUML.Package;
 import com.vp.plugin.model.*;
 
@@ -170,7 +169,7 @@ public class RefOntoUMLFactory {
 									container);
 				}
 				break;
-			case FORMAL_ASSOCIATION:
+			case FORMAL:
 				association = RefOntoUMLFactoryUtil.createFormalAssociation
 						(source,
 								multFrom.getMinMultiplicity(),
@@ -181,19 +180,8 @@ public class RefOntoUMLFactory {
 								multTo.getMaxMultiplicity(),
 								container);
 				break;
-			case MATERIAL_ASSOCIATION:
+			case MATERIAL:
 				association = RefOntoUMLFactoryUtil.createMaterialAssociation
-						(source,
-								multFrom.getMinMultiplicity(),
-								multFrom.getMaxMultiplicity(),
-								vpAssociation.getName(),
-								target,
-								multTo.getMinMultiplicity(),
-								multTo.getMaxMultiplicity(),
-								container);
-				break;
-			case STRUCTURATION:
-				association = RefOntoUMLFactoryUtil.createStructuration
 						(source,
 								multFrom.getMinMultiplicity(),
 								multFrom.getMaxMultiplicity(),
