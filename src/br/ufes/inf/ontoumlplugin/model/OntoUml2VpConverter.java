@@ -3,7 +3,6 @@ package br.ufes.inf.ontoumlplugin.model;
 import RefOntoUML.*;
 import RefOntoUML.Package;
 import RefOntoUML.parser.OntoUMLParser;
-import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.model.*;
 import com.vp.plugin.model.factory.IModelElementFactory;
 
@@ -31,6 +30,7 @@ public class OntoUml2VpConverter {
         addAssociations(parser);
         addGeneralizations(parser);
         addGeneralizationSets(parser);
+        addComments(parser);
     }
 
     private void addPackages(OntoUMLParser parser) {
@@ -210,6 +210,21 @@ public class OntoUml2VpConverter {
         }
 
         vpPackage.addChild(vpGenSet);
+    }
+
+    private void addComments(OntoUMLParser parser) {
+        for (Element element : parser.getAllInstances(Element.class)) {
+            for (Comment c : element.getOwnedComment()) {
+                if (element instanceof Classifier) {
+                    IModelElement modelElement = this.classifierElements.get((Classifier) element);
+                    INOTE note = IModelElementFactory.instance().createNOTE();
+                    note.setDescription(c.getBody());
+                    IAnchor anchor = IModelElementFactory.instance().createAnchor();
+                    anchor.setFrom(modelElement);
+                    anchor.setTo(note);
+                }
+            }
+        }
     }
 
 

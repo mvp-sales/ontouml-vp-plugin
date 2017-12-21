@@ -261,19 +261,19 @@ public class Vp2OntoUmlConverter {
     }
 
     private void addComments() {
-        /*for (IModelElement element : vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_ANCHOR)) {
+        for (IModelElement element : vpProject.toAllLevelModelElementArray(IModelElementFactory.MODEL_TYPE_ANCHOR)) {
             IAnchor anchor = (IAnchor) element;
             if (anchor.getTo() instanceof INOTE) {
                 INOTE note = (INOTE) anchor.getTo();
                 Classifier classifier = classifierElements.get(anchor.getFrom());
-                RefOntoUMLFactoryUtil.createComment(note.toString(), classifier);
+                System.out.println(note.getDescription());
+                RefOntoUMLFactoryUtil.createComment(note.getDescription(), classifier);
             } else {
                 INOTE note = (INOTE) anchor.getFrom();
                 Classifier classifier = classifierElements.get(anchor.getTo());
-                IComment[] ccc = note.toCommentArray();
-                RefOntoUMLFactoryUtil.createComment(note.toString(), classifier);
+                RefOntoUMLFactoryUtil.createComment(note.getDescription(), classifier);
             }
-        }*/
+        }
     }
 
 
