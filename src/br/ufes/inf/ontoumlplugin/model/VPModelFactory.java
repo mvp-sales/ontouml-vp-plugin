@@ -50,28 +50,6 @@ public class VPModelFactory {
             vpClass.addStereotype(OntoUMLClassType.DATA_TYPE.getText());
 		}
 
-		vpClass = setVPAttributes(vpClass, ontoUmlElement);
-
-		return vpClass;
-	}
-	
-	private static void addStereotypeClass(IClass vpClass, String stereotypeStr, IProject project){
-		IStereotype stereotype = OntoUMLClassType.getStereotypeFromString(project, stereotypeStr);
-		if(stereotype != null){
-			vpClass.addStereotype(stereotype);
-		}
-	}
-	
-	private static IClass setVPAttributes(IClass vpClass, RefOntoUML.Classifier ontoUmlElement){
-		for(RefOntoUML.Property attribute : ontoUmlElement.getAttribute()){
-			IAttribute vpAttribute = IModelElementFactory.instance().createAttribute();
-			vpAttribute.setName(attribute.getName());
-			vpAttribute.setType(attribute.getType().getName());
-			AssociationMultiplicity multiplicity = new AssociationMultiplicity(attribute.getLower(), attribute.getUpper());
-			vpAttribute.setMultiplicity(multiplicity.getMultiplicityString());
-			vpClass.addAttribute(vpAttribute);
-		}
-		
 		return vpClass;
 	}
 	
@@ -129,16 +107,12 @@ public class VPModelFactory {
 	{
 
 		if(ontoUmlAssociation instanceof RefOntoUML.FormalAssociation){
-			//addStereotypeAssociation(vpAssociation, "Formal", project);
 			vpAssociation.addStereotype(OntoUMLRelationshipType.FORMAL.getText());
 		}else if(ontoUmlAssociation instanceof RefOntoUML.Mediation){
-			//addStereotypeAssociation(vpAssociation, "Mediation", project);
 			vpAssociation.addStereotype(OntoUMLRelationshipType.MEDIATION.getText());
 		}else if(ontoUmlAssociation instanceof RefOntoUML.Characterization){
-			//addStereotypeAssociation(vpAssociation, "Characterization", project);
 			vpAssociation.addStereotype(OntoUMLRelationshipType.CHARACTERIZATION.getText());
 		}else if(ontoUmlAssociation instanceof RefOntoUML.MaterialAssociation){
-			//addStereotypeAssociation(vpAssociation, "Material", project);
 			vpAssociation.addStereotype(OntoUMLRelationshipType.MATERIAL.getText());
 		}
 

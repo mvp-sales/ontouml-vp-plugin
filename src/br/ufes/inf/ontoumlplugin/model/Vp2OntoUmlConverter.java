@@ -36,6 +36,7 @@ public class Vp2OntoUmlConverter {
     public Package transform() {
         addPackages();
         addClasses();
+        addAttributes();
         addAssociations();
         addGeneralizations();
         addGeneralizationSets();
@@ -86,63 +87,30 @@ public class Vp2OntoUmlConverter {
                     vpClass.toStereotypeArray()[0] :
                     OntoUMLClassType.SUBKIND.getText();
 
-            if (!vpStereotype.equalsIgnoreCase(OntoUMLClassType.PRIMITIVE_TYPE.getText())) continue;
-
             RefOntoUML.Package containerPackage = vpClass.getParent() == null || modelPackages.get(vpClass.getParent()) == null ? rootPackage : modelPackages.get(vpClass.getParent());
             RefOntoUML.Classifier ontoUmlClass = RefOntoUMLFactory.createOntoUmlClass(containerPackage, vpClass, vpStereotype);
-            ontoUmlClass = addOntoUMLAttributes(ontoUmlClass, vpClass);
-            this.classifierElements.put(vpClass, ontoUmlClass);
-        }
-
-        for(IModelElement classElement : classElements)
-        {
-            IClass vpClass = (IClass) classElement;
-            String vpStereotype = vpClass.toStereotypeArray().length != 0?
-                    vpClass.toStereotypeArray()[0] :
-                    OntoUMLClassType.SUBKIND.getText();
-
-            if (!vpStereotype.equalsIgnoreCase(OntoUMLClassType.DATA_TYPE.getText())) continue;
-
-            RefOntoUML.Package containerPackage = vpClass.getParent() == null || modelPackages.get(vpClass.getParent()) == null ? rootPackage : modelPackages.get(vpClass.getParent());
-            RefOntoUML.Classifier ontoUmlClass = RefOntoUMLFactory.createOntoUmlClass(containerPackage, vpClass, vpStereotype);
-            ontoUmlClass = addOntoUMLAttributes(ontoUmlClass, vpClass);
-            this.classifierElements.put(vpClass, ontoUmlClass);
-        }
-
-        for(IModelElement classElement : classElements)
-        {
-            IClass vpClass = (IClass) classElement;
-            String vpStereotype = vpClass.toStereotypeArray().length != 0?
-                    vpClass.toStereotypeArray()[0] :
-                    OntoUMLClassType.SUBKIND.getText();
-
-            if (vpStereotype.equalsIgnoreCase(OntoUMLClassType.PRIMITIVE_TYPE.getText()) ||
-                    vpStereotype.equalsIgnoreCase(OntoUMLClassType.DATA_TYPE.getText())) continue;
-
-            RefOntoUML.Package containerPackage = vpClass.getParent() == null || modelPackages.get(vpClass.getParent()) == null ? rootPackage : modelPackages.get(vpClass.getParent());
-            RefOntoUML.Classifier ontoUmlClass = RefOntoUMLFactory.createOntoUmlClass(containerPackage, vpClass, vpStereotype);
-            ontoUmlClass = addOntoUMLAttributes(ontoUmlClass, vpClass);
             this.classifierElements.put(vpClass, ontoUmlClass);
         }
     }
 
-    private RefOntoUML.Classifier addOntoUMLAttributes(RefOntoUML.Classifier classifier, IClass vpClass)
-    {
-        for(IAttribute attribute : vpClass.toAttributeArray()){
-            String className = attribute.getTypeAsString();
-            RefOntoUML.Classifier attributeClassifier = getClassifierElement(className);
-            AssociationMultiplicity multiplicity = new AssociationMultiplicity(attribute.getMultiplicity());
-            RefOntoUMLFactoryUtil.createAttribute(
-                    classifier,
-                    attributeClassifier,
-                    multiplicity.getMinMultiplicity(),
-                    multiplicity.getMaxMultiplicity(),
-                    attribute.getName(),
-                    false
-            );
+    private void addAttributes() {
+        for (Map.Entry<IModelElement, Classifier> entry : this.classifierElements.entrySet()) {
+            IClass vpClass = (IClass) entry.getKey();
+            Classifier ontoUmlClassifier = entry.getValue();
+            for (IAttribute attribute : vpClass.toAttributeArray()) {
+                String className = attribute.getTypeAsString();
+                RefOntoUML.Classifier attributeClassifier = getClassifierElement(className);
+                AssociationMultiplicity multiplicity = new AssociationMultiplicity(attribute.getMultiplicity());
+                RefOntoUMLFactoryUtil.createAttribute(
+                        ontoUmlClassifier,
+                        attributeClassifier,
+                        multiplicity.getMinMultiplicity(),
+                        multiplicity.getMaxMultiplicity(),
+                        attribute.getName(),
+                        false
+                );
+            }
         }
-
-        return classifier;
     }
 
     private void addAssociations() {

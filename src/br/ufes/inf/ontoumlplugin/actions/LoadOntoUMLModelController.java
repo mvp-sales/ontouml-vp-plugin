@@ -76,7 +76,10 @@ public class LoadOntoUMLModelController implements VPActionController {
 		.observeOn(Schedulers.trampoline())
 		.subscribe(
 			() -> viewManager.showMessage("Model loaded successfully", OntoUMLPlugin.PLUGIN_ID),
-			err -> viewManager.showMessage(err.getMessage(), OntoUMLPlugin.PLUGIN_ID)
+			err -> {
+				viewManager.showMessage(err.getMessage(), OntoUMLPlugin.PLUGIN_ID);
+				err.printStackTrace();
+			}
 		);
 	}
 }

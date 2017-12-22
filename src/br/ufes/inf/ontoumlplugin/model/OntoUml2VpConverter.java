@@ -1,6 +1,7 @@
 package br.ufes.inf.ontoumlplugin.model;
 
 import RefOntoUML.*;
+import RefOntoUML.Class;
 import RefOntoUML.Package;
 import RefOntoUML.parser.OntoUMLParser;
 import com.vp.plugin.model.*;
@@ -23,10 +24,21 @@ public class OntoUml2VpConverter {
         this.vpProject = vpProject;
     }
 
+    public IModelElement getClassifierElement(String name){
+        for(Map.Entry<Classifier, IModelElement> entry : this.classifierElements.entrySet()){
+            Classifier elem = entry.getKey();
+            if(elem.getName().equals(name)){
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
+
     public void transform(Package ontoUmlRootPackage) {
         OntoUMLParser parser = new OntoUMLParser(ontoUmlRootPackage);
         addPackages(parser);
         addClasses(parser);
+        addAttributes();
         addAssociations(parser);
         addGeneralizations(parser);
         addGeneralizationSets(parser);
@@ -58,23 +70,39 @@ public class OntoUml2VpConverter {
     }
 
     private void addClasses(OntoUMLParser parser) {
-        for (RefOntoUML.Class ontoUmlClass : parser.getAllInstances(RefOntoUML.Class.class)) {
+        for (Class ontoUmlClass : parser.getAllInstances(Class.class)) {
             IPackage classPackage = this.packageElements.get((Package) ontoUmlClass.eContainer());
             createClass(ontoUmlClass, classPackage);
         }
 
-        for(DataType dataType : parser.getAllInstances(DataType.class)) {
-            IPackage dataTypePackage = this.packageElements.get((Package) dataType.eContainer());
-            createClass(dataType, dataTypePackage);
+        for (DataType ontoUmlClass : parser.getAllInstances(DataType.class)) {
+            IPackage classPackage = this.packageElements.get((Package) ontoUmlClass.eContainer());
+            createClass(ontoUmlClass, classPackage);
         }
     }
 
-    private void createClass(Classifier c, IPackage vpPackage){
+    private void createClass(Classifier c, IPackage vpPackage) {
         IClass vpClass = IModelElementFactory.instance().createClass();
         vpClass.setName(c.getName());
         vpClass = VPModelFactory.setClassStereotype(vpClass, c, this.vpProject);
         this.classifierElements.put(c, vpClass);
         vpPackage.addChild(vpClass);
+    }
+
+    private void addAttributes() {
+        for (Map.Entry<Classifier, IModelElement> entry : this.classifierElements.entrySet()) {
+            Classifier ontoUmlClassifier = entry.getKey();
+            IClass vpClass = (IClass) entry.getValue();
+            for(RefOntoUML.Property attribute : ontoUmlClassifier.getAttribute()){
+                IAttribute vpAttribute = IModelElementFactory.instance().createAttribute();
+                vpAttribute.setName(attribute.getName());
+                IModelElement attr = getClassifierElement(attribute.getName());
+                vpAttribute.setType(attr);
+                AssociationMultiplicity multiplicity = new AssociationMultiplicity(attribute.getLower(), attribute.getUpper());
+                vpAttribute.setMultiplicity(multiplicity.getMultiplicityString());
+                vpClass.addAttribute(vpAttribute);
+            }
+        }
     }
 
     private void addAssociations(OntoUMLParser parser) {

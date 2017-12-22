@@ -78,26 +78,6 @@ public class RefOntoUMLFactory {
 		return classifier;
 	}
 
-    /*private static RefOntoUML.Classifier addOntoUMLAtributes
-			(RefOntoUML.Classifier classifier, RefOntoUMLWrapper wrapper, IModelElement vpElement)
-    {
-        IClass vpClass = (IClass) vpElement;
-		for(IAttribute attribute : vpClass.toAttributeArray()){
-			String className = attribute.getTypeAsString();
-			RefOntoUML.Classifier attributeClassifier = wrapper.getOntoUMLClassFromName(className);
-			AssociationMultiplicity multiplicity = new AssociationMultiplicity(attribute.getMultiplicity());
-			RefOntoUMLFactoryUtil.createAttribute
-									(classifier, 
-									attributeClassifier, 
-									multiplicity.getMinMultiplicity(), 
-									multiplicity.getMaxMultiplicity(), 
-									attribute.getName(), 
-									false);
-        }
-        
-        return classifier;
-    }*/
-
 	public static Association createCommonAssociation
 			(Classifier source, Classifier target, Package container,
 			 IAssociation vpAssociation, OntoUMLRelationshipType type)
