@@ -1,16 +1,12 @@
 package br.ufes.inf.ontoumlplugin.actions;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import RefOntoUML.*;
-import RefOntoUML.Package;
+
 import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
-import br.ufes.inf.ontoumlplugin.model.OntoUMLRelationshipType;
 import br.ufes.inf.ontoumlplugin.model.OntoUml2VpConverter;
 import com.vp.plugin.model.*;
 import io.reactivex.Completable;
@@ -21,11 +17,8 @@ import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.ViewManager;
 import com.vp.plugin.action.VPAction;
 import com.vp.plugin.action.VPActionController;
-import com.vp.plugin.model.factory.IModelElementFactory;
 
-import RefOntoUML.parser.OntoUMLParser;
 import RefOntoUML.util.RefOntoUMLResourceUtil;
-import br.ufes.inf.ontoumlplugin.model.VPModelFactory;
 
 public class LoadOntoUMLModelController implements VPActionController {
 
@@ -47,6 +40,7 @@ public class LoadOntoUMLModelController implements VPActionController {
 		if(returnValue == JFileChooser.APPROVE_OPTION){
 			File file = fileChooser.getSelectedFile();
 			try {
+				viewManager.showMessage("Loading, please wait...", OntoUMLPlugin.PLUGIN_ID);
 				Resource model = RefOntoUMLResourceUtil.loadModel(file.getAbsolutePath());
 				RefOntoUML.Package ontoUmlPackage = (RefOntoUML.Package) model.getContents().get(0);
 

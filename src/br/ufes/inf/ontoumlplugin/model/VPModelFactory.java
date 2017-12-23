@@ -50,6 +50,8 @@ public class VPModelFactory {
             vpClass.addStereotype(OntoUMLClassType.DATA_TYPE.getText());
 		}
 
+		vpClass.setAbstract(ontoUmlElement.isIsAbstract());
+
 		return vpClass;
 	}
 	

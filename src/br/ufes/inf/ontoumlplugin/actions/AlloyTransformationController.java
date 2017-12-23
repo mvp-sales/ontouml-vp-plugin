@@ -61,6 +61,8 @@ public class AlloyTransformationController implements VPActionController {
 
         Vp2OntoUmlConverter vp2OntoUmlConverter = new Vp2OntoUmlConverter(project);
 
+        viewManager.showMessage("Loading, please wait...", OntoUMLPlugin.PLUGIN_ID);
+
         Observable.fromCallable(vp2OntoUmlConverter::transform)
             .subscribeOn(Schedulers.computation())
             .map(

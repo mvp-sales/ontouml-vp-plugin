@@ -172,4 +172,8 @@ public class CommonUtils {
 
         stereotype.setTaggedValueDefinitions(taggedValueDefinitionContainer);
     }
+
+    public static String getTempDir() {
+        return System.getProperty("java.io.tmpdir");
+    }
 }
