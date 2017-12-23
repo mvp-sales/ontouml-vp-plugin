@@ -124,7 +124,8 @@ public class Vp2OntoUmlConverter {
             OntoUMLRelationshipType relationType = OntoUMLRelationshipType.fromString(vpStereotype);
             RefOntoUML.Package containerPackage =
                     vpAssociation.getParent() == null || modelPackages.get(vpAssociation.getParent()) == null ?
-                    rootPackage : modelPackages.get(vpAssociation.getParent());
+                    modelPackages.get(vpAssociation.getFrom().getParent()) :
+                    modelPackages.get(vpAssociation.getParent());
             Association ontoUmlAssociation;
             switch(relationType) {
                 default:
@@ -135,7 +136,14 @@ public class Vp2OntoUmlConverter {
                 case MATERIAL:
                     RefOntoUML.Classifier source = this.classifierElements.get(vpAssociation.getFrom()),
                             target = this.classifierElements.get(vpAssociation.getTo());
-                    ontoUmlAssociation = RefOntoUMLFactory.createCommonAssociation(source, target, containerPackage, vpAssociation, relationType);
+                    ontoUmlAssociation = RefOntoUMLFactory.createCommonAssociation
+                    (
+                            source,
+                            target,
+                            containerPackage,
+                            vpAssociation,
+                            relationType
+                    );
                     break;
                 case COMPONENT_OF:
                 case MEMBER_OF:
@@ -161,6 +169,8 @@ public class Vp2OntoUmlConverter {
 
             }
 
+            ontoUmlAssociation.setIsDerived(vpAssociation.isDerived());
+
             this.classifierElements.put(vpAssociation, ontoUmlAssociation);
         }
 
@@ -169,16 +179,19 @@ public class Vp2OntoUmlConverter {
         {
             IAssociationClass vpAssClass = (IAssociationClass) associationElement;
             RefOntoUML.Classifier relator, material;
+            IClass vpRelator;
             if (vpAssClass.getFrom() instanceof IClass) {
                 relator = this.classifierElements.get(vpAssClass.getFrom());
                 material = this.classifierElements.get(vpAssClass.getTo());
+                vpRelator = (IClass) vpAssClass.getFrom();
             }else {
                 relator = this.classifierElements.get(vpAssClass.getTo());
                 material = this.classifierElements.get(vpAssClass.getFrom());
+                vpRelator = (IClass) vpAssClass.getTo();
             }
 
             RefOntoUML.Package containerPackage = vpAssClass.getParent() == null || !this.modelPackages.containsKey(vpAssClass.getParent()) ?
-                    rootPackage :
+                    modelPackages.get(vpRelator.getParent()) :
                     this.modelPackages.get(vpAssClass.getParent());
 
             Derivation derivation = RefOntoUMLFactory.createOntoUMLDerivation(relator, material, containerPackage, vpAssClass);

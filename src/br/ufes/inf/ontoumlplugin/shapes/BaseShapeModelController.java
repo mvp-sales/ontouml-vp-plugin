@@ -1,6 +1,8 @@
 package br.ufes.inf.ontoumlplugin.shapes;
 
+import RefOntoUML.parser.OntoUMLParser;
 import br.ufes.inf.ontoumlplugin.model.OntoUMLClassType;
+import br.ufes.inf.ontoumlplugin.utils.CommonUtils;
 import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.diagram.IClassDiagramUIModel;
 import com.vp.plugin.diagram.IDiagramUIModel;
@@ -25,6 +27,9 @@ public abstract class BaseShapeModelController implements VPShapeModelCreationCo
     public void shapeCreated(IShapeUIModel iShapeUIModel) {
         IProject project = ApplicationManager.instance().getProjectManager().getProject();
         IDiagramUIModel lDiagram = ApplicationManager.instance().getDiagramManager().getActiveDiagram();
+        if (!OntoUMLClassType.doesProjectHaveStereotype(project, stereotypeName)) {
+            CommonUtils.addOntoUMLStereotypes(project);
+        }
 
         IClass classElement = (IClass) iShapeUIModel.getModelElement();
         createModelElement(classElement, project, lDiagram);

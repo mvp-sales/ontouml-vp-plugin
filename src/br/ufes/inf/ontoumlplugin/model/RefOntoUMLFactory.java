@@ -3,6 +3,7 @@ package br.ufes.inf.ontoumlplugin.model;
 
 
 import RefOntoUML.Classifier;
+import RefOntoUML.Collective;
 import RefOntoUML.Package;
 import com.vp.plugin.model.*;
 
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 public class RefOntoUMLFactory {
 
 	public static RefOntoUML.Classifier createOntoUmlClass
-			(Package container, IModelElement vpClass, String stereotype)
+			(Package container, IClass vpClass, String stereotype)
 	{
 		RefOntoUML.Classifier classifier;
 		OntoUMLClassType classType = OntoUMLClassType.fromString(stereotype);
@@ -36,6 +37,9 @@ public class RefOntoUMLFactory {
 				break;
 			case COLLECTIVE:
 				classifier = RefOntoUMLFactoryUtil.createCollective(vpClass.getName(), container);
+				ITaggedValueContainer taggedValueContainer = vpClass.getTaggedValues();
+				ITaggedValue isExtensional = taggedValueContainer.getTaggedValueByName("isExtensional");
+                ((Collective)classifier).setIsExtensional(Boolean.valueOf(isExtensional.getValueAsString().toLowerCase()));
 				break;
 			case QUANTITY:
 				classifier = RefOntoUMLFactoryUtil.createQuantity(vpClass.getName(), container);
@@ -74,6 +78,8 @@ public class RefOntoUMLFactory {
 				classifier = RefOntoUMLFactoryUtil.createEnumeration(vpClass.getName(), new ArrayList<String>(), container);
 				break;
 		}
+
+		classifier.setIsAbstract(vpClass.isAbstract());
 
 		return classifier;
 	}

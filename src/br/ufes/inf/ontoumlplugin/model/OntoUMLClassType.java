@@ -43,4 +43,15 @@ public enum OntoUMLClassType {
 		}
 		return null;
 	}
+
+	public static boolean doesProjectHaveStereotype(IProject project, String text) {
+		IModelElement[] stereotypes = project.toModelElementArray(IModelElementFactory.MODEL_TYPE_STEREOTYPE);
+		for(IModelElement e : stereotypes){
+			IStereotype s = (IStereotype) e;
+			if(s.getBaseType().equals(IModelElementFactory.MODEL_TYPE_CLASS) && s.getName().equalsIgnoreCase(text)){
+				return true;
+			}
+		}
+		return false;
+	}
 }
