@@ -4,6 +4,7 @@ import br.ufes.inf.ontoumlplugin.actions.CheckOntoUMLModelController;
 
 import br.ufes.inf.ontoumlplugin.utils.CommonUtils;
 import com.vp.plugin.model.*;
+import com.vp.plugin.model.factory.IModelElementFactory;
 
 /**
  * Created by mvp-sales on 15/06/17.
@@ -49,6 +50,8 @@ public class OntoUMLPluginProjectListener implements IProjectListener {
     public void projectRenamed(IProject iProject) {
     	if(stateProjectListener == NEWED) {
             CommonUtils.addOntoUMLStereotypes(iProject);
+            IPackage rootPackage = IModelElementFactory.instance().createPackage();
+            rootPackage.setName(iProject.getName());
     	}
     	stateProjectListener = RENAMED;
     }
