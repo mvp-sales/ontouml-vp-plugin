@@ -93,14 +93,23 @@ public class OntoUml2VpConverter {
         for (Map.Entry<Classifier, IModelElement> entry : this.classifierElements.entrySet()) {
             Classifier ontoUmlClassifier = entry.getKey();
             IClass vpClass = (IClass) entry.getValue();
-            for(RefOntoUML.Property attribute : ontoUmlClassifier.getAttribute()){
-                IAttribute vpAttribute = IModelElementFactory.instance().createAttribute();
-                vpAttribute.setName(attribute.getName());
-                IModelElement attr = getClassifierElement(attribute.getName());
-                vpAttribute.setType(attr);
-                AssociationMultiplicity multiplicity = new AssociationMultiplicity(attribute.getLower(), attribute.getUpper());
-                vpAttribute.setMultiplicity(multiplicity.getMultiplicityString());
-                vpClass.addAttribute(vpAttribute);
+            if (!(ontoUmlClassifier instanceof Enumeration)) {
+                for (RefOntoUML.Property attribute : ontoUmlClassifier.getAttribute()) {
+                    IAttribute vpAttribute = IModelElementFactory.instance().createAttribute();
+                    vpAttribute.setName(attribute.getName());
+                    IModelElement attr = getClassifierElement(attribute.getName());
+                    vpAttribute.setType(attr);
+                    AssociationMultiplicity multiplicity = new AssociationMultiplicity(attribute.getLower(), attribute.getUpper());
+                    vpAttribute.setMultiplicity(multiplicity.getMultiplicityString());
+                    vpClass.addAttribute(vpAttribute);
+                }
+            } else {
+                Enumeration ontoUmlEnum = (Enumeration) ontoUmlClassifier;
+                for (EnumerationLiteral literal : ontoUmlEnum.getOwnedLiteral()) {
+                    IEnumerationLiteral vpLiteral = IModelElementFactory.instance().createEnumerationLiteral();
+                    vpLiteral.setName(literal.getName());
+                    vpClass.addChild(vpLiteral);
+                }
             }
         }
     }

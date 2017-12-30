@@ -9,8 +9,11 @@ import com.vp.plugin.model.*;
 
 import RefOntoUML.Association;
 import RefOntoUML.util.RefOntoUMLFactoryUtil;
+import com.vp.plugin.model.factory.IModelElementFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 
 public class RefOntoUMLFactory {
@@ -75,13 +78,22 @@ public class RefOntoUMLFactory {
 				classifier = RefOntoUMLFactoryUtil.createPrimitiveType(vpClass.getName(), container);
 				break;
 			case ENUMERATION:
-				classifier = RefOntoUMLFactoryUtil.createEnumeration(vpClass.getName(), new ArrayList<String>(), container);
+				Collection<String> enumerationLiterals = getEnumerationLiterals(vpClass);
+				classifier = RefOntoUMLFactoryUtil.createEnumeration(vpClass.getName(), enumerationLiterals, container);
 				break;
 		}
 
 		classifier.setIsAbstract(vpClass.isAbstract());
 
 		return classifier;
+	}
+
+	private static Collection<String> getEnumerationLiterals(IClass vpClass) {
+		List<String> literals = new ArrayList<>();
+		for (IModelElement child : vpClass.toChildArray(IModelElementFactory.MODEL_TYPE_ENUMERATION_LITERAL)) {
+			literals.add(child.getName());
+		}
+		return literals;
 	}
 
 	public static Association createCommonAssociation
