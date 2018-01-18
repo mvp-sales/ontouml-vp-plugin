@@ -23,6 +23,10 @@
        <library path="lib/menthor-alloy.jar" relativePath="true" />
        <library path="lib/menthor-ontouml2alloy.jar" relativePath="true" />
        <library path="lib/alloy4.2.jar" relativePath="true" />
+       <library path="lib/menthor-ontouml2simpleowl.jar" relativePath="true" />
+       <library path="lib/menthor-ontouml2temporalowl.jar" relativePath="true" />
+       <library path="lib/menthor-ootos.jar" relativePath="true" />
+       <library path="lib/owlapi-distribution-3.4.4-bin.jar" relativePath="true" />
    </runtime>
 	
 	<actionSets> 
@@ -102,6 +106,16 @@
                 icon="icons/ontouml_spec.png"
                 toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/br.ufes.inf.ontoumlplugin.actionset.ConvertModelToRefOntoUML">
             <actionController class="br.ufes.inf.ontoumlplugin.actions.OntoUMLSpecificationController"/>
+        </action>
+        <action
+                id="br.ufes.inf.ontoumlplugin.actionset.OWLTransformation"
+                actionType="generalAction"
+                label="OWL Transformation"
+                tooltip="Open OntoUML Elements Specification in the browser"
+                style="normal"
+                icon="icons/ontouml_spec.png"
+                toolbarPath="br.ufes.inf.ontoumlplugin.actions.toolbar1/br.ufes.inf.ontoumlplugin.actionset.OntoUMLSpecification">
+            <actionController class="br.ufes.inf.ontoumlplugin.actions.OWLTransformationController"/>
         </action>
     </actionSet>
     
