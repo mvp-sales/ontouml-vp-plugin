@@ -6,6 +6,7 @@ import RefOntoUML.parser.SyntacticVerificator;
 import br.ufes.inf.ontoumlplugin.OntoUMLPlugin;
 import br.ufes.inf.ontoumlplugin.model.Vp2OntoUmlConverter;
 import br.ufes.inf.ontoumlplugin.utils.AlloyAnalyzerUtil;
+import br.ufes.inf.ontoumlplugin.utils.AlloyDialog;
 import br.ufes.inf.ontoumlplugin.utils.CommonUtils;
 import edu.mit.csail.sdg.alloy4whole.SimpleGUICustom;
 import io.reactivex.Observable;
@@ -51,8 +52,10 @@ public class AlloyTransformationController implements VPActionController {
         oclOptions.setWorldScope(constraintSimulationPanel.getWorldScopeListSelected());
         oclOptions.setConstraintList(constraintSimulationPanel.getConstraintListSelected());*/
 
+        ApplicationManager.instance().getViewManager().showDialog(new AlloyDialog());
 
-        IProject project = ApplicationManager.instance().getProjectManager().getProject();
+
+        /*IProject project = ApplicationManager.instance().getProjectManager().getProject();
 
         viewManager.clearMessages(OntoUMLPlugin.PLUGIN_ID);
         viewManager.removeMessagePaneComponent(OntoUMLPlugin.PLUGIN_ID);
@@ -97,7 +100,7 @@ public class AlloyTransformationController implements VPActionController {
                     }
                 },
                 err -> viewManager.showMessage(err.getMessage(), OntoUMLPlugin.PLUGIN_ID)
-            );
+            );*/
     }
 
     @Override
